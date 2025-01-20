@@ -16,7 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  * NOT FOR COMMERCIAL USE WITHOUT PERMISSION.
+ *  
  */
+
+/*
+Command used to load code onto the board: 
+
+~/git/openocd/src/openocd -s ~/git/openocd/tcl -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 5000" -c "rp2350.dap.core1 cortex_m reset_config sysresetreq" -c "program main.elf verify reset exit"
+
+*/
 #include <stdio.h>
 #include <math.h>
 #include <cstring>
@@ -55,15 +63,87 @@ static uint dma_ch_in_data = 0;
 
 static volatile uint32_t dma_counter_0 = 0;
 
+// Hearing the -1kHz signal
+static bool modeLSB = true;
+// Hearing the +2kHz signal
+//static bool modeLSB = false;
+
 #define AN_BUFFER_SIZE (256)
 
-// Circular buffers were the I/Q signals are accumulated
-static float an_buffer_l[AN_BUFFER_SIZE];
-static float an_buffer_r[AN_BUFFER_SIZE];
+// Circular buffers were the raw I/Q signals are accumulated
+static float an_buffer_i[AN_BUFFER_SIZE];
+static float an_buffer_q[AN_BUFFER_SIZE];
+static float ssb_buffer[AN_BUFFER_SIZE];
+
+// Location of *next* write into the buffer
 static uint an_buffer_ptr = 0;
 
-// Inside of this handler we will already see the result of the 
-// control channel's update of .write_addr.
+#define HILBERT_SIZE (31)
+
+static float hilbert_impulse[HILBERT_SIZE] = {
+    0.004195635890348866, 
+    -1.2790256324988477e-15, 
+    0.009282101548804558, 
+    -3.220409857465908e-16, 
+    0.01883580699770617, 
+    -8.18901417658659e-16, 
+    0.03440100801932521, 
+    -6.356643085811313e-16, 
+    0.059551575569702433, 
+    -8.708587876669048e-16, 
+    0.10303763641989427, 
+    -6.507176308640055e-16, 
+    0.19683153562363995, 
+    -1.8755360872545065e-16, 
+    0.6313536408821954, 
+    0, 
+    -0.6313536408821954, 
+    1.8755360872545065e-16, 
+    -0.19683153562363995, 
+    6.507176308640055e-16, 
+    -0.10303763641989427, 
+    8.708587876669048e-16, 
+    -0.059551575569702433, 
+    6.356643085811313e-16, 
+    -0.03440100801932521, 
+    8.18901417658659e-16, 
+    -0.01883580699770617, 
+    3.220409857465908e-16, 
+    -0.009282101548804558, 
+    1.2790256324988477e-15, 
+    -0.004195635890348866 
+};
+
+// Build the group-delay in samples.
+// This is assuming an odd Hilbert size.
+#define HILBERT_GROUP_DELAY (HILBERT_SIZE + 1) / 2
+
+/**
+ * @param x Circular signal buffer.  
+ * @param h Non-circular impulse response. Size (hN) is arbitrary, but 
+ * must be smaller than xN.
+ * @param xNext Most recent insert location in circular buffer x.
+ * @param xN Size of circular buffer x. 
+ * @param hN Size of impulse response buffer h.
+ */
+static float convolve_circular_f32(const float* x, unsigned int xNext, unsigned int xN, 
+    const float* h, unsigned int hN) {
+    unsigned int n = xNext;
+    float result = 0;
+    for (unsigned int k = 0; k < hN; k++) {
+        // Multiply-accumulate
+        result += x[n] * h[k];
+        // Move backwards through the signal buffer x, per the definintion 
+        // of convolution.  Implement the wrap when needed.
+        if (n == 0) {
+            n = xN - 1;
+        } else {
+            n = n - 1;
+        }
+    }
+    return result;
+}
+
 static void dma_in_handler() {   
 
     // Figure out which part of the double-buffer we just finished
@@ -75,12 +155,42 @@ static void dma_in_handler() {
         audio_data = (int32_t*)&(audio_buffer[AUDIO_BUFFER_SIZE]);
     }
 
-    // Move into analysis buffer
+    // Move from the DMA buffer and into analysis buffer.  This also 
+    // separates the I/Q streams, corrects the scaling, and produces
+    // the real LSB/USB.
     for (int i = 0; i < AUDIO_BUFFER_SIZE; i += 2) {
+
         // The 24-bit signed value is left-justified in the 32-bit word, 
         // so we need to shift right 8. Sign extension is automatic.
-        an_buffer_r[an_buffer_ptr] = audio_data[i] >> 8;
-        an_buffer_l[an_buffer_ptr] = audio_data[i + 1] >> 8;
+        an_buffer_i[an_buffer_ptr] = audio_data[i] >> 8;
+        an_buffer_q[an_buffer_ptr] = audio_data[i + 1] >> 8;
+
+        // Apply the delay to the I stream, taking into account a 
+        // possible wrap around the start of the circular buffer.
+        unsigned int delayed_n;
+        if (an_buffer_ptr >= HILBERT_GROUP_DELAY) {
+            delayed_n = an_buffer_ptr - HILBERT_GROUP_DELAY;
+        } else {
+            delayed_n = AN_BUFFER_SIZE + an_buffer_ptr - HILBERT_GROUP_DELAY;
+        }
+        float sampleI = an_buffer_i[delayed_n];
+
+        // Apply the Hilbert transform to the Q stream.
+        float sampleQ = convolve_circular_f32(an_buffer_q, an_buffer_ptr, AN_BUFFER_SIZE,
+            hilbert_impulse, HILBERT_SIZE);
+
+        float sampleSSB;
+        if (modeLSB) {
+            sampleSSB = sampleI + sampleQ;
+        } else {
+            sampleSSB = sampleI - sampleQ;
+        }
+
+        // Save in output circular buffer
+        ssb_buffer[an_buffer_ptr] = sampleSSB;
+
+        // TODO: Apply an LFP to get rid of any high-frequency noise
+
         // Increment and wrap
         an_buffer_ptr++;
         if (an_buffer_ptr == AN_BUFFER_SIZE) 
@@ -125,23 +235,25 @@ int main(int argc, const char** argv) {
     gpio_set_function(I2C0_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(I2C0_SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(I2C0_SDA_PIN);
-    gpio_pull_up(I2C0_SDA_PIN);
+    gpio_pull_up(I2C0_SCL_PIN);
 
     // Startup ID
     sleep_ms(500);
+    sleep_ms(500);
+
+    int32_t freq = 7255000;
+    int32_t cal = 490;
+
+    printf("Minimal SDR2\nCopyright (C) 2025 Bruce MacKinnon KC1FSZ\n");
+    printf("Freq %d\n", freq);
 
     // ----- Si5351 Initialization --------------------------------------------
     // We are using I2C0 here!
     si_init(i2c0);
     si_enable(0, true);
-
-    int32_t freq = 7255000;
-    int32_t cal = 490;
-
     // Change freq
     si_evaluate(0, freq + cal);
-
-    printf("Si5351 freq %d\n", freq);
+    printf("Si5351 initialized 1\n");
 
     // ----- PCM1804 A/D Converter Setup -------------------------------------
 
@@ -404,23 +516,21 @@ int main(int argc, const char** argv) {
         gpio_put(LED_PIN, 0);
         sleep_ms(500);
 
-        // Grab a copy of the structure that may be changing 
-        // inside of an ISR.
-        // IMPORTANT: Interrupts are disabled during the copy!
-        float an_buffer_l_copy[AN_BUFFER_SIZE];
-        uint32_t in = save_and_disable_interrupts();
-        std::memcpy(an_buffer_l_copy, an_buffer_l, AN_BUFFER_SIZE * sizeof(float));
-        restore_interrupts(in);
-
-        // Analyze the buffers
         cf32 work[work_size];
         float max_mag = 0;
+
+        // IMPORTANT: Interrupts are disabled during the analysis
+        uint32_t in = save_and_disable_interrupts();
+
+        // Analyze the buffers
         for (int i = 0; i < work_size; i++) {
-            work[i].r = an_buffer_l_copy[i];
+            work[i].r = ssb_buffer[i];
             work[i].i = 0;
-            if (fabs(an_buffer_l_copy[i]) > max_mag)
-                max_mag = fabs(an_buffer_l_copy[i]);
+            if (fabs(ssb_buffer[i]) > max_mag)
+                max_mag = fabs(ssb_buffer[i]);
         }
+
+        restore_interrupts(in);
 
         //printf("dma_counter_0/_01=%d/%d\n", dma_counter_0, dma_counter_1);
 
@@ -429,6 +539,7 @@ int main(int argc, const char** argv) {
         uint maxIdx = maxMagIdx(work, 0, work_size / 2);
         printf("Max mag %d, FFT max bin %d, mag %d\n", 
             (int)max_mag, maxIdx, (int)work[maxIdx].mag());
+
    }
 
     return 0;

@@ -487,6 +487,8 @@ void si_init(i2c_inst_t* hw) {
 	data[1] = 0x00;
 	i2c_put_data(I2C_VFO, data, 2, false);
 	
+	printf("A\n");
+
 	// First time init of clock control registers
 	data[0] = SI_CLK0_CTL;
 	data[1] = SI_VFO0CTL;
