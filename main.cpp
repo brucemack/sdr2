@@ -50,7 +50,7 @@ using namespace radlib;
 
 // DMA stuff
 // The *2 accounts for left/right
-#define AUDIO_BUFFER_SIZE (32 * 2)
+#define AUDIO_BUFFER_SIZE (64 * 2)
 // Here is where the actual audio data gets written
 // The *2 accounts for the fact that we are double-buffering.
 static __attribute__((aligned(8))) uint32_t audio_buffer[AUDIO_BUFFER_SIZE * 2];
@@ -116,7 +116,8 @@ static float hilbert_impulse[HILBERT_SIZE] = {
 
 // Build the group-delay in samples.
 // This is assuming an odd Hilbert size.
-#define HILBERT_GROUP_DELAY (HILBERT_SIZE + 1) / 2
+// NOTE: The +1 seems to give slightly better rejection
+#define HILBERT_GROUP_DELAY ((HILBERT_SIZE + 1) / 2) + 1
 
 /**
  * @param x Circular signal buffer.  
@@ -540,6 +541,14 @@ int main(int argc, const char** argv) {
         printf("Max mag %d, FFT max bin %d, mag %d\n", 
             (int)max_mag, maxIdx, (int)work[maxIdx].mag());
 
+        // Spectrum
+        printf("<PLOT00>:");
+        for (unsigned int i = 0; i < work_size / 2; i++) {
+            if (i > 0)
+                printf(",");
+            printf("%d", (int)work[i].mag());
+        }
+        printf("\n");
    }
 
     return 0;
