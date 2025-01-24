@@ -88,10 +88,6 @@ static float an_buffer_q[AN_BUFFER_SIZE];
 static uint an_buffer_wr_ptr = 0;
 static uint an_buffer_rd_ptr = 0;
 
-// LSB/USB selector
-static bool modeLSB = true;
-//static bool modeLSB = false;
-
 #define HILBERT_SIZE (31)
 
 static float hilbert_impulse[HILBERT_SIZE] = {
@@ -155,6 +151,17 @@ static uint decimation_counter = 0;
 static uint16_t dac_buffer[DAC_BUFFER_SIZE];
 static volatile uint32_t dac_buffer_wr_ptr = 0;
 static volatile uint32_t dac_buffer_rd_ptr = 0;
+
+static int32_t freq = 7200000;
+// Calibration
+static int32_t cal = 490;
+// LSB/USB selector
+static bool modeLSB = true;
+//static bool modeLSB = false;
+// Converts from scale if input to scale of output (0-4095)
+//static float dacScale = 0.05;
+static float dacScale = 0.008;
+static bool overflow = false;
 
 /**
  * @param x Circular signal buffer.  
@@ -273,10 +280,6 @@ static bool dac_tick(repeating_timer_t* t) {
     return true;
 }
 
-// Converts from scale if input to scale of output (0-4095)
-//static float dacScale = 0.05;
-static float dacScale = 0.01;
-
 // This should be called when a complete frame of I/Q data has been 
 // received.
 //
@@ -333,7 +336,6 @@ static void process_in_frame() {
         // audio signal.
         float audio48 = convolve_circular_f32(ssb_buffer, new_an_buffer_rd_ptr, AN_BUFFER_SIZE,
             LPFImpulse, LPF_IMPULSE_SIZE);
-        //float audio48 = 0;
 
         // Save in output circular buffer
         lpf_buffer[new_an_buffer_rd_ptr] = audio48;
@@ -341,15 +343,20 @@ static void process_in_frame() {
         // Decimation down to audio sample rate of 8k (/6)       
         if (++decimation_counter == 6) {
             
-            // Here we need to scale to a -2,0248->+2,2048 range
+            // Here we need to scale to a -2,0248 -> +2,2048 range
             float audioScaled = audio48 * dacScale;
-            // Here we need to adjust to get a 0->4095 range
+            // Here we need to adjust to get a 0 -> 4095 range
             float audioCentered = audioScaled + 2048.0;
-            // Clip to 12 bits.
-            if (audioCentered < 0) 
+
+            // Clip to 12 bits for DAC
+            if (audioCentered < 0) {
                 audioCentered = 0;
-            else if (audioCentered > 4095) 
+                overflow = true;
+            }
+            else if (audioCentered > 4095) {
                 audioCentered = 4095;
+                overflow = true;
+            }
 
             dac_buffer[new_dac_buffer_wr_ptr] = (uint16_t)audioCentered;
 
@@ -422,9 +429,6 @@ int main(int argc, const char** argv) {
     // Startup ID
     sleep_ms(500);
     sleep_ms(500);
-
-    int32_t freq = 7255000;
-    int32_t cal = 490;
 
     printf("Minimal SDR2\nCopyright (C) 2025 Bruce MacKinnon KC1FSZ\n");
     printf("Freq %d\n", freq);
@@ -717,7 +721,37 @@ int main(int argc, const char** argv) {
 
     // ===== Main Event Loop =================================================
 
-    while (true) {
+    while (true) { 
+        
+        int c = getchar_timeout_us(0);
+        if (c == '-') {
+            freq = freq - 1000;
+            si_evaluate(0, freq + cal);
+            printf("Freq %d\n", freq);
+        }
+        else if (c == '=') {
+            freq = freq + 1000;
+            si_evaluate(0, freq + cal);
+            printf("Freq %d\n", freq);
+        }
+        else if (c == '_') {
+            freq = freq - 100;
+            si_evaluate(0, freq + cal);
+            printf("Freq %d\n", freq);
+        }
+        else if (c == '+') {
+            freq = freq + 100;
+            si_evaluate(0, freq + cal);
+            printf("Freq %d\n", freq);
+        }
+        else if (c == 'a') {
+            dacScale = dacScale + 0.001;
+            printf("Scale %f\n", dacScale);
+        }
+        else if (c == 'z') {
+            dacScale = dacScale - 0.001;
+            printf("Scale %f\n", dacScale);
+        }
 
         // Here is where we process inbound I/Q data and produce DAC data
         if (processTimer.poll()) {
@@ -760,8 +794,8 @@ int main(int argc, const char** argv) {
 
             //printf("Max/min mag %d/%d, FFT max bin %d, FFT mag %d\n", 
             //    (int)max_mag, (int)min_mag, maxIdx, (int)work[maxIdx].mag());
-            printf("DACTick=%d, DACBWR=%d, DACBEM=%d, DACBD=%d\n", 
-                dac_tick_count, dac_buffer_write_count, dacBufferEmpty, dac_buffer_depth); 
+            //printf("DACTick=%d, DACBWR=%d, DACBEM=%d, DACBD=%d\n", 
+            //    dac_tick_count, dac_buffer_write_count, dacBufferEmpty, dac_buffer_depth); 
             //printf("DACTick=%d, DACBufferWrite=%d, DAC_empty=%d, %d, %d, %d, %d\n", 
             //    dac_tick_count, dac_buffer_write_count, dacBufferEmpty, 
             //    diag_count_0, diag_count_1, diag_count_2, max_proc_0);
@@ -776,6 +810,10 @@ int main(int argc, const char** argv) {
             }
             printf("\n");
             */
+            if (overflow) {
+                overflow = false;
+                printf("Overflow\n");
+            }
         }
    }
 

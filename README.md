@@ -32,3 +32,8 @@ GP14
 GP15
 GP16 - I2C0 SDA for Si5351 (Addr 0x60)
 GP17 - I2C0 SCL for Si5351 (Addr 0x60)
+
+Research
+========
+
+Consider the PCM5100 DAC and the PCM1863 ADC? SparkFun is using the DAC on their boards.
