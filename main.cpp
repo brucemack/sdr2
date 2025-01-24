@@ -37,6 +37,7 @@ Command used to load code onto the board:
 #include "hardware/i2c.h"
 
 #include "kc1fsz-tools/rp2040/PicoPollTimer.h"
+#include "kc1fsz-tools/rp2040/PicoPerfTimer.h"
 #include "radlib/util/dsp_util.h"
 #include "radlib/util/f32_fft.h"
 
@@ -54,26 +55,35 @@ using namespace kc1fsz;
 
 #define LED_PIN (PICO_DEFAULT_LED_PIN)
 
+// Diagnostic counters
+static volatile uint32_t txFifoFull = 0;
+static volatile uint32_t dacBufferEmpty = 0;
+static volatile uint32_t dac_tick_count = 0;
+static volatile uint32_t diag_count_0 = 0;
+static volatile uint32_t diag_count_1 = 0;
+static volatile uint32_t diag_count_2 = 0;
+static volatile uint32_t dac_buffer_write_count = 0;
+static volatile uint32_t dac_buffer_nonempty_count = 0;
+static volatile uint32_t max_proc_0 = 0;
+
 // DMA stuff for ADC
-// The *2 accounts for left/right
-#define AUDIO_BUFFER_SIZE (96 * 2)
+// The *2 accounts for left/right channels
+#define ADC_BUFFER_SIZE (384 * 2)
 // Here is where the actual audio data gets written
 // The *2 accounts for the fact that we are double-buffering.
-static __attribute__((aligned(8))) uint32_t audio_buffer[AUDIO_BUFFER_SIZE * 2];
+static __attribute__((aligned(8))) uint32_t adc_buffer[ADC_BUFFER_SIZE * 2];
 // Here is where the buffer addresses are stored to control DMA
 // The *2 accounts for the fact that we are double-buffering.
-static __attribute__((aligned(8))) uint32_t* addr_buffer[2];
+static __attribute__((aligned(8))) uint32_t* adc_addr_buffer[2];
 
 static uint dma_ch_in_ctrl = 0;
 static uint dma_ch_in_data = 0;
-static volatile uint32_t dma_counter_0 = 0;
 
 // Circular analysis buffers were the raw I/Q signals are accumulated for further
 // analysis. Fs=48k
-#define AN_BUFFER_SIZE (256)
+#define AN_BUFFER_SIZE (1024)
 static float an_buffer_i[AN_BUFFER_SIZE];
 static float an_buffer_q[AN_BUFFER_SIZE];
-
 // Location of *next* read/write into the buffer
 static uint an_buffer_wr_ptr = 0;
 static uint an_buffer_rd_ptr = 0;
@@ -133,6 +143,9 @@ static float LPFImpulse[LPF_IMPULSE_SIZE] = {
     -0.007988518488193047, -0.0322923540338797, -0.0025580477346377516, -0.007508482037031126, -0.0015547763074605164, 0.003280642290253403, 0.008795348444624476, 0.013112016273176279, 0.015229588003704697, 0.014260356689224188, 0.009841832366608681, 0.002295390261866158, -0.007296945242233224, -0.01717660135976687, -0.025298778719890665, -0.029398991822789773, -0.027623603206855935, -0.018731596787559205, -0.0025587380614820365, 0.020105815714798622, 0.04727569765636943, 0.07608694879779716, 0.10336445155058628, 0.12570901987001032, 0.14037248973886046, 0.14550041816800013, 0.14037248973886046, 0.12570901987001032, 0.10336445155058628, 0.07608694879779716, 0.04727569765636943, 0.020105815714798622, -0.0025587380614820365, -0.018731596787559205, -0.027623603206855935, -0.029398991822789773, -0.025298778719890665, -0.01717660135976687, -0.007296945242233224, 0.002295390261866158, 0.009841832366608681, 0.014260356689224188, 0.015229588003704697, 0.013112016273176279, 0.008795348444624476, 0.003280642290253403, -0.0015547763074605164, -0.007508482037031126, -0.0025580477346377516, -0.0322923540338797, -0.007988518488193047
 };
 
+// Circular buffer - result of the LPF. Fs=48k
+static float lpf_buffer[AN_BUFFER_SIZE];
+
 static uint decimation_counter = 0;
 
 // Buffer used to drive the DAC.  This is treated like a 12-bit 
@@ -171,48 +184,48 @@ static float convolve_circular_f32(const float* x, unsigned int xNext, unsigned 
 
 // This will be called once every AUDIO_BUFFER_SIZE/2 samples.
 //
-// If AUDIO_BUFFER_SIZE is 96 * 2, then every time this is called 
-// we'll have 96 I/Q sample pairs to work with.  Assuming the 
-// inbound rate is 48,000 and the outbound rate is 8,000, we'll
-// decimate by a factor of 6 to create 96/6 = 16 outbound samples
-// in each call.
+// If AUDIO_BUFFER_SIZE is 384 * 2, then every time this is called 
+// we'll have 384 I/Q sample pairs to work with.  
 static void dma_in_handler() {   
+
+    // Counter used to alternate between double-buffer sides
+    static uint32_t dma_count_0 = 0;
+
+    diag_count_2++;
 
     // Figure out which part of the double-buffer we just finished
     // loading into.  Notice: the pointer is signed.
-    int32_t* audio_data;
-    if (dma_counter_0 % 2 == 0) {
-        audio_data = (int32_t*)audio_buffer;
+    int32_t* adc_data;
+    if (dma_count_0 % 2 == 0) {
+        adc_data = (int32_t*)adc_buffer;
     } else {
-        audio_data = (int32_t*)&(audio_buffer[AUDIO_BUFFER_SIZE]);
+        adc_data = (int32_t*)&(adc_buffer[ADC_BUFFER_SIZE]);
     }
 
     // Move from the DMA buffer and into analysis buffer.  This also 
     // separates the I/Q streams, corrects the scaling, and produces
     // the real LSB/USB.
-    for (int i = 0; i < AUDIO_BUFFER_SIZE; i += 2) {
+    for (int i = 0; i < ADC_BUFFER_SIZE; i += 2) {
 
         // The 24-bit signed value is left-justified in the 32-bit word, 
         // so we need to shift right 8. Sign extension is automatic.
-        an_buffer_i[an_buffer_wr_ptr] = audio_data[i] >> 8;
-        an_buffer_q[an_buffer_wr_ptr] = audio_data[i + 1] >> 8;
+        an_buffer_i[an_buffer_wr_ptr] = adc_data[i] >> 8;
+        an_buffer_q[an_buffer_wr_ptr] = adc_data[i + 1] >> 8;
 
         // Increment and wrap
         an_buffer_wr_ptr++;
         if (an_buffer_wr_ptr == AN_BUFFER_SIZE) 
             an_buffer_wr_ptr = 0;
+        // Look for overflows (i.e. background process not keeping up)
+        if (an_buffer_rd_ptr == an_buffer_wr_ptr)
+            diag_count_1++;
     }
    
     // Clear the IRQ status
     dma_hw->ints0 = 1u << dma_ch_in_data;
 
-    dma_counter_0++;
+    dma_count_0++;
 }
-
-// Diagnostic counters
-static volatile uint32_t txFifoFull = 0;
-static volatile uint32_t dacBufferEmpty = 0;
-static volatile uint32_t dac_tick_count = 0;
 
 static repeating_timer_t dac_timer; 
 
@@ -233,13 +246,11 @@ static bool dac_tick(repeating_timer_t* t) {
         dacBufferEmpty++;
         return true;
     }
+    
+    uint16_t rawSample = dac_buffer[dac_buffer_rd_ptr];
 
     // All scaling and offsets are done in advance to make this 
     // ISR as fast as possible.
-    uint16_t rawSample = dac_buffer[dac_buffer_rd_ptr++];
-    if (dac_buffer_rd_ptr == DAC_BUFFER_SIZE) 
-        dac_buffer_rd_ptr = 0;
-
     // To create an output sample we need to write three words.  The STOP flag
     // is set on the last one.
     //
@@ -253,17 +264,28 @@ static bool dac_tick(repeating_timer_t* t) {
     hw->data_cmd = 0b000'0100'0000;
     hw->data_cmd = 0b000'0000'0000 | ((rawSample >> 4) & 0xff); // High 8 bits
     // STOP requested.  Data is low 4 bits of sample, padded on right with zeros
-    hw->data_cmd = 0b010'0000'0000 | ((rawSample << 4) & 0xff);     
+    hw->data_cmd = 0b010'0000'0000 | ((rawSample << 4) & 0xff);       
     
+    dac_buffer_rd_ptr++;
+    if (dac_buffer_rd_ptr == DAC_BUFFER_SIZE) 
+        dac_buffer_rd_ptr = 0;
+
     return true;
 }
 
+// Converts from scale if input to scale of output (0-4095)
+//static float dacScale = 0.05;
+static float dacScale = 0.01;
+
 // This should be called when a complete frame of I/Q data has been 
 // received.
-
-// Converts from scale if input to scale of output (0-4095)
-static float dacScale = 0.25;
-
+//
+// Assuming the inbound rate is 48,000 and the outbound rate is 8,000, 
+// we'll decimate by a factor of 6 to create 384/6 = 64 outbound samples
+// in each call.
+//
+// Benchmark: measured 2.6ms to process 8ms (384 samples) of I/Q input data.
+//
 static void process_in_frame() {
 
     // Safely capture the start and end of the analysis buffer
@@ -295,6 +317,7 @@ static void process_in_frame() {
         // Apply the Hilbert transform to the Q stream.
         float sampleQ = convolve_circular_f32(an_buffer_q, new_an_buffer_rd_ptr, AN_BUFFER_SIZE,
             hilbert_impulse, HILBERT_SIZE);
+        //float sampleQ = 0;
 
         float sampleSSB;
         if (modeLSB) {
@@ -306,20 +329,29 @@ static void process_in_frame() {
         // Save in output circular buffer
         ssb_buffer[new_an_buffer_rd_ptr] = sampleSSB;
 
+        // Apply a LFP to get rid of any high-frequency content in the baseband 
+        // audio signal.
+        float audio48 = convolve_circular_f32(ssb_buffer, new_an_buffer_rd_ptr, AN_BUFFER_SIZE,
+            LPFImpulse, LPF_IMPULSE_SIZE);
+        //float audio48 = 0;
+
+        // Save in output circular buffer
+        lpf_buffer[new_an_buffer_rd_ptr] = audio48;
+        
         // Decimation down to audio sample rate of 8k (/6)       
         if (++decimation_counter == 6) {
-
-            // Apply a LFP to get rid of any high-frequency content in the baseband 
-            // audio signal.
-            float audio48 = convolve_circular_f32(ssb_buffer, new_an_buffer_rd_ptr, AN_BUFFER_SIZE,
-                LPFImpulse, LPF_IMPULSE_SIZE);
             
             // Here we need to scale to a -2,0248->+2,2048 range
-            int16_t audioScaled = audio48 * dacScale;
+            float audioScaled = audio48 * dacScale;
             // Here we need to adjust to get a 0->4095 range
-            uint16_t audioCentered = audioScaled + 2048;
+            float audioCentered = audioScaled + 2048.0;
+            // Clip to 12 bits.
+            if (audioCentered < 0) 
+                audioCentered = 0;
+            else if (audioCentered > 4095) 
+                audioCentered = 4095;
 
-            dac_buffer[new_dac_buffer_wr_ptr] = audioCentered;
+            dac_buffer[new_dac_buffer_wr_ptr] = (uint16_t)audioCentered;
 
             // Move the write pointer forward 
             new_dac_buffer_wr_ptr++;
@@ -327,8 +359,9 @@ static void process_in_frame() {
                 new_dac_buffer_wr_ptr = 0;
 
             decimation_counter = 0;
+            dac_buffer_write_count++;
         }
-
+        
         // Increment and wrap
         new_an_buffer_rd_ptr++;
         if (new_an_buffer_rd_ptr == AN_BUFFER_SIZE) 
@@ -354,8 +387,9 @@ int main(int argc, const char** argv) {
     uint rst_pin = 5;
     // Pin to be allocated to I2S DIN (input from)
     uint din_pin = 6;
-    //unsigned long system_clock_khz = 125000;
     unsigned long system_clock_khz = 129600;
+    PicoPerfTimer timer_0;
+
     // Adjust system clock to more evenly divide the 
     // audio sampling frequency.
     set_sys_clock_khz(system_clock_khz, true);
@@ -414,6 +448,7 @@ int main(int argc, const char** argv) {
 
     // 8kHz timer for DAC output.  
     // The negative time is used to indicate the time between callback starts.
+    // This uses the default alarm pool.
     add_repeating_timer_us(-125, dac_tick, 0, &dac_timer);
 
     // ===== PCM1804 A/D Converter Setup ======================================
@@ -582,8 +617,8 @@ int main(int argc, const char** argv) {
     // The control channel will read between these two addresses,
     // telling the data channel to write to them alternately (i.e.
     // double-buffer).
-    addr_buffer[0] = audio_buffer;
-    addr_buffer[1] = &(audio_buffer[AUDIO_BUFFER_SIZE]);
+    adc_addr_buffer[0] = adc_buffer;
+    adc_addr_buffer[1] = &(adc_buffer[ADC_BUFFER_SIZE]);
     
     dma_ch_in_ctrl = dma_claim_unused_channel(true);
     dma_ch_in_data = dma_claim_unused_channel(true);
@@ -619,7 +654,7 @@ int main(int argc, const char** argv) {
         &dma_hw->ch[dma_ch_in_data].al2_write_addr_trig,
         // Here is where we start to read from (the address 
         // buffer area).
-        addr_buffer, 
+        adc_addr_buffer, 
         // TRANS_COUNT: Number of transfers to perform before stopping.
         // This count will be reset to the original value (1) every 
         // time the channel is started.
@@ -653,7 +688,7 @@ int main(int argc, const char** argv) {
         // This is the "magic" that connects the PIO SM to the DMA.
         &(pio0->rxf[din_sm]),
         // Number of transfers (each is 32 bits)
-        AUDIO_BUFFER_SIZE,
+        ADC_BUFFER_SIZE,
         // Don't start yet
         false);
 
@@ -672,8 +707,11 @@ int main(int argc, const char** argv) {
 
     int strobe = 0;
     
+    // Audio processing should happen once every DMA frame (8ms)
+    // in order to avoid falling behind.
     PicoPollTimer processTimer;
-    processTimer.setIntervalUs(10);
+    processTimer.setIntervalUs(8 * 1000);
+    // Display/diagnostic should happen once per second
     PicoPollTimer flashTimer;
     flashTimer.setIntervalUs(1000 * 1000);
 
@@ -681,7 +719,15 @@ int main(int argc, const char** argv) {
 
     while (true) {
 
-        // Do periodic display stuff
+        // Here is where we process inbound I/Q data and produce DAC data
+        if (processTimer.poll()) {
+            timer_0.reset();
+            process_in_frame();           
+            if (timer_0.elapsedUs() > max_proc_0) 
+                max_proc_0 = timer_0.elapsedUs();
+        }
+
+        // Do periodic display/diagnostic stuff
         if (flashTimer.poll()) {
 
             ++strobe;
@@ -692,20 +738,35 @@ int main(int argc, const char** argv) {
             }
 
             cf32 work[work_size];
-            float max_mag = 0;
+            float max_mag = 0, min_mag = 0;
 
             // Analyze the SSB buffer
-            for (int i = 0; i < work_size; i++) {
-                work[i].r = ssb_buffer[i];
+            for (int i = 0; i < work_size; i++) {               
+                work[i].r = lpf_buffer[i];
                 work[i].i = 0;
-                if (fabs(ssb_buffer[i]) > max_mag)
-                    max_mag = fabs(ssb_buffer[i]);
+                if (lpf_buffer[i] > max_mag)
+                    max_mag = lpf_buffer[i];
+                if (lpf_buffer[i] < min_mag)
+                    min_mag = lpf_buffer[i];
             }
             fft.transform(work);
             uint maxIdx = maxMagIdx(work, 0, work_size / 2);
-            printf("Max mag %d, FFT max bin %d, mag %d, %d, %d, %d\n", 
-                (int)max_mag, maxIdx, (int)work[maxIdx].mag(), dac_tick_count, txFifoFull, dacBufferEmpty);
 
+            uint32_t dac_buffer_depth;
+            if (dac_buffer_wr_ptr > dac_buffer_rd_ptr)
+                dac_buffer_depth = dac_buffer_wr_ptr - dac_buffer_rd_ptr;
+            else 
+                dac_buffer_depth = (DAC_BUFFER_SIZE - dac_buffer_rd_ptr) + dac_buffer_wr_ptr;
+
+            //printf("Max/min mag %d/%d, FFT max bin %d, FFT mag %d\n", 
+            //    (int)max_mag, (int)min_mag, maxIdx, (int)work[maxIdx].mag());
+            printf("DACTick=%d, DACBWR=%d, DACBEM=%d, DACBD=%d\n", 
+                dac_tick_count, dac_buffer_write_count, dacBufferEmpty, dac_buffer_depth); 
+            //printf("DACTick=%d, DACBufferWrite=%d, DAC_empty=%d, %d, %d, %d, %d\n", 
+            //    dac_tick_count, dac_buffer_write_count, dacBufferEmpty, 
+            //    diag_count_0, diag_count_1, diag_count_2, max_proc_0);
+
+            /*
             // Spectrum
             printf("<PLOT00>:");
             for (unsigned int i = 0; i < work_size / 2; i++) {
@@ -714,11 +775,7 @@ int main(int argc, const char** argv) {
                 printf("%d", (int)work[i].mag());
             }
             printf("\n");
-        }
-
-        // Here is where we process inbound I/Q data and produce DAC data
-        if (processTimer.poll()) {
-            process_in_frame();           
+            */
         }
    }
 
