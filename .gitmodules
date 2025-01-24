@@ -1,3 +1,6 @@
 [submodule "radlib"]
 	path = radlib
 	url = https://github.com/brucemack/radlib.git
+[submodule "kc1fsz-tools-cpp"]
+	path = kc1fsz-tools-cpp
+	url = https://github.com/brucemack/kc1fsz-tools-cpp.git

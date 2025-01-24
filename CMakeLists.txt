@@ -12,12 +12,12 @@ add_executable(main
   si5351.c
   radlib/util/dsp_util.cpp
   radlib/util/f32_fft.cpp
+  kc1fsz-tools-cpp/src/rp2040/PicoPollTimer.cpp
+  kc1fsz-tools-cpp/src/rp2040/PicoPerfTimer.cpp
 )
-
+target_compile_definitions(main PRIVATE PICO_BUILD=1)
 pico_generate_pio_header(main ${CMAKE_CURRENT_LIST_DIR}/i2s.pio)
-
 pico_enable_stdio_usb(main 1)
 pico_enable_stdio_uart(main 1)
-target_link_libraries(main pico_stdlib hardware_i2c hardware_dma 
-  hardware_pio hardware_clocks)
-pico_add_extra_outputs(main)
+target_include_directories(main PRIVATE kc1fsz-tools-cpp/include)
+target_link_libraries(main pico_stdlib hardware_i2c hardware_dma hardware_pio hardware_clocks)
