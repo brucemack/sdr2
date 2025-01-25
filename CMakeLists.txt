@@ -8,6 +8,7 @@ pico_sdk_init()
 
 add_executable(main
   main.cpp
+  sweeper.cpp
   i2s.pio
   si5351.c
   radlib/util/dsp_util.cpp
