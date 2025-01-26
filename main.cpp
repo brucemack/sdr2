@@ -141,8 +141,8 @@ static float hilbert_impulse[HILBERT_SIZE] = {
 // Build the group-delay in samples.
 // This is assuming an odd Hilbert size.
 // NOTE: The +1 seems to give slightly better rejection
-//#define HILBERT_GROUP_DELAY ((HILBERT_SIZE + 1) / 2) + 1
-#define HILBERT_GROUP_DELAY ((HILBERT_SIZE + 1) / 2) - 1
+#define HILBERT_GROUP_DELAY ((HILBERT_SIZE + 1) / 2) + 2
+//#define HILBERT_GROUP_DELAY ((HILBERT_SIZE + 1) / 2) - 1
 
 // Circular buffer - result of Hilbert transform (i.e. one sideband 
 // eliminated). Fs=48k
@@ -341,6 +341,9 @@ static void process_in_frame() {
     unsigned int new_dac_buffer_wr_ptr = dac_buffer_wr_ptr;
     restore_interrupts(in_state);
 
+    //float imbalanceScale = 1.0;
+    float imbalanceScale = 0.95;
+
     // This processing loop happens while interrupts are enabled
     // so it's lower priority than the DMA and DAC timer.
 
@@ -355,11 +358,11 @@ static void process_in_frame() {
             delayed_n = AN_BUFFER_SIZE + new_an_buffer_rd_ptr - HILBERT_GROUP_DELAY;
         }
         float sampleI = an_buffer_i[delayed_n];
+        sampleI *= imbalanceScale;
 
         // Apply the Hilbert transform to the Q stream.
         float sampleQ = convolve_circular_f32(an_buffer_q, new_an_buffer_rd_ptr, AN_BUFFER_SIZE,
             hilbert_impulse, HILBERT_SIZE);
-        //float sampleQ = 0;
 
         float sampleSSB;
         if (modeLSB) {

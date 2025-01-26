@@ -37,3 +37,9 @@ Research
 ========
 
 Consider the PCM5100 DAC and the PCM1863 ADC? SparkFun is using the DAC on their boards.
+
+References
+==========
+
+[PCM1804 Datasheet](https://www.ti.com/lit/ds/symlink/pcm1804.pdf)
+
