@@ -1,0 +1,89 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "8479b471-211f-4f9d-aaff-f8c510ef6f99")
+	(paper "A4")
+	(lib_symbols)
+	(sheet
+		(at 63.5 29.21)
+		(size 25.4 26.67)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "8a73e46d-a625-466e-b3b9-e488e942275f")
+		(property "Sheetname" "QSE-MUX"
+			(at 63.5 28.4984 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "qse-mux.kicad_sch"
+			(at 63.5 56.4646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "tx-1"
+				(path "/8479b471-211f-4f9d-aaff-f8c510ef6f99"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 33.02 29.21)
+		(size 26.67 26.67)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "9695a7db-03d9-4388-abc4-282f3401666d")
+		(property "Sheetname" "QSE"
+			(at 33.02 28.4984 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "qse.kicad_sch"
+			(at 33.02 56.4646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "tx-1"
+				(path "/8479b471-211f-4f9d-aaff-f8c510ef6f99"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
