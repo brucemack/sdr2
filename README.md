@@ -3,6 +3,7 @@ Build/Debug Commands
 
 One-time setup of make process:
 
+        git submodule update --init
         mkdir build
         cd build
         cmake -DPICO_BOARD=pico2 ..
@@ -22,8 +23,9 @@ GP4
 GP5  - RST out to PCM1804 ADC
 GP6  - DIN in from PC1804 ADC
 GP7  - BCK in from PC1804 ADC
-GP8  - Debug out
-GP9  - LRCK in from PC1804 ADC
+GP8  - LRCK in from PC1804 ADC
+GP9  - Debug out
+GND  - 
 GP10 - SCK out to PCM1804 ADC
 GP11
 GP12

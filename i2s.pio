@@ -27,6 +27,88 @@
 .wrap
 
 ; ================================================================
+; Program for receiving I2S audio data from a slave CODEC.
+; Input pins: DIN
+; Side set pins: LRCK, BCK
+;
+; Be sure to run this at a fraction of the SCK state machine!
+; So the BCK/LRCK have the right relationship with the desired
+; Fs frequency.
+
+; NOTE ABOUT READ TIMING:
+;
+; Per the PCM1804 datasheet (page 22), the data will become 
+; available after the FALLING EDGE of the BCK. So we should 
+; always lower the BCK in one instruction and read the DIN
+; pin in a following instruction (as well as raising the BCK
+; to prepare for the next cycle).
+
+; NOTE ABOUT PCM1804 BCK
+;
+; Per the datasheet, the expectation is that BCK is running
+; at 64xFs (i.e. two 32-bit frames) even though the ADC
+; only has 24 bits of resolution.
+
+; NOTE ABOUT I2S FRAMING:
+;
+; It's a bit strange, but per the I2S specification, the MSB of 
+; a frame is available during the second rising BCK *AFTER* the 
+; transition of the LRCK.
+
+; From datasheet (page 886):
+;
+; "JMP X-- and JMP Y-- always decrement scratch register X or Y, 
+; respectively. The decrement is not conditional on the current 
+; value of the scratch register. The branch is conditioned on the 
+; initial value of the register, i.e. before the decrement took 
+; place: if the register is initially nonzero, the branch is taken."
+
+
+.program i2s_din_master
+.side_set 2 
+
+public entry_point:
+frameL:
+                    ;      LRCK
+                    ;      |BCK
+                    ;      ||
+    in pins 1       side 0b01   ; Collect the LSB of the previous frame
+    push noblock    side 0b00   ; Queue the previous (right) frame's ISR.
+                                ; This also clears the ISR.
+
+    in pins 1       side 0b01   ; Collect the MSB of the current frame
+    set x 28        side 0b00   ; Prepare the count for the current frame
+
+dataL:
+
+    in pins 1       side 0b01
+    jmp x-- dataL   side 0b00
+
+; Launch the transition into the right frame
+
+    in pins 1       side 0b01   ; Collect LSB+1 of the left frame
+    nop             side 0b10   ; Move the LRCK
+
+frameR:
+
+    in pins 1       side 0b11   ; Collect the LSB of the previous frame
+    push noblock    side 0b10   ; Queue the previous frame's ISR.
+                                ; This also clears the ISR.
+
+    in pins 1       side 0b11   ; Collect the MSB of the current frame
+    set x 28        side 0b10   ; Prepare the count for the current frame
+
+dataR: 
+
+    in pins 1       side 0b11
+    jmp x-- dataR   side 0b10
+
+; Launch the transition into the left frame
+
+    in pins 1       side 0b11   ; Collect LSB+1 of the right frame
+    nop             side 0b00   ; Move the LRCK
+
+; ================================================================
 ; Program for receiving I2S audio data from master CODEC.
 ; Input pins are sequential in this order: DIN, BCLK, LRCLK.
 ; Output pin is: DEBUG
