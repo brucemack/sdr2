@@ -256,6 +256,7 @@ static void dma_in_handler() {
 
         // The 24-bit signed value is left-justified in the 32-bit word, 
         // so we need to shift right 8. Sign extension is automatic.
+        // Range of 24 bits is -8,388,608 to 8,388,607.
         an_buffer_i[an_buffer_wr_ptr] = adc_data[i] >> 8;
         an_buffer_q[an_buffer_wr_ptr] = adc_data[i + 1] >> 8;
 
@@ -586,6 +587,8 @@ int main(int argc, const char** argv) {
     // Allocate state machine
     uint din_sm = pio_claim_unused_sm(pio0, true);
     uint din_sm_mask = 1 << din_sm;
+
+    /* PCM1804 SLAVE CODE COMMENTED OUT
     
     // Load slave program into the PIO
     uint din_program_offset = pio_add_program(pio0, &i2s_din_program);
@@ -645,6 +648,7 @@ int main(int argc, const char** argv) {
     // Adjust state-machine clock divisor.  The speed is somewhat
     // arbitrary here, so long as it is fast enough to see the 
     // transitions on BCK and LRCK.  We run it at the same speed as the 
+    // SCK state machine.
     //
     // NOTE: The clock divisor is in 16:8 format
     //
@@ -652,8 +656,8 @@ int main(int argc, const char** argv) {
     //            Integer Part         |  Fraction Part
     pio_sm_set_clkdiv_int_frac(pio0, din_sm, 
         sck_sm_clock_d, sck_sm_clock_f);
+    */
     
-    /*
     // Load master program into the PIO
     uint din_program_offset = pio_add_program(pio0, &i2s_din_master_program);
   
@@ -707,7 +711,7 @@ int main(int argc, const char** argv) {
     //            Integer Part         |  Fraction Part
     // 
     pio_sm_set_clkdiv_int_frac(pio0, din_sm, 21, 24);
-    */
+    
     // ----- DMA setup -------------------------------------------
 
     // The control channel will read between these two addresses,
@@ -879,9 +883,13 @@ int main(int argc, const char** argv) {
                 printf("%d\n", swState.sample[i]);
         }
         else if (c == 'p') {
+            // Make a quick copy since this buffer is changing in real-time
+            float copy[64];
+            for (unsigned int i = 0; i < 64; i++) 
+                copy[i] = an_buffer_i[i];
             printf("\n\n\n======================================\n");
-            for (unsigned int i = 0; i < 128; i++) 
-                printf("%d\n", (int)an_buffer_i[i]);
+            for (unsigned int i = 0; i < 64; i++) 
+                printf("%d\n", (int)copy[i]);
         }
 
         // Here is where we process inbound I/Q data and produce DAC data
@@ -892,7 +900,6 @@ int main(int argc, const char** argv) {
                 max_proc_0 = timer_0.elapsedUs();
         }
 
-        /*
         if (sweepTimer.poll()) 
             sweeper_tick(&swState, &swContext);
 
@@ -949,7 +956,6 @@ int main(int argc, const char** argv) {
                 printf("Overflow\n");
             }
         }
-        */
    }
 
     return 0;
