@@ -567,11 +567,13 @@ int main(int argc, const char** argv) {
     // for the reset circuit, the system clock must be supplied as soon as the 
     // power is supplied ..."
     //
+    /*
     sleep_ms(100);
     gpio_put(rst_pin, 0);
     sleep_ms(5);
     gpio_put(rst_pin, 1);
-
+    */
+   
     // Per PCM1804 datasheet page 18: 
     //
     // "The digital output is valid after the reset state is released and the 
@@ -586,7 +588,6 @@ int main(int argc, const char** argv) {
     // Allocate state machine
     uint din_sm = pio_claim_unused_sm(pio0, true);
     uint din_sm_mask = 1 << din_sm;
-
     /*
     // Load slave program into the PIO
     uint din_program_offset = pio_add_program(pio0, &i2s_din_program);
@@ -675,15 +676,12 @@ int main(int argc, const char** argv) {
     // assembler and defined inside of the generated .h file.
     pio_sm_config din_sm_config = 
         i2s_din_master_program_get_default_config(din_program_offset);
-    // TODO: DOC!
-    //sm_config_set_sideset(&din_sm_config, 2, false, false);
     // Associate the input pin with state machine.  This will be 
     // relevant to the DIN pin for IN instructions.
     sm_config_set_in_pins(&din_sm_config, din_pin);
     // Set the "side set pins" for the state machine. 
     // These are BCLK and LRCLK
     sm_config_set_sideset_pins(&din_sm_config, din_pin + 1);
-    //sm_config_set_out_pins(&din_sm_config, din_pin + 1, 2);
     // Configure the IN shift behavior.
     // Parameter 0: "false" means shift ISR to left on input.
     // Parameter 1: "false" means autopush is not enabled.
@@ -804,6 +802,22 @@ int main(int argc, const char** argv) {
 
     // Final enable of the two SMs to keep them in sync.
     pio_enable_sm_mask_in_sync(pio0, sck_sm_mask | din_sm_mask);
+
+    // Now issue a reset of the CODEC
+    //
+    // Per datasheet page 18: "In slave mode, the system clock rate is automatically
+    // detected."
+    //
+    // Per datasheet page 18: "The PCM1804 needs -RST=low when control pins
+    // are changed or in slave mode when SCKI, LRCK, and BCK are changed."
+    //
+    // I believe these two statements imply that a -RST is needed after *all* of the
+    // clocks are being driven at the target frequency.
+
+    sleep_ms(100);
+    gpio_put(rst_pin, 0);
+    sleep_ms(100);
+    gpio_put(rst_pin, 1);
 
     int strobe = 0;
     
