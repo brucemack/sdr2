@@ -567,13 +567,11 @@ int main(int argc, const char** argv) {
     // for the reset circuit, the system clock must be supplied as soon as the 
     // power is supplied ..."
     //
-    /*
     sleep_ms(100);
     gpio_put(rst_pin, 0);
     sleep_ms(5);
     gpio_put(rst_pin, 1);
-    */
-   
+
     // Per PCM1804 datasheet page 18: 
     //
     // "The digital output is valid after the reset state is released and the 
@@ -588,7 +586,7 @@ int main(int argc, const char** argv) {
     // Allocate state machine
     uint din_sm = pio_claim_unused_sm(pio0, true);
     uint din_sm_mask = 1 << din_sm;
-    /*
+    
     // Load slave program into the PIO
     uint din_program_offset = pio_add_program(pio0, &i2s_din_program);
   
@@ -654,8 +652,8 @@ int main(int argc, const char** argv) {
     //            Integer Part         |  Fraction Part
     pio_sm_set_clkdiv_int_frac(pio0, din_sm, 
         sck_sm_clock_d, sck_sm_clock_f);
-    */
     
+    /*
     // Load master program into the PIO
     uint din_program_offset = pio_add_program(pio0, &i2s_din_master_program);
   
@@ -709,7 +707,7 @@ int main(int argc, const char** argv) {
     //            Integer Part         |  Fraction Part
     // 
     pio_sm_set_clkdiv_int_frac(pio0, din_sm, 21, 24);
-    
+    */
     // ----- DMA setup -------------------------------------------
 
     // The control channel will read between these two addresses,
@@ -825,6 +823,7 @@ int main(int argc, const char** argv) {
     // in order to avoid falling behind.
     PicoPollTimer processTimer;
     processTimer.setIntervalUs(8 * 1000);
+
     // Display/diagnostic should happen once per second
     PicoPollTimer flashTimer;
     flashTimer.setIntervalUs(1000 * 1000);
@@ -879,6 +878,11 @@ int main(int argc, const char** argv) {
             for (unsigned int i = 0; i < swState.sampleCount; i++) 
                 printf("%d\n", swState.sample[i]);
         }
+        else if (c == 'p') {
+            printf("\n\n\n======================================\n");
+            for (unsigned int i = 0; i < 128; i++) 
+                printf("%d\n", (int)an_buffer_i[i]);
+        }
 
         // Here is where we process inbound I/Q data and produce DAC data
         if (processTimer.poll()) {
@@ -888,6 +892,7 @@ int main(int argc, const char** argv) {
                 max_proc_0 = timer_0.elapsedUs();
         }
 
+        /*
         if (sweepTimer.poll()) 
             sweeper_tick(&swState, &swContext);
 
@@ -930,21 +935,21 @@ int main(int argc, const char** argv) {
             //    dac_tick_count, dac_buffer_write_count, dacBufferEmpty, 
             //    diag_count_0, diag_count_1, diag_count_2, max_proc_0);
 
-            /*
             // Spectrum
-            printf("<PLOT00>:");
-            for (unsigned int i = 0; i < work_size / 2; i++) {
-                if (i > 0)
-                    printf(",");
-                printf("%d", (int)work[i].mag());
-            }
-            printf("\n");
-            */
+            //printf("<PLOT00>:");
+            //for (unsigned int i = 0; i < work_size / 2; i++) {
+            //    if (i > 0)
+            //        printf(",");
+            //    printf("%d", (int)work[i].mag());
+            //}
+            //printf("\n");
+
             if (overflow) {
                 overflow = false;
                 printf("Overflow\n");
             }
         }
+        */
    }
 
     return 0;
