@@ -17,32 +17,36 @@
  *
  * NOT FOR COMMERCIAL USE WITHOUT PERMISSION.
  */
+
 ; ================================================================
 ; Program for generating system clock
 
 .program i2s_sck
 .wrap_target
-    set pins, 1
-    set pins, 0
+    set pins 1
+    set pins 0
 .wrap
 
 ; ================================================================
-; Program for receiving I2S audio data from a slave CODEC.
+; Program for receiving I2S audio data from a slave ADC.
 ; Input pins: DIN
 ; Side set pins: LRCK, BCK
 ;
-; Be sure to run this at a fraction of the SCK state machine!
-; So the BCK/LRCK have the right relationship with the desired
-; Fs frequency.
-
+; NOTES: 
+; * Be sure to run this at a fraction of the SCK state machine!
+;   So the BCK/LRCK have the right relationship with the desired
+;   Fs frequency.
+; * Make sure that auto-push is enabled (32)
+; * Make sure that the clocks start in the high position,
+;   as if we are just finishing a right channel transfer.
+;
 ; NOTE ABOUT READ TIMING:
 ;
 ; Per the PCM1804 datasheet (page 22), the data will become 
 ; available after the FALLING EDGE of the BCK. So we should 
 ; always lower the BCK in one instruction and read the DIN
-; pin in a following instruction (as well as raising the BCK
-; to prepare for the next cycle).
-
+; pin in a following instruction (as well as raising the BCK).
+;
 ; NOTE ABOUT PCM1804 BCK
 ;
 ; Per the datasheet, the expectation is that BCK is running
@@ -58,55 +62,71 @@
 ; From datasheet (page 886):
 ;
 ; "JMP X-- and JMP Y-- always decrement scratch register X or Y, 
-; respectively. The decrement is not conditional on the current 
+; respectively. The decrement is not conditional on the current (i.e. final) 
 ; value of the scratch register. The branch is conditioned on the 
 ; initial value of the register, i.e. before the decrement took 
 ; place: if the register is initially nonzero, the branch is taken."
 
-
 .program i2s_din_master
 .side_set 2 
 
-public entry_point:
-frameL:
+; We do this to (almost) fill up the ISR so that the next IN 
+; will trigger an autopush and get things flowing normally.
+
                     ;      LRCK
                     ;      |BCK
                     ;      ||
-    in pins 1       side 0b01   ; Collect the LSB of the previous frame
-    push noblock    side 0b00   ; Queue the previous (right) frame's ISR.
-                                ; This also clears the ISR.
-
-    in pins 1       side 0b01   ; Collect the MSB of the current frame
-    set x 28        side 0b00   ; Prepare the count for the current frame
-
+    in pins 31      side 0b11
+.wrap_target
+    set x 30        side 0b00
 dataL:
-
-    in pins 1       side 0b01
+    in pins 1       side 0b01   ; Autopush should happen on the first loop
     jmp x-- dataL   side 0b00
-
-; Launch the transition into the right frame
-
-    in pins 1       side 0b01   ; Collect LSB+1 of the left frame
-    nop             side 0b10   ; Move the LRCK
-
-frameR:
-
-    in pins 1       side 0b11   ; Collect the LSB of the previous frame
-    push noblock    side 0b10   ; Queue the previous frame's ISR.
-                                ; This also clears the ISR.
-
-    in pins 1       side 0b11   ; Collect the MSB of the current frame
-    set x 28        side 0b10   ; Prepare the count for the current frame
-
-dataR: 
-
-    in pins 1       side 0b11
+    in pins 1       side 0b01   
+    set x 30        side 0b10
+dataR:
+    in pins 1       side 0b11   ; Autopush should happen on the first loop
     jmp x-- dataR   side 0b10
+    in pins 1       side 0b11
+.wrap 
 
-; Launch the transition into the left frame
+; ================================================================
+; Program for sending I2S audio to a slave DAC.
+; Is is expected that this will run in parallel (perlectly 
+; synchronized) with the i2s_din_master program. Therefore,
+; we don't have any clock lines to worry about.
+;
+; NOTE: The first word written to the left channel will
+; be garbage.
+;
+; NOTES: 
+; * Make sure that auto-pull is enabled (32).
+; * Make sure that SHIFTCTRL_OUT_SHIFTDIR is set to "left."
+; * Bits will be taken from the MSB end of OSR.
+;       
+.program i2s_dout_master
+.side_set 2 
 
-    in pins 1       side 0b11   ; Collect LSB+1 of the right frame
-    nop             side 0b00   ; Move the LRCK
+; We do this first out to (almost) empty the OSR so that 
+; the next OUT will trigger an autopull and get things 
+; flowing normally.
+public entry_point:
+                    ;      LRCK
+                    ;      |BCK
+                    ;      ||
+    out pins 31     side 0b11
+.wrap_target
+    out pins 1      side 0b00
+    set x 30        side 0b01
+dataL: 
+    out pins 1      side 0b00
+    jmp x-- dataL   side 0b01
+    out pins 1      side 0b10
+    set x 30        side 0b11
+dataR:
+    out pins 1      side 0b10
+    jmp x-- dataR   side 0b11
+.wrap
 
 ; ================================================================
 ; Program for receiving I2S audio data from master CODEC.

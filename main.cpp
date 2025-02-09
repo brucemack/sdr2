@@ -56,29 +56,37 @@ using namespace kc1fsz;
 
 #define LED_PIN (PICO_DEFAULT_LED_PIN)
 
-// Diagnostic counters
-static volatile uint32_t txFifoFull = 0;
-static volatile uint32_t dacBufferEmpty = 0;
-static volatile uint32_t dac_tick_count = 0;
-static volatile uint32_t diag_count_0 = 0;
-static volatile uint32_t diag_count_1 = 0;
-static volatile uint32_t diag_count_2 = 0;
-static volatile uint32_t dac_buffer_write_count = 0;
-static volatile uint32_t dac_buffer_nonempty_count = 0;
-static volatile uint32_t max_proc_0 = 0;
+// Buffer used to drive the DAC via DMA.
+// When running at 48kHz, each buffer of 384 samples represents 8ms of activity
+#define DAC_BUFFER_SIZE (512 * 2)
+// 4096-byte alignment is needed because we are using a DMA channel in ring mode
+// and all buffers must be aligned to a power of two boundary.
+// 512 samples * 2  words per sample * 4 bytes per word = 4096 bytes
+static __attribute__((aligned(4096))) uint32_t dac_buffer_ping[DAC_BUFFER_SIZE];
+static __attribute__((aligned(4096))) uint32_t dac_buffer_pong[DAC_BUFFER_SIZE];
 
-// DMA stuff for ADC
-// The *2 accounts for left/right channels
-#define ADC_BUFFER_SIZE (384 * 2)
+// Buffer used to drive the ADC via DMA.
+// The *2 accounts for left + right channels
+// When running at 48kHz, each buffer of 384 samples represents 8ms of activity
+// When running at 48kHz, each buffer of 512 samples represents 10ms of activity
+#define ADC_BUFFER_SIZE (512 * 2)
 // Here is where the actual audio data gets written
 // The *2 accounts for the fact that we are double-buffering.
 static __attribute__((aligned(8))) uint32_t adc_buffer[ADC_BUFFER_SIZE * 2];
-// Here is where the buffer addresses are stored to control DMA
+// Here is where the buffer addresses are stored to control ADC DMA
 // The *2 accounts for the fact that we are double-buffering.
 static __attribute__((aligned(8))) uint32_t* adc_addr_buffer[2];
 
+// Diagnostic counters
+static volatile uint32_t dma_in_count = 0;
+static volatile uint32_t dma_out_count = 0;
+static volatile uint32_t an_buffer_overflow_count = 0;
+static volatile uint32_t max_proc_0 = 0;
+
 static uint dma_ch_in_ctrl = 0;
 static uint dma_ch_in_data = 0;
+static uint dma_ch_out_data0 = 0;
+static uint dma_ch_out_data1 = 0;
 
 // Circular analysis buffers were the raw I/Q signals are accumulated for further
 // analysis. Fs=48k
@@ -156,7 +164,7 @@ static float LPFImpulse[LPF_IMPULSE_SIZE] = {
 */
 
 #define LPF_IMPULSE_SIZE (91)
-static float LPFImpulse[LPF_IMPULSE_SIZE] = {
+static const float LPFImpulse[LPF_IMPULSE_SIZE] = {
 0.026023731209180712, -0.014944709238861435, -0.01282048293469228, -0.011606039275329378, -0.010593560098382651, -0.00924125050458392, -0.007286060750618341, -0.004648438806810258, -0.0015355909555464862, 0.00171013338400933, 0.0045964325270102255, 0.006672390629168848, 0.007523840203798958, 0.006943597991965513, 0.004907442913820445, 0.0017317488367759044, -0.002112573413878447, -0.005956312807227829, -0.00905892246527812, -0.010785308726788935, -0.010650672953206002, -0.008495597575241154, -0.004513733345988606, 0.0007693820564916878, 0.006489959083732819, 0.011662090756684888, 0.01522931867508315, 0.01634570240113426, 0.014472103355133298, 0.009568210608822089, 0.0020876523550769467, -0.006951746454653754, -0.01615006622499047, -0.023815670331730376, -0.028272268352863006, -0.02806697519845502, -0.02215747488201716, -0.010297917934256877, 0.007255778779401038, 0.029207770582472974, 0.05373554159034625, 0.0786499018999863, 0.10140628513007802, 0.1196538139172792, 0.13142332055479838, 0.13550049513969512, 0.13142332055479838, 0.1196538139172792, 0.10140628513007802, 0.0786499018999863, 0.05373554159034625, 0.029207770582472974, 0.007255778779401038, -0.010297917934256877, -0.02215747488201716, -0.02806697519845502, -0.028272268352863006, -0.023815670331730376, -0.01615006622499047, -0.006951746454653754, 0.0020876523550769467, 0.009568210608822089, 0.014472103355133298, 0.01634570240113426, 0.01522931867508315, 0.011662090756684888, 0.006489959083732819, 0.0007693820564916878, -0.004513733345988606, -0.008495597575241154, -0.010650672953206002, -0.010785308726788935, -0.00905892246527812, -0.005956312807227829, -0.002112573413878447, 0.0017317488367759044, 0.004907442913820445, 0.006943597991965513, 0.007523840203798958, 0.006672390629168848, 0.0045964325270102255, 0.00171013338400933, -0.0015355909555464862, -0.004648438806810258, -0.007286060750618341, -0.00924125050458392, -0.010593560098382651, -0.011606039275329378, -0.01282048293469228, -0.014944709238861435, 0.026023731209180712
 };
 
@@ -165,13 +173,11 @@ static float lpf_buffer[AN_BUFFER_SIZE];
 
 static uint decimation_counter = 0;
 
-// Buffer used to drive the DAC.  This is treated like a 12-bit 
-// integer which is written directly to the DAC (i.e. all pre-scaling
-// is done in advance).
-#define DAC_BUFFER_SIZE (256)
-static uint16_t dac_buffer[DAC_BUFFER_SIZE];
-static volatile uint32_t dac_buffer_wr_ptr = 0;
-static volatile uint32_t dac_buffer_rd_ptr = 0;
+// This flag is used to manage the alternating buffers. "Ping ready"
+// indicates that the ping buffer was just written and should be sent
+// out on the next opportunity. Otherwise, it's the pong buffer that
+// was just written and is waiting to be sent.
+//static volatile bool dac_buffer_ping_ready = false;
 
 static int32_t freq = 7200000;
 // Calibration
@@ -231,14 +237,12 @@ static float convolve_circular_f32(const float* x, unsigned int xNext, unsigned 
 
 // This will be called once every AUDIO_BUFFER_SIZE/2 samples.
 //
-// If AUDIO_BUFFER_SIZE is 384 * 2, then every time this is called 
-// we'll have 384 I/Q sample pairs to work with.  
-static void dma_in_handler() {   
+static void dma_adc_handler() {   
 
     // Counter used to alternate between double-buffer sides
     static uint32_t dma_count_0 = 0;
 
-    diag_count_2++;
+    dma_in_count++;
 
     // Figure out which part of the double-buffer we just finished
     // loading into.  Notice: the pointer is signed.
@@ -266,7 +270,7 @@ static void dma_in_handler() {
             an_buffer_wr_ptr = 0;
         // Look for overflows (i.e. background process not keeping up)
         if (an_buffer_rd_ptr == an_buffer_wr_ptr)
-            diag_count_1++;
+            an_buffer_overflow_count++;
     }
    
     // Clear the IRQ status
@@ -275,58 +279,37 @@ static void dma_in_handler() {
     dma_count_0++;
 }
 
-static repeating_timer_t dac_timer; 
+static void dma_dac0_handler() {   
 
-static bool dac_tick(repeating_timer_t* t) {
+    dma_out_count++;
 
-    dac_tick_count++;
+    // Clear the IRQ status
+    dma_hw->ints0 = 1u << dma_ch_out_data0;
+}
 
-    i2c_hw_t *hw = i2c_get_hw(i2c1);
+static void dma_dac1_handler() {   
 
-    // Tx FIFO must not be full
-    if (!(hw->status & I2C_IC_STATUS_TFNF_BITS)) {
-        txFifoFull++;
-        return true;
+    dma_out_count++;
+
+    // Clear the IRQ status
+    dma_hw->ints0 = 1u << dma_ch_out_data1;
+}
+
+static void dma_irq_handler() {   
+    // Figure out which interrupt fired
+    if (dma_hw->ints0 & (1u << dma_ch_in_data)) {
+        dma_adc_handler();
     }
-
-    // Make sure we have something in the DAC buffer
-    if (dac_buffer_rd_ptr == dac_buffer_wr_ptr) {
-        dacBufferEmpty++;
-        return true;
+    if (dma_hw->ints0 & (1u << dma_ch_out_data0)) {
+        dma_dac0_handler();
     }
-    
-    uint16_t rawSample = dac_buffer[dac_buffer_rd_ptr];
-
-    // All scaling and offsets are done in advance to make this 
-    // ISR as fast as possible.
-    // To create an output sample we need to write three words.  The STOP flag
-    // is set on the last one.
-    //
-    // 0 0 0 | 0   1   0   x   x   0   0   x 
-    // 0 0 0 | d11 d10 d09 d08 d07 d06 d05 d04
-    // 0 1 0 | d03 d02 d01 d00 x   x   x   x
-    //   ^
-    //   |
-    //   +------ STOP BIT!
-    //
-    hw->data_cmd = 0b000'0100'0000;
-    hw->data_cmd = 0b000'0000'0000 | ((rawSample >> 4) & 0xff); // High 8 bits
-    // STOP requested.  Data is low 4 bits of sample, padded on right with zeros
-    hw->data_cmd = 0b010'0000'0000 | ((rawSample << 4) & 0xff);       
-    
-    dac_buffer_rd_ptr++;
-    if (dac_buffer_rd_ptr == DAC_BUFFER_SIZE) 
-        dac_buffer_rd_ptr = 0;
-
-    return true;
+    if (dma_hw->ints0 & (1u << dma_ch_out_data1)) {
+        dma_dac1_handler();
+    }
 }
 
 // This should be called when a complete frame of I/Q data has been 
 // received.
-//
-// Assuming the inbound rate is 48,000 and the outbound rate is 8,000, 
-// we'll decimate by a factor of 6 to create 384/6 = 64 outbound samples
-// in each call.
 //
 // Benchmark: measured 2.6ms to process 8ms (384 samples) of I/Q input data.
 //
@@ -339,15 +322,13 @@ static void process_in_frame() {
     unsigned int an_end = an_buffer_wr_ptr;
     // Here is where the reading starts (where we left off before)
     unsigned int new_an_buffer_rd_ptr = an_buffer_rd_ptr;
-    // Here is where we should start writing oubound DAC data
-    unsigned int new_dac_buffer_wr_ptr = dac_buffer_wr_ptr;
     restore_interrupts(in_state);
 
     float imbalanceScale = 1.0;
     //float imbalanceScale = 0.95;
 
     // This processing loop happens while interrupts are enabled
-    // so it's lower priority than the DMA and DAC timer.
+    // so it's lower priority than the DMA.
 
     while (new_an_buffer_rd_ptr != an_end) {
 
@@ -383,36 +364,7 @@ static void process_in_frame() {
 
         // Save in output circular buffer
         lpf_buffer[new_an_buffer_rd_ptr] = audio48;
-        
-        // Decimation down to audio sample rate of 8k (/6)       
-        if (++decimation_counter == 6) {
-            
-            // Here we need to scale to a -2,0248 -> +2,2048 range
-            float audioScaled = audio48 * dacScale;
-            // Here we need to adjust to get a 0 -> 4095 range
-            float audioCentered = audioScaled + 2048.0;
 
-            // Clip to 12 bits for DAC
-            if (audioCentered < 0) {
-                audioCentered = 0;
-                overflow = true;
-            }
-            else if (audioCentered > 4095) {
-                audioCentered = 4095;
-                overflow = true;
-            }
-
-            dac_buffer[new_dac_buffer_wr_ptr] = (uint16_t)audioCentered;
-
-            // Move the write pointer forward 
-            new_dac_buffer_wr_ptr++;
-            if (new_dac_buffer_wr_ptr == DAC_BUFFER_SIZE)
-                new_dac_buffer_wr_ptr = 0;
-
-            decimation_counter = 0;
-            dac_buffer_write_count++;
-        }
-        
         // Increment and wrap
         new_an_buffer_rd_ptr++;
         if (new_an_buffer_rd_ptr == AN_BUFFER_SIZE) 
@@ -422,22 +374,25 @@ static void process_in_frame() {
     // Adjust the pointers on the buffers
     in_state = save_and_disable_interrupts();
     an_buffer_rd_ptr = new_an_buffer_rd_ptr;
-    dac_buffer_wr_ptr = new_dac_buffer_wr_ptr;
     restore_interrupts(in_state);
 }
 
 int main(int argc, const char** argv) {
 
     unsigned long fs = 48000;
-    unsigned long sck_mult = 384;
-    unsigned long sck_freq = sck_mult * fs;
+
     // Pin to be allocated to I2S SCK (output to CODEC)
     // GP10 is physical pin 14
-    uint sck_pin = 10;
+    uint sck_pin = 4;
+    // ADC pins
     // Pin to be allocated to ~RST
     uint rst_pin = 5;
     // Pin to be allocated to I2S DIN (input from)
     uint din_pin = 6;
+    // DAC pins
+    // Pin to be allocated to I2S DOUT 
+    uint dout_pin = 9;
+
     unsigned long system_clock_khz = 129600;
     PicoPerfTimer timer_0;
 
@@ -474,8 +429,25 @@ int main(int argc, const char** argv) {
     sleep_ms(500);
     sleep_ms(500);
 
-    printf("Minimal SDR2\nCopyright (C) 2025 Bruce MacKinnon KC1FSZ\n");
+    printf("Minimal SDR2\nCopyright (C) Bruce MacKinnon KC1FSZ, 2025\n");
     printf("Freq %d\n", freq);
+
+    {
+        float omega = 2.0 * 3.1415926 * 1000.0 / 48000.0;
+        float phi = 0;
+        for (unsigned int i = 0; i < DAC_BUFFER_SIZE; i += 2) {
+            float c = 2000000.0 * cos(phi);
+            int32_t c0 = c;
+            //if (i < DAC_BUFFER_SIZE / 4) c0 = 0x7fffff;
+            //if (i < 10) c0 = 0x7fffff / 2;
+            dac_buffer_ping[i + 1] = c0 << 8;
+            dac_buffer_pong[i + 1] = c0 << 8;
+            dac_buffer_ping[i] = c0 << 8;
+            dac_buffer_pong[i] = c0 << 8;
+            phi += omega;
+        }
+    }
+
 
     // ===== Si5351 Initialization =============================================
 
@@ -486,32 +458,22 @@ int main(int argc, const char** argv) {
     si_evaluate(0, freq + cal);
     printf("Si5351 initialized 1\n");
 
-    // ===== MCP4725 DAC Setup ================================================
-
-    // One-time initialization of the I2C channel
-    i2c_hw_t *hw = i2c_get_hw(i2c1);
-    hw->enable = 0;
-    hw->tar = 0x60;
-    hw->enable = 1;
-
-    // 8kHz timer for DAC output.  
-    // The negative time is used to indicate the time between callback starts.
-    // This uses the default alarm pool.
-    add_repeating_timer_us(-125, dac_tick, 0, &dac_timer);
-
-    // ===== PCM1804 A/D Converter Setup ======================================
-
     const uint work_size = 256;
     float trigSpace[work_size];
     F32FFT fft(work_size, trigSpace);
 
+    // ===== PCM1804 A/D Converter Setup ======================================
+
+    // TODO: REVIEW WHETHER THIS IS NEEDED
     // Reset the CODEC
     gpio_put(rst_pin, 0);
     sleep_ms(100);
     gpio_put(rst_pin, 1);
     sleep_ms(100);
 
-    // ----- SCK Setup ------------------------------------------------------
+    // ===== PCM5100 DAC Setup ===============================================
+
+    // ===== I2S SCK PIO Setup ===============================================
 
     // Allocate state machine
     uint sck_sm = pio_claim_unused_sm(pio0, true);
@@ -582,83 +544,13 @@ int main(int argc, const char** argv) {
 
     sleep_ms(50);
 
-    // ----- DIN Setup ------------------------------------------------------
+    // ===== I2S LRCK, BCK, DIN Setup (ADC) =====================================
 
     // Allocate state machine
     uint din_sm = pio_claim_unused_sm(pio0, true);
     uint din_sm_mask = 1 << din_sm;
-
-    /* PCM1804 SLAVE CODE COMMENTED OUT
     
-    // Load slave program into the PIO
-    uint din_program_offset = pio_add_program(pio0, &i2s_din_program);
-  
-    // Setup the function select for a GPIO to use from the given PIO 
-    // instance.
-    // DIN
-    pio_gpio_init(pio0, din_pin);
-    gpio_set_pulls(din_pin, false, false);
-    gpio_set_dir(din_pin, GPIO_IN);
-    // BCK
-    pio_gpio_init(pio0, din_pin + 1);
-    gpio_set_pulls(din_pin + 1, false, false);
-    gpio_set_dir(din_pin + 1, GPIO_IN);
-    // LRCK
-    pio_gpio_init(pio0, din_pin + 2);
-    gpio_set_pulls(din_pin + 2, false, false);
-    gpio_set_dir(din_pin + 2, GPIO_IN);
-    // DIAG (OUT)
-    pio_gpio_init(pio0, din_pin + 3);
-    //gpio_set_pulls(din_pin + 3, false, false);
-    gpio_set_dir(din_pin + 3, GPIO_OUT);
-
-    // NOTE: The xxx_get_default_config() function is generated by the PIO
-    // assembler and defined inside of the generated .h file.
-    pio_sm_config din_sm_config = 
-        i2s_din_program_get_default_config(din_program_offset);
-    // Associate the input pins with state machine.  This will be 
-    // relevant to the DIN pin for IN instructions and the BCK, LRCK
-    // pins for WAIT instructions.
-    sm_config_set_in_pins(&din_sm_config, din_pin);
-    // Set the "jump pin" for the state machine. This will be the 
-    // LRCK pin in this usage.
-    sm_config_set_jmp_pin(&din_sm_config, din_pin + 2);
-    // Output (debug pin)
-    sm_config_set_set_pins(&din_sm_config, din_pin + 3, 1);
-    // Configure the IN shift behavior.
-    // Parameter 0: "false" means shift ISR to left on input.
-    // Parameter 1: "false" means autopush is not enabled.
-    // Parameter 2: "0" means threshold (in bits) before auto/conditional 
-    //              push to the ISR.
-    sm_config_set_in_shift(&din_sm_config, false, false, 0);
-    // Merge the FIFOs since we are only doing RX.  This gives us 
-    // 8 words of buffer instead of the usual 4.
-    sm_config_set_fifo_join(&din_sm_config, PIO_FIFO_JOIN_RX);
-
-    // Initialize the direction of the pins before SM is enabled
-    // There are four pins in the mask here. 
-    uint din_pins_mask = 0b1111 << din_pin;
-    uint din_pindirs   = 0b1000 << din_pin;
-    // The "0" means input, "1" means output
-    pio_sm_set_pindirs_with_mask(pio0, din_sm, din_pindirs, din_pins_mask);
-
-    // Hook it all together.  (But this does not enable the SM!)
-    pio_sm_init(pio0, din_sm, din_program_offset, &din_sm_config);
-          
-    // Adjust state-machine clock divisor.  The speed is somewhat
-    // arbitrary here, so long as it is fast enough to see the 
-    // transitions on BCK and LRCK.  We run it at the same speed as the 
-    // SCK state machine.
-    //
-    // NOTE: The clock divisor is in 16:8 format
-    //
-    // d d d d d d d d d d d d d d d d . f f f f f f f f
-    //            Integer Part         |  Fraction Part
-    pio_sm_set_clkdiv_int_frac(pio0, din_sm, 
-        sck_sm_clock_d, sck_sm_clock_f);
-    */
-    
-    // Load master program into the PIO
+    // Load master ADC program into the PIO
     uint din_program_offset = pio_add_program(pio0, &i2s_din_master_program);
   
     // Setup the function select for a GPIO to use from the given PIO 
@@ -684,12 +576,12 @@ int main(int argc, const char** argv) {
     // Set the "side set pins" for the state machine. 
     // These are BCLK and LRCLK
     sm_config_set_sideset_pins(&din_sm_config, din_pin + 1);
-    // Configure the IN shift behavior.
+    // Configure the IN shift behavior.,,,,,
     // Parameter 0: "false" means shift ISR to left on input.
-    // Parameter 1: "false" means autopush is not enabled.
-    // Parameter 2: "0" means threshold (in bits) before auto/conditional 
+    // Parameter 1: "true" means autopush is enabled.
+    // Parameter 2: "32" means threshold (in bits) before auto/conditional 
     //              push to the ISR.
-    sm_config_set_in_shift(&din_sm_config, false, false, 0);
+    sm_config_set_in_shift(&din_sm_config, false, true, 32);
     // Merge the FIFOs since we are only doing RX.  This gives us 
     // 8 words of buffer instead of the usual 4.
     sm_config_set_fifo_join(&din_sm_config, PIO_FIFO_JOIN_RX);
@@ -700,6 +592,9 @@ int main(int argc, const char** argv) {
     // DIN: The "0" means input, "1" means output
     uint din_pindirs   = 0b110 << din_pin;
     pio_sm_set_pindirs_with_mask(pio0, din_sm, din_pindirs, din_pins_mask);
+    // Start with the two clocks in 1 state.
+    uint din_pinvals   = 0b110 << din_pin;
+    pio_sm_set_pins_with_mask(pio0, din_sm, din_pinvals, din_pins_mask);
 
     // Hook it all together.  (But this does not enable the SM!)
     pio_sm_init(pio0, din_sm, din_program_offset, &din_sm_config);
@@ -712,7 +607,7 @@ int main(int argc, const char** argv) {
     // 
     pio_sm_set_clkdiv_int_frac(pio0, din_sm, 21, 24);
     
-    // ----- DMA setup -------------------------------------------
+    // ----- ADC DMA setup ---------------------------------------
 
     // The control channel will read between these two addresses,
     // telling the data channel to write to them alternately (i.e.
@@ -792,20 +687,187 @@ int main(int argc, const char** argv) {
         // Don't start yet
         false);
 
-    // Enable interrupt when DMA data transfer completes
+    // Enable interrupt when DMA data transfer completes via
+    // the DMA_IRQ0.
     dma_channel_set_irq0_enabled(dma_ch_in_data, true);
-    // Bind to the interrupt handler and enable
-    irq_set_exclusive_handler(DMA_IRQ_0, dma_in_handler);
+
+    // ===== I2S DOUT/BCK/LRCK PIO Setup (To DAC) ==============================
+
+    // Allocate state machine
+    uint dout_sm = pio_claim_unused_sm(pio0, true);
+    uint dout_sm_mask = 1 << dout_sm;
+
+    // Load master ADC program into the PIO
+    uint dout_program_offset = pio_add_program(pio0, &i2s_dout_master_program);
+  
+    // Setup the function select for a GPIO to use from the given PIO 
+    // instance: DOUT
+    pio_gpio_init(pio0, dout_pin);
+    gpio_set_dir(dout_pin, GPIO_OUT);
+    // BCK
+    pio_gpio_init(pio0, dout_pin + 1);
+    gpio_set_dir(dout_pin + 1, GPIO_OUT);
+    // LRCK
+    pio_gpio_init(pio0, dout_pin + 2);
+    gpio_set_dir(dout_pin + 2, GPIO_OUT);
+
+    // NOTE: The xxx_get_default_config() function is generated by the PIO
+    // assembler and defined inside of the generated .h file.
+    pio_sm_config dout_sm_config = 
+        i2s_dout_master_program_get_default_config(dout_program_offset);
+    // Associate the input pin with state machine.  This will be 
+    // relevant to the DOUT pin for OUT instructions.
+    sm_config_set_out_pins(&dout_sm_config, dout_pin, 1);
+    // Set the "side set pins" for the state machine. 
+    // These are BCLK and LRCLK
+    sm_config_set_sideset_pins(&dout_sm_config, dout_pin + 1);
+    // Configure the OUT shift behavior.
+    // Parameter 0: "false" means shift OSR to left on input.
+    // Parameter 1: "true" means autopull is enabled.
+    // Parameter 2: "32" means threshold (in bits) before auto/conditional 
+    //              pull to the OSR.
+    sm_config_set_out_shift(&dout_sm_config, false, true, 32);
+    // Merge the FIFOs since we are only doing TX.  This gives us 
+    // 8 words of buffer instead of the usual 4.
+    sm_config_set_fifo_join(&dout_sm_config, PIO_FIFO_JOIN_TX);
+
+    // Initialize the direction of the pins before SM is enabled
+    uint dout_pins_mask = 0b111 << dout_pin;
+    // DIN: The "0" means input, "1" means output
+    uint dout_pindirs   = 0b111 << dout_pin;
+    pio_sm_set_pindirs_with_mask(pio0, dout_sm, dout_pindirs, dout_pins_mask);
+    // Start with the two clocks in 1 state.
+    uint dout_pinvals   = 0b110 << dout_pin;
+    pio_sm_set_pins_with_mask(pio0, dout_sm, dout_pinvals, dout_pins_mask);
+
+    // Hook it all together.  (But this does not enable the SM!)
+    pio_sm_init(pio0, dout_sm, dout_program_offset, &dout_sm_config);
+          
+    // Adjust state-machine clock divisor.  
+    // NOTE: The clock divisor is in 16:8 format
+    //
+    // d d d d d d d d d d d d d d d d . f f f f f f f f
+    //            Integer Part         |  Fraction Part
+    // 
+    // TODO: USE VARIABLES SHARED WITH DIN
+    pio_sm_set_clkdiv_int_frac(pio0, dout_sm, 21, 24);
+    
+    dma_ch_out_data0 = dma_claim_unused_channel(true);
+    dma_ch_out_data1 = dma_claim_unused_channel(true);
+
+    // ----- DAC DMA channel 0 setup -------------------------------------
+
+    cfg = dma_channel_get_default_config(dma_ch_out_data0);
+    // We need to increment the read to move across the buffer
+    channel_config_set_read_increment(&cfg, true);
+    // Define wrap-around ring (read). Per Pico SDK docs:
+    //
+    // "For values n > 0, only the lower n bits of the address will change. This 
+    // wraps the address on a (1 << n) byte boundary, facilitating access to 
+    // naturally-aligned ring buffers. Ring sizes between 2 and 32768 bytes are 
+    // possible (size_bits from 1 - 15)."
+    //
+    // WARNING: Make sure the buffer is sufficiently aligned for this to work!
+    channel_config_set_ring(&cfg, false, 13);
+    // No increment required because we are always writing to the 
+    // PIO TX FIFO every time.
+    channel_config_set_write_increment(&cfg, false);
+    // Set size of each transfer (one audio word)
+    channel_config_set_transfer_data_size(&cfg, DMA_SIZE_32);
+    // Attach the DMA channel to the TX DREQ of the PIO state machine. 
+    // The "true" below indicates TX.
+    // This is the "magic" that connects the PIO SM to the DMA.
+    channel_config_set_dreq(&cfg, pio_get_dreq(pio0, dout_sm, true));
+    // We trigger the other data channel once the data transfer is done
+    // in order to achieve the ping-pong effect.
+    channel_config_set_chain_to(&cfg, dma_ch_out_data1);
+    // Program the DMA channel
+    dma_channel_configure(dma_ch_out_data0, &cfg,
+        // Initial write address
+        // The memory-mapped location of the RX FIFO of the PIO state
+        // machine used for receiving data
+        // This is the "magic" that connects the PIO SM to the DMA.
+        &(pio0->txf[dout_sm]),
+        // Initial Read address
+        dac_buffer_ping, 
+        // Number of transfers (each is 32 bits)
+        DAC_BUFFER_SIZE,
+        // Don't start yet
+        false);
+    // Enable interrupt when DMA data transfer completes
+    dma_channel_set_irq0_enabled(dma_ch_out_data0, true);
+
+    // ----- DAC DMA channel 1 setup -------------------------------------
+
+    cfg = dma_channel_get_default_config(dma_ch_out_data1);
+    // We need to increment the read to move across the buffer
+    channel_config_set_read_increment(&cfg, true);
+    // Define wrap-around ring (read)
+    channel_config_set_ring(&cfg, false, 13);
+    // No increment required because we are always writing to the 
+    // PIO TX FIFO every time.
+    channel_config_set_write_increment(&cfg, false);
+    // Set size of each transfer (one audio word)
+    channel_config_set_transfer_data_size(&cfg, DMA_SIZE_32);
+    // Attach the DMA channel to the TX DREQ of the PIO state machine. 
+    // The "true" below indicates TX.
+    // This is the "magic" that connects the PIO SM to the DMA.
+    channel_config_set_dreq(&cfg, pio_get_dreq(pio0, dout_sm, true));
+    // We trigger the other data channel once the data transfer is done
+    // in order to achieve the ping-pong effect.
+    channel_config_set_chain_to(&cfg, dma_ch_out_data0);
+    // Program the DMA channel
+    dma_channel_configure(dma_ch_out_data1, &cfg,
+        // Initial write address
+        // The memory-mapped location of the RX FIFO of the PIO state
+        // machine used for receiving data
+        // This is the "magic" that connects the PIO SM to the DMA.
+        &(pio0->txf[dout_sm]),
+        // Initial Read address
+        dac_buffer_pong, 
+        // Number of transfers (each is 32 bits)
+        DAC_BUFFER_SIZE,
+        // Don't start yet
+        false);
+    // Enable interrupt when DMA data transfer completes
+    dma_channel_set_irq0_enabled(dma_ch_out_data1, true);
+
+    // ----- Final Enables ----------------------------------------------------
+
+    // Bind to the interrupt handler 
+    irq_set_exclusive_handler(DMA_IRQ_0, dma_irq_handler);
+    // Enable DMA interrupts
     irq_set_enabled(DMA_IRQ_0, true);
 
-    // Start DMA action on the control side.  This will trigger
-    // the data DMA channel in turn.
+    // Start ADC DMA action on the control side.  This will trigger
+    // the ADC data DMA channel in turn.
     dma_channel_start(dma_ch_in_ctrl);
+    // Start DAC DMA action immediately so the DAC FIFO is full
+    // from the beginning.
+    dma_channel_start(dma_ch_out_data0);
 
-    // Final enable of the two SMs to keep them in sync.
-    pio_enable_sm_mask_in_sync(pio0, sck_sm_mask | din_sm_mask);
+    // Stuff the TX FIFO to get going.  If the DAC state machine
+    // gets started before there is anything in the FIFO we will
+    // get stalled forever. 
+    // TODO: EXPLAIN WHY
+    /*
+    pio0->txf[dout_sm] = 0;
+    pio0->txf[dout_sm] = 0;
+    pio0->txf[dout_sm] = 0;
+    pio0->txf[dout_sm] = 0;
+    pio0->txf[dout_sm] = 0;
+    pio0->txf[dout_sm] = 0;
+    */
+    // Loop until the TX FIFO is full
+    uint fill_count = 0;
+    while (pio0->fstat & 0x00040000 == 0) {
+        fill_count++;
+    }
 
-    // Now issue a reset of the CODEC
+    // Final enable of the three SMs to keep them in sync.
+    pio_enable_sm_mask_in_sync(pio0, sck_sm_mask | din_sm_mask | dout_sm_mask);
+
+    // Now issue a reset of the ADC
     //
     // Per datasheet page 18: "In slave mode, the system clock rate is automatically
     // detected."
@@ -909,14 +971,41 @@ int main(int argc, const char** argv) {
             ++strobe;
             if (strobe & 1 == 1) {
                 gpio_put(LED_PIN, 1);
+                /*
+                // #### TEST DATA
+                for (unsigned int i = 0; i < DAC_BUFFER_SIZE; i += 2) {
+                    // BLUE (OUTR)
+                    dac_buffer_ping[i] = 0;
+                    dac_buffer_pong[i] = 0;
+                    // YELLOW (OUTL)
+                    dac_buffer_ping[i + 1] = (0x7fffff << 8);
+                    dac_buffer_pong[i + 1] = (0x7fffff << 8);
+                    //dac_buffer_ping[i] = (0x800000 << 8);
+                    //dac_buffer_pong[i] = (0x800000 << 8);
+                    //dac_buffer_ping[i + 1] = 0;
+                    //dac_buffer_pong[i + 1] = 0;
+                }
+                */
             } else {
                 gpio_put(LED_PIN, 0);
+                /*
+                // #### TEST DATA
+                for (unsigned int i = 0; i < DAC_BUFFER_SIZE; i += 2) {
+                    dac_buffer_ping[i + 1] = 0;
+                    dac_buffer_pong[i + 1] = 0;
+                    dac_buffer_ping[i] = 0;
+                    dac_buffer_pong[i] = 0;
+                }
+                */
             }
+
+            //printf("IN/OUT %d/%d\n", dma_in_count, dma_out_count);
+            //printf("FSTAT %08x, FDEBUG=%08x\n", pio0->fstat, pio0->fdebug);
 
             cf32 work[work_size];
             float max_mag = 0, min_mag = 0;
 
-            // Analyze the SSB buffer
+            // Analyze the SSB buffer999
             for (int i = 0; i < work_size; i++) {               
                 work[i].r = lpf_buffer[i];
                 work[i].i = 0;
@@ -928,19 +1017,8 @@ int main(int argc, const char** argv) {
             fft.transform(work);
             uint maxIdx = maxMagIdx(work, 0, work_size / 2);
 
-            uint32_t dac_buffer_depth;
-            if (dac_buffer_wr_ptr > dac_buffer_rd_ptr)
-                dac_buffer_depth = dac_buffer_wr_ptr - dac_buffer_rd_ptr;
-            else 
-                dac_buffer_depth = (DAC_BUFFER_SIZE - dac_buffer_rd_ptr) + dac_buffer_wr_ptr;
-
             //printf("Max/min mag %d/%d, FFT max bin %d, FFT mag %d\n", 
             //    (int)max_mag, (int)min_mag, maxIdx, (int)work[maxIdx].mag());
-            //printf("DACTick=%d, DACBWR=%d, DACBEM=%d, DACBD=%d\n", 
-            //    dac_tick_count, dac_buffer_write_count, dacBufferEmpty, dac_buffer_depth); 
-            //printf("DACTick=%d, DACBufferWrite=%d, DAC_empty=%d, %d, %d, %d, %d\n", 
-            //    dac_tick_count, dac_buffer_write_count, dacBufferEmpty, 
-            //    diag_count_0, diag_count_1, diag_count_2, max_proc_0);
 
             // Spectrum
             //printf("<PLOT00>:");
