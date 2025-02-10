@@ -913,7 +913,7 @@ int main(int argc, const char** argv) {
                 gpio_put(LED_PIN, 0);
             }
 
-            printf("Max time %d\n", max_proc_0);
+            //printf("Max time %d\n", max_proc_0);
             max_proc_0 = 0;
             //printf("IN/OUT %d/%d\n", dma_in_count, dma_out_count);
             //printf("FSTAT %08x, FDEBUG=%08x\n", pio0->fstat, pio0->fdebug);
