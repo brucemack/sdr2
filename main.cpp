@@ -29,6 +29,8 @@ Command used to load code onto the board:
 #include <math.h>
 #include <cstring>
 
+#include <arm_math.h>
+
 #include "pico/stdlib.h"
 #include "pico/time.h"
 #include "hardware/clocks.h"
@@ -38,12 +40,13 @@ Command used to load code onto the board:
 
 #include "kc1fsz-tools/rp2040/PicoPollTimer.h"
 #include "kc1fsz-tools/rp2040/PicoPerfTimer.h"
-#include "radlib/util/dsp_util.h"
-#include "radlib/util/f32_fft.h"
+//#include "radlib/util/dsp_util.h"
+//#include "radlib/util/f32_fft.h"
 
 #include "i2s.pio.h"
 #include "si5351.h"
 #include "sweeper.h"
+#include "dsp.h"
 
 #define I2C0_SDA_PIN (16)  // Physical pin 21
 #define I2C0_SCL_PIN (17)  // Physical pin 22
@@ -51,25 +54,27 @@ Command used to load code onto the board:
 #define I2C1_SDA_PIN (2)  
 #define I2C1_SCL_PIN (3)  
 
-using namespace radlib;
+//using namespace radlib;
 using namespace kc1fsz;
 
 #define LED_PIN (PICO_DEFAULT_LED_PIN)
 
 // Buffer used to drive the DAC via DMA.
 // When running at 48kHz, each buffer of 384 samples represents 8ms of activity
-#define DAC_BUFFER_SIZE (512 * 2)
+#define DAC_BUFFER_SIZE (256 * 2)
+#define DAC_BUFFER_ALIGN (DAC_BUFFER_SIZE * 4)
 // 4096-byte alignment is needed because we are using a DMA channel in ring mode
 // and all buffers must be aligned to a power of two boundary.
-// 512 samples * 2  words per sample * 4 bytes per word = 4096 bytes
-static __attribute__((aligned(4096))) uint32_t dac_buffer_ping[DAC_BUFFER_SIZE];
-static __attribute__((aligned(4096))) uint32_t dac_buffer_pong[DAC_BUFFER_SIZE];
+// 256 samples * 2  words per sample * 4 bytes per word = 2048 bytes
+static __attribute__((aligned(DAC_BUFFER_ALIGN))) uint32_t dac_buffer_ping[DAC_BUFFER_SIZE];
+static __attribute__((aligned(DAC_BUFFER_ALIGN))) uint32_t dac_buffer_pong[DAC_BUFFER_SIZE];
 
 // Buffer used to drive the ADC via DMA.
 // The *2 accounts for left + right channels
 // When running at 48kHz, each buffer of 384 samples represents 8ms of activity
 // When running at 48kHz, each buffer of 512 samples represents 10ms of activity
-#define ADC_BUFFER_SIZE (512 * 2)
+#define ADC_SAMPLE_COUNT 256
+#define ADC_BUFFER_SIZE (ADC_SAMPLE_COUNT * 2)
 // Here is where the actual audio data gets written
 // The *2 accounts for the fact that we are double-buffering.
 static __attribute__((aligned(8))) uint32_t adc_buffer[ADC_BUFFER_SIZE * 2];
@@ -88,54 +93,16 @@ static uint dma_ch_in_data = 0;
 static uint dma_ch_out_data0 = 0;
 static uint dma_ch_out_data1 = 0;
 
-// Circular analysis buffers were the raw I/Q signals are accumulated for further
-// analysis. Fs=48k
-#define AN_BUFFER_SIZE (1024)
-static float an_buffer_i[AN_BUFFER_SIZE];
-static float an_buffer_q[AN_BUFFER_SIZE];
-// Location of *next* read/write into the buffer
-static uint an_buffer_wr_ptr = 0;
-static uint an_buffer_rd_ptr = 0;
+// Enabled inside ADC DMA IRQ to indicate that a new frame is available
+static volatile bool adc_frame_ready = false;
+// This flag is used to manage the alternating buffers. "ping open"
+// indicates that the ping buffer was just written and should be sent
+// out on the next opportunity. Otherwise, it's the pong buffer that
+// was just written and is waiting to be sent.
+static volatile bool dac_buffer_ping_open = false;
 
-/*
-#define HILBERT_SIZE (31)
-static float hilbert_impulse[HILBERT_SIZE] = {
-    0.004195635890348866, 
-    -1.2790256324988477e-15, 
-    0.009282101548804558, 
-    -3.220409857465908e-16, 
-    0.01883580699770617, 
-    -8.18901417658659e-16, 
-    0.03440100801932521, 
-    -6.356643085811313e-16, 
-    0.059551575569702433, 
-    -8.708587876669048e-16, 
-    0.10303763641989427, 
-    -6.507176308640055e-16, 
-    0.19683153562363995, 
-    -1.8755360872545065e-16, 
-    0.6313536408821954, 
-    0, 
-    -0.6313536408821954, 
-    1.8755360872545065e-16, 
-    -0.19683153562363995, 
-    6.507176308640055e-16, 
-    -0.10303763641989427, 
-    8.708587876669048e-16, 
-    -0.059551575569702433, 
-    6.356643085811313e-16, 
-    -0.03440100801932521, 
-    8.18901417658659e-16, 
-    -0.01883580699770617, 
-    3.220409857465908e-16, 
-    -0.009282101548804558, 
-    1.2790256324988477e-15, 
-    -0.004195635890348866 
-};
-*/
-
-#define HILBERT_SIZE (51)
-static float hilbert_impulse[HILBERT_SIZE] = {
+#define HILBERT_IMPULSE_SIZE (51)
+static const float hilbert_impulse[HILBERT_IMPULSE_SIZE] = {
 0.012442742396853695, -9.247429900666847e-16, 0.009007745694645828, 3.886440143014065e-16, 0.012248270003437301, 2.0291951727332382e-16, 0.016267702606548327, 1.073881019267362e-15, 0.021262591317853616, -1.5445700787658912e-15, 0.027540135461651433, 9.040409971208902e-16, 0.03555144114893796, -9.736771998276128e-17, 0.04616069183085064, 2.5884635757740463e-16, 0.060879120316970736, -1.9452769758181735e-16, 0.08310832605502039, 6.688463706336815e-16, 0.12163479949392442, -4.100082211906412e-17, 0.208751841831881, 3.007875123018464e-16, 0.635463817659196, 0, -0.635463817659196, -3.007875123018464e-16, -0.208751841831881, 4.100082211906412e-17, -0.12163479949392442, -6.688463706336815e-16, -0.08310832605502039, 1.9452769758181735e-16, -0.060879120316970736, -2.5884635757740463e-16, -0.04616069183085064, 9.736771998276128e-17, -0.03555144114893796, -9.040409971208902e-16, -0.027540135461651433, 1.5445700787658912e-15, -0.021262591317853616, -1.073881019267362e-15, -0.016267702606548327, -2.0291951727332382e-16, -0.012248270003437301, -3.886440143014065e-16, -0.009007745694645828, 9.247429900666847e-16, -0.012442742396853695
 };
 
@@ -149,35 +116,27 @@ static float hilbert_impulse[HILBERT_SIZE] = {
 // Build the group-delay in samples.
 // This is assuming an odd Hilbert size.
 // NOTE: The +1 seems to give slightly better rejection
-#define HILBERT_GROUP_DELAY ((HILBERT_SIZE + 1) / 2) + 2
-//#define HILBERT_GROUP_DELAY ((HILBERT_SIZE + 1) / 2) - 1
+#define HILBERT_GROUP_DELAY ((HILBERT_IMPULSE_SIZE + 1) / 2) + 2
+//#define HILBERT_GROUP_DELAY ((HILBERT_IMPULSE_SIZE + 1) / 2) - 1
 
-// Circular buffer - result of Hilbert transform (i.e. one sideband 
-// eliminated). Fs=48k
-static float ssb_buffer[AN_BUFFER_SIZE];
+#define LPF_IMPULSE_SIZE (51)
+static float lpf_impulse[LPF_IMPULSE_SIZE] = {
+-0.007988518488193047, -0.0322923540338797, -0.0025580477346377516, -0.007508482037031126, -0.0015547763074605164, 0.003280642290253403, 0.008795348444624476, 0.013112016273176279, 0.015229588003704697, 0.014260356689224188, 0.009841832366608681, 0.002295390261866158, -0.007296945242233224, -0.01717660135976687, -0.025298778719890665, -0.029398991822789773, -0.027623603206855935, -0.018731596787559205, -0.0025587380614820365, 0.020105815714798622, 0.04727569765636943, 0.07608694879779716, 0.10336445155058628, 0.12570901987001032, 0.14037248973886046, 0.14550041816800013, 0.14037248973886046, 0.12570901987001032, 0.10336445155058628, 0.07608694879779716, 0.04727569765636943, 0.020105815714798622, -0.0025587380614820365, -0.018731596787559205, -0.027623603206855935, -0.029398991822789773, -0.025298778719890665, -0.01717660135976687, -0.007296945242233224, 0.002295390261866158, 0.009841832366608681, 0.014260356689224188, 0.015229588003704697, 0.013112016273176279, 0.008795348444624476, 0.003280642290253403, -0.0015547763074605164, -0.007508482037031126, -0.0025580477346377516, -0.0322923540338797, -0.007988518488193047
+};
 
 /*
-#define LPF_IMPULSE_SIZE (51)
-static float LPFImpulse[LPF_IMPULSE_SIZE] = {
--0.007988518488193047, -0.0322923540338797, -0.0025580477346377516, -0.007508482037031126, -0.0015547763074605164, 0.003280642290253403, 0.008795348444624476, 0.013112016273176279, 0.015229588003704697, 0.014260356689224188, 0.009841832366608681, 0.002295390261866158, -0.007296945242233224, -0.01717660135976687, -0.025298778719890665, -0.029398991822789773, -0.027623603206855935, -0.018731596787559205, -0.0025587380614820365, 0.020105815714798622, 0.04727569765636943, 0.07608694879779716, 0.10336445155058628, 0.12570901987001032, 0.14037248973886046, 0.14550041816800013, 0.14037248973886046, 0.12570901987001032, 0.10336445155058628, 0.07608694879779716, 0.04727569765636943, 0.020105815714798622, -0.0025587380614820365, -0.018731596787559205, -0.027623603206855935, -0.029398991822789773, -0.025298778719890665, -0.01717660135976687, -0.007296945242233224, 0.002295390261866158, 0.009841832366608681, 0.014260356689224188, 0.015229588003704697, 0.013112016273176279, 0.008795348444624476, 0.003280642290253403, -0.0015547763074605164, -0.007508482037031126, -0.0025580477346377516, -0.0322923540338797, -0.007988518488193047
+#define LPF_IMPULSE_SIZE (91)
+static float lpf_impulse[LPF_IMPULSE_SIZE] = {
+0.026023731209180712, -0.014944709238861435, -0.01282048293469228, -0.011606039275329378, -0.010593560098382651, -0.00924125050458392, -0.007286060750618341, -0.004648438806810258, -0.0015355909555464862, 0.00171013338400933, 0.0045964325270102255, 0.006672390629168848, 0.007523840203798958, 0.006943597991965513, 0.004907442913820445, 0.0017317488367759044, -0.002112573413878447, -0.005956312807227829, -0.00905892246527812, -0.010785308726788935, -0.010650672953206002, -0.008495597575241154, -0.004513733345988606, 0.0007693820564916878, 0.006489959083732819, 0.011662090756684888, 0.01522931867508315, 0.01634570240113426, 0.014472103355133298, 0.009568210608822089, 0.0020876523550769467, -0.006951746454653754, -0.01615006622499047, -0.023815670331730376, -0.028272268352863006, -0.02806697519845502, -0.02215747488201716, -0.010297917934256877, 0.007255778779401038, 0.029207770582472974, 0.05373554159034625, 0.0786499018999863, 0.10140628513007802, 0.1196538139172792, 0.13142332055479838, 0.13550049513969512, 0.13142332055479838, 0.1196538139172792, 0.10140628513007802, 0.0786499018999863, 0.05373554159034625, 0.029207770582472974, 0.007255778779401038, -0.010297917934256877, -0.02215747488201716, -0.02806697519845502, -0.028272268352863006, -0.023815670331730376, -0.01615006622499047, -0.006951746454653754, 0.0020876523550769467, 0.009568210608822089, 0.014472103355133298, 0.01634570240113426, 0.01522931867508315, 0.011662090756684888, 0.006489959083732819, 0.0007693820564916878, -0.004513733345988606, -0.008495597575241154, -0.010650672953206002, -0.010785308726788935, -0.00905892246527812, -0.005956312807227829, -0.002112573413878447, 0.0017317488367759044, 0.004907442913820445, 0.006943597991965513, 0.007523840203798958, 0.006672390629168848, 0.0045964325270102255, 0.00171013338400933, -0.0015355909555464862, -0.004648438806810258, -0.007286060750618341, -0.00924125050458392, -0.010593560098382651, -0.011606039275329378, -0.01282048293469228, -0.014944709238861435, 0.026023731209180712
 };
 */
 
-#define LPF_IMPULSE_SIZE (91)
-static const float LPFImpulse[LPF_IMPULSE_SIZE] = {
-0.026023731209180712, -0.014944709238861435, -0.01282048293469228, -0.011606039275329378, -0.010593560098382651, -0.00924125050458392, -0.007286060750618341, -0.004648438806810258, -0.0015355909555464862, 0.00171013338400933, 0.0045964325270102255, 0.006672390629168848, 0.007523840203798958, 0.006943597991965513, 0.004907442913820445, 0.0017317488367759044, -0.002112573413878447, -0.005956312807227829, -0.00905892246527812, -0.010785308726788935, -0.010650672953206002, -0.008495597575241154, -0.004513733345988606, 0.0007693820564916878, 0.006489959083732819, 0.011662090756684888, 0.01522931867508315, 0.01634570240113426, 0.014472103355133298, 0.009568210608822089, 0.0020876523550769467, -0.006951746454653754, -0.01615006622499047, -0.023815670331730376, -0.028272268352863006, -0.02806697519845502, -0.02215747488201716, -0.010297917934256877, 0.007255778779401038, 0.029207770582472974, 0.05373554159034625, 0.0786499018999863, 0.10140628513007802, 0.1196538139172792, 0.13142332055479838, 0.13550049513969512, 0.13142332055479838, 0.1196538139172792, 0.10140628513007802, 0.0786499018999863, 0.05373554159034625, 0.029207770582472974, 0.007255778779401038, -0.010297917934256877, -0.02215747488201716, -0.02806697519845502, -0.028272268352863006, -0.023815670331730376, -0.01615006622499047, -0.006951746454653754, 0.0020876523550769467, 0.009568210608822089, 0.014472103355133298, 0.01634570240113426, 0.01522931867508315, 0.011662090756684888, 0.006489959083732819, 0.0007693820564916878, -0.004513733345988606, -0.008495597575241154, -0.010650672953206002, -0.010785308726788935, -0.00905892246527812, -0.005956312807227829, -0.002112573413878447, 0.0017317488367759044, 0.004907442913820445, 0.006943597991965513, 0.007523840203798958, 0.006672390629168848, 0.0045964325270102255, 0.00171013338400933, -0.0015355909555464862, -0.004648438806810258, -0.007286060750618341, -0.00924125050458392, -0.010593560098382651, -0.011606039275329378, -0.01282048293469228, -0.014944709238861435, 0.026023731209180712
-};
-
-// Circular buffer - result of the LPF. Fs=48k
-static float lpf_buffer[AN_BUFFER_SIZE];
-
-static uint decimation_counter = 0;
-
-// This flag is used to manage the alternating buffers. "Ping ready"
-// indicates that the ping buffer was just written and should be sent
-// out on the next opportunity. Otherwise, it's the pong buffer that
-// was just written and is waiting to be sent.
-//static volatile bool dac_buffer_ping_ready = false;
+// State buffers/etc for FIR filters
+static float hilbert_delay_state[HILBERT_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
+static float hilbert_fir_state[HILBERT_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
+static float lpf_fir_state[LPF_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
+static arm_fir_instance_f32 hilbert_fir;
+static arm_fir_instance_f32 lpf_fir;
 
 static int32_t freq = 7200000;
 // Calibration
@@ -185,14 +144,14 @@ static int32_t cal = 490;
 // LSB/USB selector
 static bool modeLSB = true;
 //static bool modeLSB = false;
-// Converts from scale if input to scale of output (0-4095)
-//static float dacScale = 0.05;
-//static float dacScale = 0.008;
-static float dacScale = 0.012;
+static float dacScale = 1.0;
 static bool overflow = false;
+// Used to trim I/Q imbalance on input
+static float imbalanceScale = 1.0;
 
 // ----- Sweeper Integration ------------------------------------------
 
+/*
 class SweeperContextImpl : public SweeperContext {
 public:
 
@@ -208,80 +167,22 @@ public:
         return sqrt(total);
     }
 };
-
-/**
- * @param x Circular signal buffer.  
- * @param h Non-circular impulse response. Size (hN) is arbitrary, but 
- * must be smaller than xN.
- * @param xNext Most recent insert location in circular buffer x.
- * @param xN Size of circular buffer x. 
- * @param hN Size of impulse response buffer h.
- */
-static float convolve_circular_f32(const float* x, unsigned int xNext, unsigned int xN, 
-    const float* h, unsigned int hN) {
-    unsigned int n = xNext;
-    float result = 0;
-    for (unsigned int k = 0; k < hN; k++) {
-        // Multiply-accumulate
-        result += x[n] * h[k];
-        // Move backwards through the signal buffer x, per the definintion 
-        // of convolution.  Implement the wrap when needed.
-        if (n == 0) {
-            n = xN - 1;
-        } else {
-            n = n - 1;
-        }
-    }
-    return result;
-}
+*/
 
 // This will be called once every AUDIO_BUFFER_SIZE/2 samples.
-//
 static void dma_adc_handler() {   
 
-    // Counter used to alternate between double-buffer sides
-    static uint32_t dma_count_0 = 0;
-
     dma_in_count++;
+    adc_frame_ready = true;
 
-    // Figure out which part of the double-buffer we just finished
-    // loading into.  Notice: the pointer is signed.
-    int32_t* adc_data;
-    if (dma_count_0 % 2 == 0) {
-        adc_data = (int32_t*)adc_buffer;
-    } else {
-        adc_data = (int32_t*)&(adc_buffer[ADC_BUFFER_SIZE]);
-    }
-
-    // Move from the DMA buffer and into analysis buffer.  This also 
-    // separates the I/Q streams, corrects the scaling, and produces
-    // the real LSB/USB.
-    for (int i = 0; i < ADC_BUFFER_SIZE; i += 2) {
-
-        // The 24-bit signed value is left-justified in the 32-bit word, 
-        // so we need to shift right 8. Sign extension is automatic.
-        // Range of 24 bits is -8,388,608 to 8,388,607.
-        an_buffer_i[an_buffer_wr_ptr] = adc_data[i] >> 8;
-        an_buffer_q[an_buffer_wr_ptr] = adc_data[i + 1] >> 8;
-
-        // Increment and wrap
-        an_buffer_wr_ptr++;
-        if (an_buffer_wr_ptr == AN_BUFFER_SIZE) 
-            an_buffer_wr_ptr = 0;
-        // Look for overflows (i.e. background process not keeping up)
-        if (an_buffer_rd_ptr == an_buffer_wr_ptr)
-            an_buffer_overflow_count++;
-    }
-   
     // Clear the IRQ status
     dma_hw->ints0 = 1u << dma_ch_in_data;
-
-    dma_count_0++;
 }
 
 static void dma_dac0_handler() {   
 
     dma_out_count++;
+    dac_buffer_ping_open = true;
 
     // Clear the IRQ status
     dma_hw->ints0 = 1u << dma_ch_out_data0;
@@ -290,6 +191,7 @@ static void dma_dac0_handler() {
 static void dma_dac1_handler() {   
 
     dma_out_count++;
+    dac_buffer_ping_open = false;
 
     // Clear the IRQ status
     dma_hw->ints0 = 1u << dma_ch_out_data1;
@@ -308,76 +210,111 @@ static void dma_irq_handler() {
     }
 }
 
+// (Pulled outside to enable introspection)
+
+static float an1_i[ADC_SAMPLE_COUNT];
+static float an1_q[ADC_SAMPLE_COUNT];
+    
+static float an2_i[ADC_SAMPLE_COUNT];
+static float an2_q[ADC_SAMPLE_COUNT];
+
+static float an3_ssb[ADC_SAMPLE_COUNT];
+
+static float an4_audio[ADC_SAMPLE_COUNT];
+
 // This should be called when a complete frame of I/Q data has been 
 // received.
 //
-// Benchmark: measured 2.6ms to process 8ms (384 samples) of I/Q input data.
+// This processing loop happens while interrupts are enabled
+// so it's lower priority than the DMA.
+//
+// Benchmark: Approximately 800ms per call.
 //
 static void process_in_frame() {
 
-    // Safely capture the start and end of the analysis buffer
-    // IMPORTANT: Interrupts are disabled
     uint32_t in_state = save_and_disable_interrupts();
-    // Catch up to inbound DMA by reading up to BUT NOT INCLUDING here
-    unsigned int an_end = an_buffer_wr_ptr;
-    // Here is where the reading starts (where we left off before)
-    unsigned int new_an_buffer_rd_ptr = an_buffer_rd_ptr;
+    bool run = adc_frame_ready;
+    adc_frame_ready = false;
     restore_interrupts(in_state);
 
-    float imbalanceScale = 1.0;
-    //float imbalanceScale = 0.95;
-
-    // This processing loop happens while interrupts are enabled
-    // so it's lower priority than the DMA.
-
-    while (new_an_buffer_rd_ptr != an_end) {
-
-        // Apply the delay to the I stream, taking into account a 
-        // possible wrap around the start of the circular buffer.
-        unsigned int delayed_n;
-        if (new_an_buffer_rd_ptr >= HILBERT_GROUP_DELAY) {
-            delayed_n = new_an_buffer_rd_ptr - HILBERT_GROUP_DELAY;
-        } else {
-            delayed_n = AN_BUFFER_SIZE + new_an_buffer_rd_ptr - HILBERT_GROUP_DELAY;
-        }
-        float sampleI = an_buffer_i[delayed_n];
-        sampleI *= imbalanceScale;
-
-        // Apply the Hilbert transform to the Q stream.
-        float sampleQ = convolve_circular_f32(an_buffer_q, new_an_buffer_rd_ptr, AN_BUFFER_SIZE,
-            hilbert_impulse, HILBERT_SIZE);
-
-        float sampleSSB;
-        if (modeLSB) {
-            sampleSSB = sampleI + sampleQ;
-        } else {
-            sampleSSB = sampleI - sampleQ;
-        }
-
-        // Save in output circular buffer
-        ssb_buffer[new_an_buffer_rd_ptr] = sampleSSB;
-
-        // Apply a LFP to get rid of any high-frequency content in the baseband 
-        // audio signal.
-        float audio48 = convolve_circular_f32(ssb_buffer, new_an_buffer_rd_ptr, AN_BUFFER_SIZE,
-            LPFImpulse, LPF_IMPULSE_SIZE);
-
-        // Save in output circular buffer
-        lpf_buffer[new_an_buffer_rd_ptr] = audio48;
-
-        // Increment and wrap
-        new_an_buffer_rd_ptr++;
-        if (new_an_buffer_rd_ptr == AN_BUFFER_SIZE) 
-           new_an_buffer_rd_ptr = 0;
+    if (!run) {
+        return;
     }
 
-    // Adjust the pointers on the buffers
-    in_state = save_and_disable_interrupts();
-    an_buffer_rd_ptr = new_an_buffer_rd_ptr;
-    restore_interrupts(in_state);
+    // Counter used to alternate between double-buffer sides
+    static uint32_t dma_count_0 = 0;
+
+    // Figure out which part of the double-buffer we just finished
+    // loading into.  Notice: the pointer is signed.
+    int32_t* adc_data;
+    if (dma_count_0 % 2 == 0) {
+        adc_data = (int32_t*)adc_buffer;
+    } else {
+        adc_data = (int32_t*)&(adc_buffer[ADC_BUFFER_SIZE]);
+    }
+    dma_count_0++;
+
+    // Move from the DMA buffer and into analysis buffer.  This also 
+    // separates the I/Q streams, and corrects the scaling.
+    unsigned int j = 0;
+    for (unsigned int i = 0; i < ADC_BUFFER_SIZE; i += 2) {
+        // The 24-bit signed value is left-justified in the 32-bit word, 
+        // so we need to shift right 8. Sign extension is automatic.
+        // Range of 24 bits is -8,388,608 to 8,388,607.
+        an1_i[j] = adc_data[i] >> 8;
+        an1_q[j] = adc_data[i + 1] >> 8;
+        j++;
+    }
+
+    // Create a delayed version of the I stream
+    // TODO: PACKAGE INTO A FUNCTION WITH SAME SIGNATURE AS arm_fir_32()
+    memmove((void*)hilbert_delay_state, 
+        (const void*)&(hilbert_delay_state[ADC_SAMPLE_COUNT]), 
+        (HILBERT_IMPULSE_SIZE - 1) * sizeof(float));
+    memmove((void*)&(hilbert_delay_state[HILBERT_IMPULSE_SIZE - 1]), 
+        (const void*)an1_i,
+        ADC_SAMPLE_COUNT * sizeof(float));
+    for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
+        an2_i[i] = hilbert_delay_state[(HILBERT_IMPULSE_SIZE - 1) - HILBERT_GROUP_DELAY + i];
+
+    // Create a Hilbert transform of the Q stream
+    arm_fir_f32(&hilbert_fir, an1_q, an2_q, ADC_SAMPLE_COUNT); 
+
+    // Make the SSB by combining the I and Q streams
+    for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
+        if (modeLSB) {
+            an3_ssb[i] = an2_i[i] + an2_q[i];
+        } else {
+            an3_ssb[i] = an2_i[i] - an2_q[i];
+        }
+
+    // Apply the LPF
+    arm_fir_f32(&lpf_fir, an3_ssb, an4_audio, ADC_SAMPLE_COUNT);
+
+    // Write to the DAC buffer based on our current tracking of which 
+    // is available for use.
+    uint32_t* dac_buffer;
+    if (dac_buffer_ping_open) 
+        dac_buffer = dac_buffer_ping;
+    else
+        dac_buffer = dac_buffer_pong;
+    // Note that we are only writing to the left DAC channel.
+    j = 0;
+    for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) {
+        int32_t aScaled = an4_audio[i] * dacScale;
+        aScaled = aScaled << 8;
+        // Right 
+        dac_buffer[j++] = 0;
+        // Left
+        dac_buffer[j++] = aScaled;
+    }
 }
 
 int main(int argc, const char** argv) {
+
+    // Get all of the ARM CMSIS-DSP strcutures setup
+    arm_fir_init_f32(&hilbert_fir, HILBERT_IMPULSE_SIZE, hilbert_impulse, hilbert_fir_state, ADC_SAMPLE_COUNT);
+    arm_fir_init_f32(&lpf_fir, LPF_IMPULSE_SIZE, lpf_impulse, lpf_fir_state, ADC_SAMPLE_COUNT);
 
     unsigned long fs = 48000;
 
@@ -431,24 +368,31 @@ int main(int argc, const char** argv) {
 
     printf("Minimal SDR2\nCopyright (C) Bruce MacKinnon KC1FSZ, 2025\n");
     printf("Freq %d\n", freq);
-
+    /*
+    // Test tone
     {
-        float omega = 2.0 * 3.1415926 * 1000.0 / 48000.0;
+        float fs = 48000;
+        float omega = 2.0 * 3.1415926 / fs;
+        float fIncrement = fs / (ADC_BUFFER_SIZE / 2);
+        float ft = fIncrement * 10;
+        omega *= ft;
         float phi = 0;
+        float a = 4000000.0;
+
         for (unsigned int i = 0; i < DAC_BUFFER_SIZE; i += 2) {
-            float c = 2000000.0 * cos(phi);
+            float c = a * cos(phi);
             int32_t c0 = c;
-            //if (i < DAC_BUFFER_SIZE / 4) c0 = 0x7fffff;
-            //if (i < 10) c0 = 0x7fffff / 2;
-            dac_buffer_ping[i + 1] = c0 << 8;
-            dac_buffer_pong[i + 1] = c0 << 8;
+            // (Right)
             dac_buffer_ping[i] = c0 << 8;
             dac_buffer_pong[i] = c0 << 8;
+            // (Left)
+            dac_buffer_ping[i + 1] = c0 << 8;
+            dac_buffer_pong[i + 1] = c0 << 8;
             phi += omega;
         }
     }
-
-
+    */
+   
     // ===== Si5351 Initialization =============================================
 
     // We are using I2C0 here!
@@ -458,9 +402,9 @@ int main(int argc, const char** argv) {
     si_evaluate(0, freq + cal);
     printf("Si5351 initialized 1\n");
 
-    const uint work_size = 256;
-    float trigSpace[work_size];
-    F32FFT fft(work_size, trigSpace);
+    //const uint work_size = 256;
+    //float trigSpace[work_size];
+    //F32FFT fft(work_size, trigSpace);
 
     // ===== PCM1804 A/D Converter Setup ======================================
 
@@ -850,15 +794,6 @@ int main(int argc, const char** argv) {
     // gets started before there is anything in the FIFO we will
     // get stalled forever. 
     // TODO: EXPLAIN WHY
-    /*
-    pio0->txf[dout_sm] = 0;
-    pio0->txf[dout_sm] = 0;
-    pio0->txf[dout_sm] = 0;
-    pio0->txf[dout_sm] = 0;
-    pio0->txf[dout_sm] = 0;
-    pio0->txf[dout_sm] = 0;
-    */
-    // Loop until the TX FIFO is full
     uint fill_count = 0;
     while (pio0->fstat & 0x00040000 == 0) {
         fill_count++;
@@ -885,20 +820,21 @@ int main(int argc, const char** argv) {
 
     int strobe = 0;
     
-    // Audio processing should happen once every DMA frame (8ms)
-    // in order to avoid falling behind.
+    // Audio processing should happen once every DMA frame (10.6ms)
+    // in order to avoid falling behind. We run a bit faster than than.
     PicoPollTimer processTimer;
-    processTimer.setIntervalUs(8 * 1000);
+    processTimer.setIntervalUs(2 * 1000);
 
     // Display/diagnostic should happen once per second
     PicoPollTimer flashTimer;
     flashTimer.setIntervalUs(1000 * 1000);
 
+    // A timer used for diagnostic features
     PicoPollTimer sweepTimer;
     sweepTimer.setIntervalUs(100 * 1000);
 
-    SweeperState swState;
-    SweeperContextImpl swContext;
+    //SweeperState swState;
+    //SweeperContextImpl swContext;
 
     // ===== Main Event Loop =================================================
 
@@ -926,13 +862,14 @@ int main(int argc, const char** argv) {
             printf("Freq %d\n", freq);
         }
         else if (c == 'a') {
-            dacScale = dacScale + 0.001;
+            dacScale = dacScale + 0.1;
             printf("Scale %f\n", dacScale);
         }
         else if (c == 'z') {
-            dacScale = dacScale - 0.001;
+            dacScale = dacScale - 0.1;
             printf("Scale %f\n", dacScale);
         }
+        /*
         else if (c == 's') {
             swState.startHz = 7200000 - 5000;
             swState.endHz = 7200000 + 5000;
@@ -944,13 +881,14 @@ int main(int argc, const char** argv) {
             for (unsigned int i = 0; i < swState.sampleCount; i++) 
                 printf("%d\n", swState.sample[i]);
         }
+        */
         else if (c == 'p') {
             // Make a quick copy since this buffer is changing in real-time
             float copy[64];
-            for (unsigned int i = 0; i < 64; i++) 
-                copy[i] = an_buffer_i[i];
+            for (unsigned int i = 0; i < ADC_SAMPLE_COUNT / 4; i++) 
+                copy[i] = an1_i[i];
             printf("\n\n\n======================================\n");
-            for (unsigned int i = 0; i < 64; i++) 
+            for (unsigned int i = 0; i < ADC_SAMPLE_COUNT / 4; i++) 
                 printf("%d\n", (int)copy[i]);
         }
 
@@ -962,8 +900,8 @@ int main(int argc, const char** argv) {
                 max_proc_0 = timer_0.elapsedUs();
         }
 
-        if (sweepTimer.poll()) 
-            sweeper_tick(&swState, &swContext);
+        //if (sweepTimer.poll()) 
+        //    sweeper_tick(&swState, &swContext);
 
         // Do periodic display/diagnostic stuff
         if (flashTimer.poll()) {
@@ -971,41 +909,20 @@ int main(int argc, const char** argv) {
             ++strobe;
             if (strobe & 1 == 1) {
                 gpio_put(LED_PIN, 1);
-                /*
-                // #### TEST DATA
-                for (unsigned int i = 0; i < DAC_BUFFER_SIZE; i += 2) {
-                    // BLUE (OUTR)
-                    dac_buffer_ping[i] = 0;
-                    dac_buffer_pong[i] = 0;
-                    // YELLOW (OUTL)
-                    dac_buffer_ping[i + 1] = (0x7fffff << 8);
-                    dac_buffer_pong[i + 1] = (0x7fffff << 8);
-                    //dac_buffer_ping[i] = (0x800000 << 8);
-                    //dac_buffer_pong[i] = (0x800000 << 8);
-                    //dac_buffer_ping[i + 1] = 0;
-                    //dac_buffer_pong[i + 1] = 0;
-                }
-                */
             } else {
                 gpio_put(LED_PIN, 0);
-                /*
-                // #### TEST DATA
-                for (unsigned int i = 0; i < DAC_BUFFER_SIZE; i += 2) {
-                    dac_buffer_ping[i + 1] = 0;
-                    dac_buffer_pong[i + 1] = 0;
-                    dac_buffer_ping[i] = 0;
-                    dac_buffer_pong[i] = 0;
-                }
-                */
             }
 
+            printf("Max time %d\n", max_proc_0);
+            max_proc_0 = 0;
             //printf("IN/OUT %d/%d\n", dma_in_count, dma_out_count);
             //printf("FSTAT %08x, FDEBUG=%08x\n", pio0->fstat, pio0->fdebug);
 
-            cf32 work[work_size];
-            float max_mag = 0, min_mag = 0;
+            //cf32 work[work_size];
+            //float max_mag = 0, min_mag = 0;
 
-            // Analyze the SSB buffer999
+            /*
+            // Analyze the SSB buffer
             for (int i = 0; i < work_size; i++) {               
                 work[i].r = lpf_buffer[i];
                 work[i].i = 0;
@@ -1016,6 +933,7 @@ int main(int argc, const char** argv) {
             }
             fft.transform(work);
             uint maxIdx = maxMagIdx(work, 0, work_size / 2);
+            */
 
             //printf("Max/min mag %d/%d, FFT max bin %d, FFT mag %d\n", 
             //    (int)max_mag, (int)min_mag, maxIdx, (int)work[maxIdx].mag());

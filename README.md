@@ -57,3 +57,68 @@ References
 
 [PCM1804 Datasheet](https://www.ti.com/lit/ds/symlink/pcm1804.pdf)
 
+
+Steps to Build CMSIS-DSP
+========================
+
+The library gets built once in a parallel project:
+
+        cd ~/pico
+        mkdir CMSISDSP
+        cd CMSISDSP
+        git clone https://github.com/ARM-software/CMSIS-DSP.git        
+        git clone https://github.com/ARM-software/CMSIS_6.git
+        cp $PICO_SDK_PATH/external/pico_sdk_import.cmake .
+
+Then setup the CMakeLists.txt shown below and build:
+
+        mkdir build
+        cd build
+        # IMPORTANT! pico2 build enables the generation of FPU instructions
+        cmake -DPICO_BOARD=pico2 ..
+        make -j4
+
+What the CMakeLists.txt looks like:
+
+```
+cmake_minimum_required (VERSION 3.6)
+
+# Pull in Pico SDK (must be before project)
+include(pico_sdk_import.cmake) 
+
+set(HOME $ENV{HOME})
+set(CMSISDSP ${HOME}/pico/CMSISDSP/CMSIS-DSP)
+set(CMSISCORE ${HOME}/pico/CMSISDSP/CMSIS_6/CMSIS/Core)
+
+# Define the project
+project (cmsis-dsp VERSION 0.1)
+
+# Initialise the Pico SDK
+pico_sdk_init()
+
+add_subdirectory(${CMSISDSP}/Source bin_dsp)
+
+target_compile_options(CMSISDSP PUBLIC 
+    -Wsign-compare
+    -Wdouble-promotion
+    -Ofast -ffast-math
+    -DNDEBUG
+    -Wall -Wextra  -Werror
+    -fshort-enums 
+    #-fshort-wchar
+)
+```
+
+Example of referencing the built CMSIS-DSP library in a client project:
+
+```
+set(HOME $ENV{HOME})
+target_include_directories(main PRIVATE
+  ${HOME}/pico/CMSISDSP/CMSIS-DSP/Include
+  ${HOME}/pico/CMSISDSP/CMSIS_6/CMSIS/Core/Include
+)
+target_link_libraries(main
+  pico_stdlib
+  ${HOME}/pico/CMSISDSP/build/bin_dsp/libCMSISDSP.a
+)
+```
