@@ -53,8 +53,15 @@ Command used to load code onto the board:
 
 using namespace kc1fsz;
 
+//#define ADC_SAMPLE_COUNT (512)
+//#define ADC_SAMPLE_BYTES_LOG2 (12)
+//#define DAC_SAMPLE_BYTES_LOG2 (12)
+
+#define ADC_SAMPLE_COUNT (256)
+#define ADC_SAMPLE_BYTES_LOG2 (11)
+#define DAC_SAMPLE_BYTES_LOG2 (11)
+
 // Buffer used to drive the DAC via DMA.
-#define ADC_SAMPLE_COUNT (512)
 // 2* for L and R
 #define DAC_BUFFER_SIZE (ADC_SAMPLE_COUNT * 2)
 // 4* for 32-bit integers
@@ -96,6 +103,8 @@ static volatile bool adc_frame_ready = false;
 // was just written and is waiting to be sent.
 static volatile bool dac_buffer_ping_open = false;
 
+static PicoPerfTimer timer_0;
+
 #define HILBERT_IMPULSE_SIZE (51)
 static const float hilbert_impulse[HILBERT_IMPULSE_SIZE] = {
 0.012442742396853695, -9.247429900666847e-16, 0.009007745694645828, 3.886440143014065e-16, 0.012248270003437301, 2.0291951727332382e-16, 0.016267702606548327, 1.073881019267362e-15, 0.021262591317853616, -1.5445700787658912e-15, 0.027540135461651433, 9.040409971208902e-16, 0.03555144114893796, -9.736771998276128e-17, 0.04616069183085064, 2.5884635757740463e-16, 0.060879120316970736, -1.9452769758181735e-16, 0.08310832605502039, 6.688463706336815e-16, 0.12163479949392442, -4.100082211906412e-17, 0.208751841831881, 3.007875123018464e-16, 0.635463817659196, 0, -0.635463817659196, -3.007875123018464e-16, -0.208751841831881, 4.100082211906412e-17, -0.12163479949392442, -6.688463706336815e-16, -0.08310832605502039, 1.9452769758181735e-16, -0.060879120316970736, -2.5884635757740463e-16, -0.04616069183085064, 9.736771998276128e-17, -0.03555144114893796, -9.040409971208902e-16, -0.027540135461651433, 1.5445700787658912e-15, -0.021262591317853616, -1.073881019267362e-15, -0.016267702606548327, -2.0291951727332382e-16, -0.012248270003437301, -3.886440143014065e-16, -0.009007745694645828, 9.247429900666847e-16, -0.012442742396853695
@@ -134,13 +143,14 @@ static arm_fir_instance_f32 hilbert_fir;
 static arm_fir_instance_f32 lpf_fir;
 static arm_cfft_instance_f32 audio_fft;
 
-static int32_t freq = 7200000;
+//static int32_t freq = 7200000;
+static int32_t freq = 7255000;
 // Calibration
 static int32_t cal = 490;
 // LSB/USB selector
 static bool modeLSB = true;
 //static bool modeLSB = false;
-static float dacScale = 10000.0;
+static float dacScale = 100.0;
 static bool overflow = false;
 // Used to trim I/Q imbalance on input
 static float imbalanceScale = 1.0;
@@ -165,11 +175,20 @@ public:
 };
 */
 
+static void process_in_frame();
+
 // This will be called once every AUDIO_BUFFER_SIZE/2 samples.
 static void dma_adc_handler() {   
 
     dma_in_count++;
     adc_frame_ready = true;
+
+    // VERY IMPORTANT: This interrupt handler needs to be fast enough 
+    /// to run inside of one sample block.
+    timer_0.reset();
+    process_in_frame();
+    if (timer_0.elapsedUs() > max_proc_0) 
+        max_proc_0 = timer_0.elapsedUs();
 
     // Clear the IRQ status
     dma_hw->ints0 = 1u << dma_ch_in_data;
@@ -228,15 +247,6 @@ static float an4_audio[ADC_SAMPLE_COUNT];
 // and a 71 tap low pass filter.
 //
 static void process_in_frame() {
-
-    uint32_t in_state = save_and_disable_interrupts();
-    bool run = adc_frame_ready;
-    adc_frame_ready = false;
-    restore_interrupts(in_state);
-
-    if (!run) {
-        return;
-    }
 
     proc_count++;
 
@@ -302,7 +312,7 @@ static void process_in_frame() {
     // Note that we are only writing to the left DAC channel.
     j = 0;
     for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) {
-        float fScaled = (an4_audio[i] * 500000.0 / 5000.0);
+        float fScaled = (an4_audio[i] * dacScale);
         // 24 bit signed
         if (fabs(fScaled) > 8388607.0) {
             overflow = true;
@@ -324,7 +334,8 @@ int main(int argc, const char** argv) {
         HILBERT_IMPULSE_SIZE, hilbert_impulse, hilbert_fir_state, ADC_SAMPLE_COUNT);
     arm_fir_init_f32(&lpf_fir, 
         LPF_IMPULSE_SIZE, lpf_impulse, lpf_fir_state, ADC_SAMPLE_COUNT);
-    arm_cfft_init_512_f32(&audio_fft);
+    //arm_cfft_init_512_f32(&audio_fft);
+    arm_cfft_init_256_f32(&audio_fft);
 
     unsigned long fs = 48000;
 
@@ -341,7 +352,6 @@ int main(int argc, const char** argv) {
     uint dout_pin = 9;
 
     unsigned long system_clock_khz = 129600;
-    PicoPerfTimer timer_0;
 
     // Adjust system clock to more evenly divide the 
     // audio sampling frequency.
@@ -721,7 +731,7 @@ int main(int argc, const char** argv) {
     // possible (size_bits from 1 - 15)."
     //
     // WARNING: Make sure the buffer is sufficiently aligned for this to work!
-    channel_config_set_ring(&cfg, false, 12);
+    channel_config_set_ring(&cfg, false, DAC_SAMPLE_BYTES_LOG2);
     // No increment required because we are always writing to the 
     // PIO TX FIFO every time.
     channel_config_set_write_increment(&cfg, false);
@@ -756,7 +766,7 @@ int main(int argc, const char** argv) {
     // We need to increment the read to move across the buffer
     channel_config_set_read_increment(&cfg, true);
     // Define wrap-around ring (read)
-    channel_config_set_ring(&cfg, false, 12);
+    channel_config_set_ring(&cfg, false, DAC_SAMPLE_BYTES_LOG2);
     // No increment required because we are always writing to the 
     // PIO TX FIFO every time.
     channel_config_set_write_increment(&cfg, false);
@@ -836,7 +846,7 @@ int main(int argc, const char** argv) {
 
     // Display/diagnostic should happen once per second
     PicoPollTimer flashTimer;
-    flashTimer.setIntervalUs(1000 * 1000);
+    flashTimer.setIntervalUs(500 * 1000);
 
     // A timer used for diagnostic features
     PicoPollTimer sweepTimer;
@@ -871,11 +881,11 @@ int main(int argc, const char** argv) {
             printf("Freq %d\n", freq);
         }
         else if (c == 'a') {
-            dacScale = dacScale + 0.1;
+            dacScale = dacScale + 5.0;
             printf("Scale %f\n", dacScale);
         }
         else if (c == 'z') {
-            dacScale = dacScale - 0.1;
+            dacScale = dacScale - 5.0;
             printf("Scale %f\n", dacScale);
         }
         /*
@@ -912,14 +922,6 @@ int main(int argc, const char** argv) {
                 printf("%d\n", (int)copy[i]);
         }
 
-        // Here is where we process inbound I/Q data and produce DAC data
-        //if (processTimer.poll()) {
-        //    timer_0.reset();
-        //    process_in_frame();           
-        //    if (timer_0.elapsedUs() > max_proc_0) 
-        //        max_proc_0 = timer_0.elapsedUs();
-        //}
-
         //if (sweepTimer.poll()) 
         //    sweeper_tick(&swState, &swContext);
 
@@ -935,26 +937,23 @@ int main(int argc, const char** argv) {
 
             //printf("Max time %d\n", max_proc_0);
             max_proc_0 = 0;
-            printf("IN/OUT/PROC %d/%d/%d\n", dma_in_count, dma_out_count, proc_count);
+            //printf("IN/OUT/PROC %d/%d/%d\n", dma_in_count, dma_out_count, proc_count);
             //printf("FSTAT %08x, FDEBUG=%08x\n", pio0->fstat, pio0->fdebug);
 
-            /*
             // Spectral analysis on final audio
             float work[ADC_SAMPLE_COUNT * 2];
             float maxAudio = 0;
+            float power = 0;
             for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) {               
-                float s = an1_i[i];
-                //float s = an1_q[i];
-                //float s = an2_i[i];
-                //float s = an2_q[i];
-                //float s = an3_ssb[i];
-                //float s = an4_audio[i];
+                float s = an4_audio[i];
+                power += s * s;
                 // Complex real/imaginary pair
                 work[i * 2] = s;
                 work[i * 2 + 1] = 0;
                 if (s > maxAudio)
                     maxAudio = s;
             }
+            power = sqrt(power);
 
             // FFT in place.
             // Argument 3: 0=forward FT
@@ -975,16 +974,16 @@ int main(int argc, const char** argv) {
             }
             float maxMag = sqrt(maxMagSquared);
 
-            //printf("Audio max mag %d, FFT max bin %d, FFT max mag %d\n", 
-            //    (int)maxAudio, maxMagIdx, (int)maxMag);
-            */
+            printf("Power %d, max %d, FFT max bin %d, FFT max mag %d\n", 
+                (int)power, (int)maxAudio, maxMagIdx, (int)maxMag);
+
             if (overflow) {
                 overflow = false;
                 printf("Overflow\n");
             }
         }
 
-        process_in_frame();           
+        //process_in_frame();           
    }
 
     return 0;
