@@ -3,7 +3,7 @@ include(pico_sdk_import.cmake)
 project(sdr2 C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 pico_sdk_init()
 
@@ -12,8 +12,6 @@ add_executable(main
   sweeper.cpp
   i2s.pio
   si5351.c
-  radlib/util/dsp_util.cpp
-  radlib/util/f32_fft.cpp
   kc1fsz-tools-cpp/src/rp2040/PicoPollTimer.cpp
   kc1fsz-tools-cpp/src/rp2040/PicoPerfTimer.cpp
 )

@@ -40,28 +40,24 @@ Command used to load code onto the board:
 
 #include "kc1fsz-tools/rp2040/PicoPollTimer.h"
 #include "kc1fsz-tools/rp2040/PicoPerfTimer.h"
-//#include "radlib/util/dsp_util.h"
-//#include "radlib/util/f32_fft.h"
 
 #include "i2s.pio.h"
 #include "si5351.h"
 #include "sweeper.h"
-#include "dsp.h"
 
 #define I2C0_SDA_PIN (16)  // Physical pin 21
 #define I2C0_SCL_PIN (17)  // Physical pin 22
-
 #define I2C1_SDA_PIN (2)  
 #define I2C1_SCL_PIN (3)  
-
-//using namespace radlib;
-using namespace kc1fsz;
-
 #define LED_PIN (PICO_DEFAULT_LED_PIN)
 
+using namespace kc1fsz;
+
 // Buffer used to drive the DAC via DMA.
-// When running at 48kHz, each buffer of 384 samples represents 8ms of activity
-#define DAC_BUFFER_SIZE (256 * 2)
+#define ADC_SAMPLE_COUNT (512)
+// 2* for L and R
+#define DAC_BUFFER_SIZE (ADC_SAMPLE_COUNT * 2)
+// 4* for 32-bit integers
 #define DAC_BUFFER_ALIGN (DAC_BUFFER_SIZE * 4)
 // 4096-byte alignment is needed because we are using a DMA channel in ring mode
 // and all buffers must be aligned to a power of two boundary.
@@ -70,10 +66,9 @@ static __attribute__((aligned(DAC_BUFFER_ALIGN))) uint32_t dac_buffer_ping[DAC_B
 static __attribute__((aligned(DAC_BUFFER_ALIGN))) uint32_t dac_buffer_pong[DAC_BUFFER_SIZE];
 
 // Buffer used to drive the ADC via DMA.
-// The *2 accounts for left + right channels
 // When running at 48kHz, each buffer of 384 samples represents 8ms of activity
 // When running at 48kHz, each buffer of 512 samples represents 10ms of activity
-#define ADC_SAMPLE_COUNT 256
+// The *2 accounts for left + right channels
 #define ADC_BUFFER_SIZE (ADC_SAMPLE_COUNT * 2)
 // Here is where the actual audio data gets written
 // The *2 accounts for the fact that we are double-buffering.
@@ -85,6 +80,7 @@ static __attribute__((aligned(8))) uint32_t* adc_addr_buffer[2];
 // Diagnostic counters
 static volatile uint32_t dma_in_count = 0;
 static volatile uint32_t dma_out_count = 0;
+static volatile uint32_t proc_count = 0;
 static volatile uint32_t an_buffer_overflow_count = 0;
 static volatile uint32_t max_proc_0 = 0;
 
@@ -119,17 +115,17 @@ static float hilbert_impulse[HILBERT_SIZE] = {
 #define HILBERT_GROUP_DELAY ((HILBERT_IMPULSE_SIZE + 1) / 2) + 2
 //#define HILBERT_GROUP_DELAY ((HILBERT_IMPULSE_SIZE + 1) / 2) - 1
 
+/*
 #define LPF_IMPULSE_SIZE (51)
 static float lpf_impulse[LPF_IMPULSE_SIZE] = {
 -0.007988518488193047, -0.0322923540338797, -0.0025580477346377516, -0.007508482037031126, -0.0015547763074605164, 0.003280642290253403, 0.008795348444624476, 0.013112016273176279, 0.015229588003704697, 0.014260356689224188, 0.009841832366608681, 0.002295390261866158, -0.007296945242233224, -0.01717660135976687, -0.025298778719890665, -0.029398991822789773, -0.027623603206855935, -0.018731596787559205, -0.0025587380614820365, 0.020105815714798622, 0.04727569765636943, 0.07608694879779716, 0.10336445155058628, 0.12570901987001032, 0.14037248973886046, 0.14550041816800013, 0.14037248973886046, 0.12570901987001032, 0.10336445155058628, 0.07608694879779716, 0.04727569765636943, 0.020105815714798622, -0.0025587380614820365, -0.018731596787559205, -0.027623603206855935, -0.029398991822789773, -0.025298778719890665, -0.01717660135976687, -0.007296945242233224, 0.002295390261866158, 0.009841832366608681, 0.014260356689224188, 0.015229588003704697, 0.013112016273176279, 0.008795348444624476, 0.003280642290253403, -0.0015547763074605164, -0.007508482037031126, -0.0025580477346377516, -0.0322923540338797, -0.007988518488193047
 };
+*/
 
-/*
 #define LPF_IMPULSE_SIZE (91)
 static float lpf_impulse[LPF_IMPULSE_SIZE] = {
 0.026023731209180712, -0.014944709238861435, -0.01282048293469228, -0.011606039275329378, -0.010593560098382651, -0.00924125050458392, -0.007286060750618341, -0.004648438806810258, -0.0015355909555464862, 0.00171013338400933, 0.0045964325270102255, 0.006672390629168848, 0.007523840203798958, 0.006943597991965513, 0.004907442913820445, 0.0017317488367759044, -0.002112573413878447, -0.005956312807227829, -0.00905892246527812, -0.010785308726788935, -0.010650672953206002, -0.008495597575241154, -0.004513733345988606, 0.0007693820564916878, 0.006489959083732819, 0.011662090756684888, 0.01522931867508315, 0.01634570240113426, 0.014472103355133298, 0.009568210608822089, 0.0020876523550769467, -0.006951746454653754, -0.01615006622499047, -0.023815670331730376, -0.028272268352863006, -0.02806697519845502, -0.02215747488201716, -0.010297917934256877, 0.007255778779401038, 0.029207770582472974, 0.05373554159034625, 0.0786499018999863, 0.10140628513007802, 0.1196538139172792, 0.13142332055479838, 0.13550049513969512, 0.13142332055479838, 0.1196538139172792, 0.10140628513007802, 0.0786499018999863, 0.05373554159034625, 0.029207770582472974, 0.007255778779401038, -0.010297917934256877, -0.02215747488201716, -0.02806697519845502, -0.028272268352863006, -0.023815670331730376, -0.01615006622499047, -0.006951746454653754, 0.0020876523550769467, 0.009568210608822089, 0.014472103355133298, 0.01634570240113426, 0.01522931867508315, 0.011662090756684888, 0.006489959083732819, 0.0007693820564916878, -0.004513733345988606, -0.008495597575241154, -0.010650672953206002, -0.010785308726788935, -0.00905892246527812, -0.005956312807227829, -0.002112573413878447, 0.0017317488367759044, 0.004907442913820445, 0.006943597991965513, 0.007523840203798958, 0.006672390629168848, 0.0045964325270102255, 0.00171013338400933, -0.0015355909555464862, -0.004648438806810258, -0.007286060750618341, -0.00924125050458392, -0.010593560098382651, -0.011606039275329378, -0.01282048293469228, -0.014944709238861435, 0.026023731209180712
 };
-*/
 
 // State buffers/etc for FIR filters
 static float hilbert_delay_state[HILBERT_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
@@ -137,6 +133,7 @@ static float hilbert_fir_state[HILBERT_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
 static float lpf_fir_state[LPF_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
 static arm_fir_instance_f32 hilbert_fir;
 static arm_fir_instance_f32 lpf_fir;
+static arm_cfft_instance_f32 audio_fft;
 
 static int32_t freq = 7200000;
 // Calibration
@@ -144,7 +141,7 @@ static int32_t cal = 490;
 // LSB/USB selector
 static bool modeLSB = true;
 //static bool modeLSB = false;
-static float dacScale = 1.0;
+static float dacScale = 10000.0;
 static bool overflow = false;
 // Used to trim I/Q imbalance on input
 static float imbalanceScale = 1.0;
@@ -228,7 +225,8 @@ static float an4_audio[ADC_SAMPLE_COUNT];
 // This processing loop happens while interrupts are enabled
 // so it's lower priority than the DMA.
 //
-// Benchmark: Approximately 800ms per call.
+// Benchmark: Approximately 1ms per call, using a 51 tap Hilbert transform
+// and a 71 tap low pass filter.
 //
 static void process_in_frame() {
 
@@ -240,6 +238,8 @@ static void process_in_frame() {
     if (!run) {
         return;
     }
+
+    proc_count++;
 
     // Counter used to alternate between double-buffer sides
     static uint32_t dma_count_0 = 0;
@@ -268,6 +268,7 @@ static void process_in_frame() {
 
     // Create a delayed version of the I stream
     // TODO: PACKAGE INTO A FUNCTION WITH SAME SIGNATURE AS arm_fir_32()
+    // TODO: MAKE A DIAGRAM
     memmove((void*)hilbert_delay_state, 
         (const void*)&(hilbert_delay_state[ADC_SAMPLE_COUNT]), 
         (HILBERT_IMPULSE_SIZE - 1) * sizeof(float));
@@ -277,34 +278,36 @@ static void process_in_frame() {
     for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
         an2_i[i] = hilbert_delay_state[(HILBERT_IMPULSE_SIZE - 1) - HILBERT_GROUP_DELAY + i];
 
-    // Create a Hilbert transform of the Q stream
+    // Apply the Hilbert transform of the Q stream
     arm_fir_f32(&hilbert_fir, an1_q, an2_q, ADC_SAMPLE_COUNT); 
 
     // Make the SSB by combining the I and Q streams
     for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
         if (modeLSB) {
-            an3_ssb[i] = an2_i[i] + an2_q[i];
-        } else {
             an3_ssb[i] = an2_i[i] - an2_q[i];
+        } else {
+            an3_ssb[i] = an2_i[i] + an2_q[i];
         }
 
-    // Apply the LPF
+    // Apply the LPF to the selected sideband
     arm_fir_f32(&lpf_fir, an3_ssb, an4_audio, ADC_SAMPLE_COUNT);
 
     // Write to the DAC buffer based on our current tracking of which 
     // is available for use.
-    uint32_t* dac_buffer;
+    int32_t* dac_buffer;
     if (dac_buffer_ping_open) 
-        dac_buffer = dac_buffer_ping;
+        dac_buffer = (int32_t*)dac_buffer_ping;
     else
-        dac_buffer = dac_buffer_pong;
+        dac_buffer = (int32_t*)dac_buffer_pong;
     // Note that we are only writing to the left DAC channel.
     j = 0;
     for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) {
-        int32_t aScaled = an4_audio[i] * dacScale;
+        //int32_t aScaled = an4_audio[i] * dacScale;
+        //int32_t aScaled = (an1_i[i] * 4000000.0 / 15000.0);
+        int32_t aScaled = (an4_audio[i] * 500000.0 / 5000.0);
         aScaled = aScaled << 8;
         // Right 
-        dac_buffer[j++] = 0;
+        dac_buffer[j++] = aScaled;
         // Left
         dac_buffer[j++] = aScaled;
     }
@@ -312,9 +315,12 @@ static void process_in_frame() {
 
 int main(int argc, const char** argv) {
 
-    // Get all of the ARM CMSIS-DSP strcutures setup
-    arm_fir_init_f32(&hilbert_fir, HILBERT_IMPULSE_SIZE, hilbert_impulse, hilbert_fir_state, ADC_SAMPLE_COUNT);
-    arm_fir_init_f32(&lpf_fir, LPF_IMPULSE_SIZE, lpf_impulse, lpf_fir_state, ADC_SAMPLE_COUNT);
+    // Get all of the ARM CMSIS-DSP structures setup
+    arm_fir_init_f32(&hilbert_fir, 
+        HILBERT_IMPULSE_SIZE, hilbert_impulse, hilbert_fir_state, ADC_SAMPLE_COUNT);
+    arm_fir_init_f32(&lpf_fir, 
+        LPF_IMPULSE_SIZE, lpf_impulse, lpf_fir_state, ADC_SAMPLE_COUNT);
+    arm_cfft_init_512_f32(&audio_fft);
 
     unsigned long fs = 48000;
 
@@ -368,12 +374,12 @@ int main(int argc, const char** argv) {
 
     printf("Minimal SDR2\nCopyright (C) Bruce MacKinnon KC1FSZ, 2025\n");
     printf("Freq %d\n", freq);
-    /*
+
     // Test tone
     {
         float fs = 48000;
         float omega = 2.0 * 3.1415926 / fs;
-        float fIncrement = fs / (ADC_BUFFER_SIZE / 2);
+        float fIncrement = fs / (ADC_SAMPLE_COUNT);
         float ft = fIncrement * 10;
         omega *= ft;
         float phi = 0;
@@ -391,8 +397,7 @@ int main(int argc, const char** argv) {
             phi += omega;
         }
     }
-    */
-   
+
     // ===== Si5351 Initialization =============================================
 
     // We are using I2C0 here!
@@ -712,7 +717,7 @@ int main(int argc, const char** argv) {
     // possible (size_bits from 1 - 15)."
     //
     // WARNING: Make sure the buffer is sufficiently aligned for this to work!
-    channel_config_set_ring(&cfg, false, 13);
+    channel_config_set_ring(&cfg, false, 12);
     // No increment required because we are always writing to the 
     // PIO TX FIFO every time.
     channel_config_set_write_increment(&cfg, false);
@@ -747,7 +752,7 @@ int main(int argc, const char** argv) {
     // We need to increment the read to move across the buffer
     channel_config_set_read_increment(&cfg, true);
     // Define wrap-around ring (read)
-    channel_config_set_ring(&cfg, false, 13);
+    channel_config_set_ring(&cfg, false, 12);
     // No increment required because we are always writing to the 
     // PIO TX FIFO every time.
     channel_config_set_write_increment(&cfg, false);
@@ -884,21 +889,32 @@ int main(int argc, const char** argv) {
         */
         else if (c == 'p') {
             // Make a quick copy since this buffer is changing in real-time
-            float copy[64];
+            float copy[ADC_SAMPLE_COUNT / 4];
             for (unsigned int i = 0; i < ADC_SAMPLE_COUNT / 4; i++) 
                 copy[i] = an1_i[i];
             printf("\n\n\n======================================\n");
             for (unsigned int i = 0; i < ADC_SAMPLE_COUNT / 4; i++) 
                 printf("%d\n", (int)copy[i]);
         }
+        else if (c == 'q') {
+            float copy[ADC_SAMPLE_COUNT];
+            for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) {
+                int32_t a = dac_buffer_pong[i * 2];
+                a = a >> 8;
+                copy[i] = a;
+            }
+            printf("\n\n\n======================================\n");
+            for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
+                printf("%d\n", (int)copy[i]);
+        }
 
         // Here is where we process inbound I/Q data and produce DAC data
-        if (processTimer.poll()) {
-            timer_0.reset();
-            process_in_frame();           
-            if (timer_0.elapsedUs() > max_proc_0) 
-                max_proc_0 = timer_0.elapsedUs();
-        }
+        //if (processTimer.poll()) {
+        //    timer_0.reset();
+        //    process_in_frame();           
+        //    if (timer_0.elapsedUs() > max_proc_0) 
+        //        max_proc_0 = timer_0.elapsedUs();
+        //}
 
         //if (sweepTimer.poll()) 
         //    sweeper_tick(&swState, &swContext);
@@ -915,43 +931,56 @@ int main(int argc, const char** argv) {
 
             //printf("Max time %d\n", max_proc_0);
             max_proc_0 = 0;
-            //printf("IN/OUT %d/%d\n", dma_in_count, dma_out_count);
+            printf("IN/OUT/PROC %d/%d/%d\n", dma_in_count, dma_out_count, proc_count);
             //printf("FSTAT %08x, FDEBUG=%08x\n", pio0->fstat, pio0->fdebug);
 
-            //cf32 work[work_size];
-            //float max_mag = 0, min_mag = 0;
-
             /*
-            // Analyze the SSB buffer
-            for (int i = 0; i < work_size; i++) {               
-                work[i].r = lpf_buffer[i];
-                work[i].i = 0;
-                if (lpf_buffer[i] > max_mag)
-                    max_mag = lpf_buffer[i];
-                if (lpf_buffer[i] < min_mag)
-                    min_mag = lpf_buffer[i];
+            // Spectral analysis on final audio
+            float work[ADC_SAMPLE_COUNT * 2];
+            float maxAudio = 0;
+            for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) {               
+                float s = an1_i[i];
+                //float s = an1_q[i];
+                //float s = an2_i[i];
+                //float s = an2_q[i];
+                //float s = an3_ssb[i];
+                //float s = an4_audio[i];
+                // Complex real/imaginary pair
+                work[i * 2] = s;
+                work[i * 2 + 1] = 0;
+                if (s > maxAudio)
+                    maxAudio = s;
             }
-            fft.transform(work);
-            uint maxIdx = maxMagIdx(work, 0, work_size / 2);
+
+            // FFT in place.
+            // Argument 3: 0=forward FT
+            // Argument 4: 1="Bit reversal", which indicates that the bins
+            //   should be organized in the "natural" order, presumably with 
+            //   some performance overhead.
+            arm_cfft_f32(&audio_fft, work, 0, 1);
+
+            float maxMagSquared = 0;
+            unsigned int maxMagIdx = 0;
+            // Only look at the positive frequencies, ignore DC
+            for (int i = 0; i < ADC_SAMPLE_COUNT / 2; i++) {               
+                float magSquared = work[i * 2] * work[i * 2] + work[i * 2 + 1] * work[i * 2 + 1];
+                if (magSquared > maxMagSquared) {
+                    maxMagSquared = magSquared;
+                    maxMagIdx = i;
+                }
+            }
+            float maxMag = sqrt(maxMagSquared);
+
+            //printf("Audio max mag %d, FFT max bin %d, FFT max mag %d\n", 
+            //    (int)maxAudio, maxMagIdx, (int)maxMag);
             */
-
-            //printf("Max/min mag %d/%d, FFT max bin %d, FFT mag %d\n", 
-            //    (int)max_mag, (int)min_mag, maxIdx, (int)work[maxIdx].mag());
-
-            // Spectrum
-            //printf("<PLOT00>:");
-            //for (unsigned int i = 0; i < work_size / 2; i++) {
-            //    if (i > 0)
-            //        printf(",");
-            //    printf("%d", (int)work[i].mag());
-            //}
-            //printf("\n");
-
             if (overflow) {
                 overflow = false;
                 printf("Overflow\n");
             }
         }
+
+        process_in_frame();           
    }
 
     return 0;
