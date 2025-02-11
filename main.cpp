@@ -81,7 +81,6 @@ static __attribute__((aligned(8))) uint32_t* adc_addr_buffer[2];
 static volatile uint32_t dma_in_count = 0;
 static volatile uint32_t dma_out_count = 0;
 static volatile uint32_t proc_count = 0;
-static volatile uint32_t an_buffer_overflow_count = 0;
 static volatile uint32_t max_proc_0 = 0;
 
 static uint dma_ch_in_ctrl = 0;
@@ -299,15 +298,20 @@ static void process_in_frame() {
         dac_buffer = (int32_t*)dac_buffer_ping;
     else
         dac_buffer = (int32_t*)dac_buffer_pong;
+
     // Note that we are only writing to the left DAC channel.
     j = 0;
     for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) {
-        //int32_t aScaled = an4_audio[i] * dacScale;
-        //int32_t aScaled = (an1_i[i] * 4000000.0 / 15000.0);
-        int32_t aScaled = (an4_audio[i] * 500000.0 / 5000.0);
+        float fScaled = (an4_audio[i] * 500000.0 / 5000.0);
+        // 24 bit signed
+        if (fabs(fScaled) > 8388607.0) {
+            overflow = true;
+            fScaled = 0;
+        }
+        int32_t aScaled = fScaled;
         aScaled = aScaled << 8;
         // Right 
-        dac_buffer[j++] = aScaled;
+        dac_buffer[j++] = 0;
         // Left
         dac_buffer[j++] = aScaled;
     }
