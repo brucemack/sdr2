@@ -53,6 +53,45 @@ Command used to load code onto the board:
 
 using namespace kc1fsz;
 
+// ####################################################################
+// TODO: MOVE
+struct delay_instance_f32 {
+    float* state; 
+    unsigned int stateSize;
+    unsigned int nextWrite;
+};
+
+void delay_init_f32(delay_instance_f32* inst, 
+    unsigned int maxDelayTaps, float* state, unsigned int blockSize) {
+    inst->state = state;
+    inst->stateSize = blockSize + maxDelayTaps;
+    inst->nextWrite = 0;
+}
+
+void delay_f32(delay_instance_f32* inst, 
+    const float* in, float* out, unsigned int blockSize, 
+    unsigned int delayTaps) {
+    if (blockSize + delayTaps > inst->stateSize)
+        assert(false);
+    for (unsigned int i = 0; i < blockSize; i++) {
+        // Calculate the read location, taking into account
+        // wraps around the start of the state.
+        unsigned int nextRead;
+        if (inst->nextWrite >= delayTaps)
+            nextRead = inst->nextWrite - delayTaps;
+        else 
+            nextRead = inst->stateSize + inst->nextWrite - delayTaps;
+        // Get the output
+        out[i] = inst->state[nextRead];
+        inst->state[inst->nextWrite] = in[i];
+        // Advance and manage wrap
+        inst->nextWrite++;
+        if (inst->nextWrite == inst->stateSize)
+            inst->nextWrite = 0;
+    }
+}
+// ####################################################################
+
 //#define ADC_SAMPLE_COUNT (512)
 //#define ADC_SAMPLE_BYTES_LOG2 (12)
 //#define DAC_SAMPLE_BYTES_LOG2 (12)
@@ -142,14 +181,15 @@ static float lpf_fir_state[LPF_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
 static arm_fir_instance_f32 hilbert_fir;
 static arm_fir_instance_f32 lpf_fir;
 static arm_cfft_instance_f32 audio_fft;
+static delay_instance_f32 hilbert_delay;
 
 static float tx_lpf_fir_state[LPF_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
 static float tx_hilbert_delay_state[HILBERT_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
 static float tx_hilbert_fir_state[HILBERT_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
 static arm_fir_instance_f32 tx_lpf_fir;
 static arm_fir_instance_f32 tx_hilbert_fir;
+static delay_instance_f32 tx_hilbert_delay;
 
-//static int32_t freq = 7200000;
 static int32_t freq = 7255000;
 // Calibration
 static int32_t cal = 490;
@@ -286,8 +326,9 @@ static void process_in_frame_rx() {
     }
 
     // Create a delayed version of the I stream
-    // TODO: PACKAGE INTO A FUNCTION WITH SAME SIGNATURE AS arm_fir_32()
-    // TODO: MAKE A DIAGRAM
+    delay_f32(&hilbert_delay, an1_i, an2_i, 
+        ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY);
+    /*
     memmove((void*)hilbert_delay_state, 
         (const void*)&(hilbert_delay_state[ADC_SAMPLE_COUNT]), 
         (HILBERT_IMPULSE_SIZE - 1) * sizeof(float));
@@ -296,6 +337,7 @@ static void process_in_frame_rx() {
         ADC_SAMPLE_COUNT * sizeof(float));
     for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
         an2_i[i] = hilbert_delay_state[(HILBERT_IMPULSE_SIZE - 1) - HILBERT_GROUP_DELAY + i];
+    */
 
     // Apply the Hilbert transform of the Q stream
     arm_fir_f32(&hilbert_fir, an1_q, an2_q, ADC_SAMPLE_COUNT); 
@@ -389,8 +431,8 @@ static void process_in_frame_tx() {
     arm_fir_f32(&tx_lpf_fir, tx_an1, tx_an2, ADC_SAMPLE_COUNT);
 
     // Create a delayed version of the audio to get the I stream
-    // TODO: PACKAGE INTO A FUNCTION WITH SAME SIGNATURE AS arm_fir_32()
-    // TODO: MAKE A DIAGRAM
+    delay_f32(&tx_hilbert_delay, tx_an2, tx_an3_i, ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY);
+    /*
     memmove((void*)tx_hilbert_delay_state, 
         (const void*)&(tx_hilbert_delay_state[ADC_SAMPLE_COUNT]), 
         (HILBERT_IMPULSE_SIZE - 1) * sizeof(float));
@@ -399,6 +441,7 @@ static void process_in_frame_tx() {
         ADC_SAMPLE_COUNT * sizeof(float));
     for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
         tx_an3_i[i] = tx_hilbert_delay_state[(HILBERT_IMPULSE_SIZE - 1) - HILBERT_GROUP_DELAY + i];
+    */
 
     // Apply the Hilbert transform of the audio to get the Q stream
     arm_fir_f32(&tx_hilbert_fir, tx_an2, tx_an3_q, ADC_SAMPLE_COUNT); 
@@ -493,11 +536,15 @@ int main(int argc, const char** argv) {
         LPF_IMPULSE_SIZE, lpf_impulse, lpf_fir_state, ADC_SAMPLE_COUNT);
     //arm_cfft_init_512_f32(&audio_fft);
     arm_cfft_init_256_f32(&audio_fft);
+    // NEW
+    delay_init_f32(&hilbert_delay, HILBERT_IMPULSE_SIZE - 1, hilbert_delay_state, ADC_SAMPLE_COUNT);
 
     arm_fir_init_f32(&tx_hilbert_fir, 
         HILBERT_IMPULSE_SIZE, hilbert_impulse, tx_hilbert_fir_state, ADC_SAMPLE_COUNT);
     arm_fir_init_f32(&tx_lpf_fir, 
         LPF_IMPULSE_SIZE, lpf_impulse, tx_lpf_fir_state, ADC_SAMPLE_COUNT);
+    // NEW
+    delay_init_f32(&tx_hilbert_delay, HILBERT_IMPULSE_SIZE - 1, tx_hilbert_delay_state, ADC_SAMPLE_COUNT);
 
     unsigned long fs = 48000;
 
