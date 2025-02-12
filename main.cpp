@@ -158,9 +158,10 @@ static float hilbert_impulse[HILBERT_SIZE] = {
 
 // Build the group-delay in samples.
 // This is assuming an odd Hilbert size.
-// NOTE: The +1 seems to give slightly better rejection
-#define HILBERT_GROUP_DELAY ((HILBERT_IMPULSE_SIZE + 1) / 2) + 2
-//#define HILBERT_GROUP_DELAY ((HILBERT_IMPULSE_SIZE + 1) / 2) - 1
+// NOTE: The +2 seems to give slightly better rejection
+//#define HILBERT_GROUP_DELAY ((HILBERT_IMPULSE_SIZE + 1) / 2) + 2
+// USE THIS VERSION WITH phaseCal:
+#define HILBERT_GROUP_DELAY ((HILBERT_IMPULSE_SIZE + 1) / 2)
 
 /*
 #define LPF_IMPULSE_SIZE (51)
@@ -190,18 +191,23 @@ static arm_fir_instance_f32 tx_lpf_fir;
 static arm_fir_instance_f32 tx_hilbert_fir;
 static delay_instance_f32 tx_hilbert_delay;
 
+// ----- Adjustable Parameters ----------------------------------
+
 static int32_t freq = 7255000;
 // Calibration
 static int32_t cal = 490;
 // LSB/USB selector
 static bool modeLSB = true;
-//static bool modeLSB = false;
 static bool modeTX = true;
 
 static float dacScale = 100.0;
-static float txDacScale = 1.0;
 // Used to trim I/Q imbalance on input
 static float imbalanceScale = 0.97;
+static int phaseCal = 2;
+
+static float txDacScale = 1.0;
+static float txImbalanceScale = 0.97;
+static int txPhaseCal = 2;
 
 // ----- Sweeper Integration ------------------------------------------
 
@@ -313,8 +319,8 @@ static void process_in_frame_rx() {
     }
     dma_count_0++;
 
-    // Move from the DMA buffer and into analysis buffer.  This also 
-    // separates the I/Q streams, and corrects the scaling.
+    // Move from the DMA buffer to analysis buffers.  This also 
+    // separates the I/Q streams and corrects the scaling.
     unsigned int j = 0;
     for (unsigned int i = 0; i < ADC_BUFFER_SIZE; i += 2) {
         // The 24-bit signed value is left-justified in the 32-bit word, 
@@ -325,9 +331,12 @@ static void process_in_frame_rx() {
         j++;
     }
 
-    // Create a delayed version of the I stream
+    // Create a delayed version of the I stream.
+    // The phaseCal allows us to compensate for imperfections in
+    // the hardware that result in phase mismatch between the I/Q
+    // channels.
     delay_f32(&hilbert_delay, an1_i, an2_i, 
-        ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY);
+        ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY + phaseCal);
     /*
     memmove((void*)hilbert_delay_state, 
         (const void*)&(hilbert_delay_state[ADC_SAMPLE_COUNT]), 
@@ -430,8 +439,11 @@ static void process_in_frame_tx() {
     // Low-pass filter the audio input
     arm_fir_f32(&tx_lpf_fir, tx_an1, tx_an2, ADC_SAMPLE_COUNT);
 
-    // Create a delayed version of the audio to get the I stream
-    delay_f32(&tx_hilbert_delay, tx_an2, tx_an3_i, ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY);
+    // Create a delayed version of the audio to get the I stream.
+    // The phaseCal allows us to compensate for imperfections in
+    // the hardware that result in phase mismatch between the I/Q
+    // channels.
+    delay_f32(&tx_hilbert_delay, tx_an2, tx_an3_i, ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY + txPhaseCal);
     /*
     memmove((void*)tx_hilbert_delay_state, 
         (const void*)&(tx_hilbert_delay_state[ADC_SAMPLE_COUNT]), 
@@ -482,10 +494,8 @@ static void process_in_frame_tx() {
 
 // TEMP
 float phaseAdjust = 0.24;
-//float PIPI = 3.14159265359;
 
 static void generateTestTone() {
-
 
     float fs = 48000;
     float omega = 2.0 * PI / fs;
@@ -1086,11 +1096,32 @@ int main(int argc, const char** argv) {
         }
         else if (c == 'e' || c == 'r') {
             if (c == 'e')
-                imbalanceScale -= 0.01;
+                if (modeTX)
+                    txImbalanceScale -= 0.01;
+                else 
+                    imbalanceScale -= 0.01;
             else
-                imbalanceScale += 0.01;
-            printf("imbalanceBalance %f\n", imbalanceScale);
+                if (modeTX)
+                    txImbalanceScale += 0.01;
+                else
+                    imbalanceScale += 0.01;
+            printf("imbalanceScale RX/TX %f/%f\n", 
+                imbalanceScale, txImbalanceScale);
             generateTestTone();
+        }
+        else if (c == 't' || c == 'y') {
+            if (c == 't')
+                if (modeTX)
+                    txPhaseCal -= 1;
+                else 
+                    phaseCal -= 1;
+            else
+                if (modeTX)
+                    txPhaseCal += 1;
+                else
+                    phaseCal += 1;
+            printf("phaseCal RX/TX %d/%d\n", 
+                phaseCal, txPhaseCal);
         }
 
         /*
