@@ -153,7 +153,7 @@ static bool modeLSB = true;
 static float dacScale = 100.0;
 static bool overflow = false;
 // Used to trim I/Q imbalance on input
-static float imbalanceScale = 1.0;
+static float imbalanceScale = 0.97;
 
 // ----- Sweeper Integration ------------------------------------------
 
@@ -185,10 +185,10 @@ static void dma_adc_handler() {
 
     // VERY IMPORTANT: This interrupt handler needs to be fast enough 
     /// to run inside of one sample block.
-    timer_0.reset();
-    process_in_frame();
-    if (timer_0.elapsedUs() > max_proc_0) 
-        max_proc_0 = timer_0.elapsedUs();
+    //timer_0.reset();
+    //process_in_frame();
+    //if (timer_0.elapsedUs() > max_proc_0) 
+    //    max_proc_0 = timer_0.elapsedUs();
 
     // Clear the IRQ status
     dma_hw->ints0 = 1u << dma_ch_in_data;
@@ -327,6 +327,53 @@ static void process_in_frame() {
     }
 }
 
+// TEMP
+float phaseAdjust = 0.24;
+//float PIPI = 3.14159265359;
+
+static void generateTestTone() {
+
+
+    float fs = 48000;
+    float omega = 2.0 * PI / fs;
+    float fIncrement = fs / (ADC_SAMPLE_COUNT);
+    float ft = fIncrement * 7;
+    omega *= ft;
+    float phi = 0;
+    float a = 4000000.0;
+    float phase;
+    
+    if (!modeLSB)
+        phase = PI / 2.0 + phaseAdjust;
+    else 
+        phase = -(PI / 2.0 - phaseAdjust);
+
+    for (unsigned int i = 0; i < DAC_BUFFER_SIZE; i += 2) {
+            
+        float c0 = imbalanceScale * a * cos(phi);
+        int32_t c1 = c0;
+        // (Left)
+        dac_buffer_ping[i + 1] = c1 << 8;
+        dac_buffer_pong[i + 1] = c1 << 8;
+
+        float d0 = a * cos(phi - phase);
+        int32_t d1 = d0;
+
+        // (Right)
+        dac_buffer_ping[i] = d1 << 8;
+        dac_buffer_pong[i] = d1 << 8;
+        phi += omega;
+    }
+}
+
+void init_si5351() {
+    // We are using I2C0 here!
+    printf("Si5351 initializing 0\n");
+    si_init(i2c0); 
+    printf("Si5351 initializing 1\n");
+    si_enable(0, true);
+}
+
 int main(int argc, const char** argv) {
 
     // Get all of the ARM CMSIS-DSP structures setup
@@ -372,15 +419,16 @@ int main(int argc, const char** argv) {
     gpio_set_function(I2C0_SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(I2C0_SDA_PIN);
     gpio_pull_up(I2C0_SCL_PIN);
+    i2c_set_baudrate(i2c0, 100000);
 
-    i2c_init(i2c1, 100 * 1000);
-    gpio_set_function(I2C1_SDA_PIN, GPIO_FUNC_I2C);
-    gpio_set_function(I2C1_SCL_PIN, GPIO_FUNC_I2C);
+    //i2c_init(i2c1, 100 * 1000);
+    //gpio_set_function(I2C1_SDA_PIN, GPIO_FUNC_I2C);
+    //gpio_set_function(I2C1_SCL_PIN, GPIO_FUNC_I2C);
     // NOTE: The Sparkfun MCP4725 breakout board has 4.7k pullups on the 
     // I2C lines.  Therefore we are not enabling them here.
     //gpio_pull_up(I2C1_SDA_PIN);
     //gpio_pull_up(I2C1_SCL_PIN);
-    i2c_set_baudrate(i2c1, 800000);
+    //i2c_set_baudrate(i2c1, 800000);
 
     // Startup ID
     sleep_ms(500);
@@ -389,37 +437,15 @@ int main(int argc, const char** argv) {
     printf("Minimal SDR2\nCopyright (C) Bruce MacKinnon KC1FSZ, 2025\n");
     printf("Freq %d\n", freq);
 
-    // Test tone
-    {
-        float fs = 48000;
-        float omega = 2.0 * 3.1415926 / fs;
-        float fIncrement = fs / (ADC_SAMPLE_COUNT);
-        float ft = fIncrement * 10;
-        omega *= ft;
-        float phi = 0;
-        float a = 4000000.0;
-
-        for (unsigned int i = 0; i < DAC_BUFFER_SIZE; i += 2) {
-            float c = a * cos(phi);
-            int32_t c0 = c;
-            // (Right)
-            dac_buffer_ping[i] = c0 << 8;
-            dac_buffer_pong[i] = c0 << 8;
-            // (Left)
-            dac_buffer_ping[i + 1] = c0 << 8;
-            dac_buffer_pong[i + 1] = c0 << 8;
-            phi += omega;
-        }
-    }
+    generateTestTone();
 
     // ===== Si5351 Initialization =============================================
 
-    // We are using I2C0 here!
-    si_init(i2c0);
-    si_enable(0, true);
+    init_si5351();
     // Change freq
+    printf("Si5351 initializing 2\n");
     si_evaluate(0, freq + cal);
-    printf("Si5351 initialized 1\n");
+    printf("Si5351 initialized 3\n");
 
     //const uint work_size = 256;
     //float trigSpace[work_size];
@@ -884,10 +910,27 @@ int main(int argc, const char** argv) {
             dacScale = dacScale + 5.0;
             printf("Scale %f\n", dacScale);
         }
-        else if (c == 'z') {
+        else if (c == 's') {
             dacScale = dacScale - 5.0;
             printf("Scale %f\n", dacScale);
         }
+        else if (c == 'q' || c == 'w') {
+            if (c == 'q')
+                phaseAdjust -= 0.005;
+            else
+                phaseAdjust += 0.005;
+            printf("Phase Adjust %f\n", phaseAdjust);
+            generateTestTone();
+        }
+        else if (c == 'e' || c == 'r') {
+            if (c == 'e')
+                imbalanceScale -= 0.01;
+            else
+                imbalanceScale += 0.01;
+            printf("imbalanceBalance %f\n", imbalanceScale);
+            generateTestTone();
+        }
+
         /*
         else if (c == 's') {
             swState.startHz = 7200000 - 5000;
@@ -921,6 +964,8 @@ int main(int argc, const char** argv) {
             for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
                 printf("%d\n", (int)copy[i]);
         }
+        else if (c == 'u')
+            init_si5351();
 
         //if (sweepTimer.poll()) 
         //    sweeper_tick(&swState, &swContext);
@@ -974,8 +1019,8 @@ int main(int argc, const char** argv) {
             }
             float maxMag = sqrt(maxMagSquared);
 
-            printf("Power %d, max %d, FFT max bin %d, FFT max mag %d\n", 
-                (int)power, (int)maxAudio, maxMagIdx, (int)maxMag);
+            //printf("Power %d, max %d, FFT max bin %d, FFT max mag %d\n", 
+            //    (int)power, (int)maxAudio, maxMagIdx, (int)maxMag);
 
             if (overflow) {
                 overflow = false;
