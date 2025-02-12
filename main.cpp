@@ -144,17 +144,17 @@ static volatile bool dac_buffer_ping_open = false;
 
 static PicoPerfTimer timer_0;
 
+/*
 #define HILBERT_IMPULSE_SIZE (51)
 static const float hilbert_impulse[HILBERT_IMPULSE_SIZE] = {
 0.012442742396853695, -9.247429900666847e-16, 0.009007745694645828, 3.886440143014065e-16, 0.012248270003437301, 2.0291951727332382e-16, 0.016267702606548327, 1.073881019267362e-15, 0.021262591317853616, -1.5445700787658912e-15, 0.027540135461651433, 9.040409971208902e-16, 0.03555144114893796, -9.736771998276128e-17, 0.04616069183085064, 2.5884635757740463e-16, 0.060879120316970736, -1.9452769758181735e-16, 0.08310832605502039, 6.688463706336815e-16, 0.12163479949392442, -4.100082211906412e-17, 0.208751841831881, 3.007875123018464e-16, 0.635463817659196, 0, -0.635463817659196, -3.007875123018464e-16, -0.208751841831881, 4.100082211906412e-17, -0.12163479949392442, -6.688463706336815e-16, -0.08310832605502039, 1.9452769758181735e-16, -0.060879120316970736, -2.5884635757740463e-16, -0.04616069183085064, 9.736771998276128e-17, -0.03555144114893796, -9.040409971208902e-16, -0.027540135461651433, 1.5445700787658912e-15, -0.021262591317853616, -1.073881019267362e-15, -0.016267702606548327, -2.0291951727332382e-16, -0.012248270003437301, -3.886440143014065e-16, -0.009007745694645828, 9.247429900666847e-16, -0.012442742396853695
 };
+*/
 
-/*
-#define HILBERT_SIZE (71)
-static float hilbert_impulse[HILBERT_SIZE] = {
+#define HILBERT_IMPULSE_SIZE (71)
+static float hilbert_impulse[HILBERT_IMPULSE_SIZE] = {
 0.003280158972196459, -2.6913320235605067e-07, 0.00281406062078617, -9.161363096266983e-07, 0.003985021414434486, -1.618587666932063e-06, 0.005450999350074075, -1.9189040647516074e-06, 0.007262664727861606, -2.360314424730244e-06, 0.00948053959593801, -2.1703343573990264e-06, 0.012181883403014827, -2.5628817403290866e-06, 0.015461200723989862, -7.066359931599645e-07, 0.019459515188764917, -3.2918847746577675e-06, 0.024362576948291248, -3.386452949263455e-06, 0.030473764476294157, -3.5184352949003947e-06, 0.0382687121226955, -4.391933037083758e-06, 0.04857005331189018, -3.953559009023066e-06, 0.06294804140744603, -2.314572775720779e-06, 0.08477848616922334, -1.6697579050910363e-06, 0.12285835532250555, -1.5223564667124609e-06, 0.2095022309647281, -1.9124822250834506e-06, 0.6357140091664184, 0, -0.6357140091664184, 1.9124822250834506e-06, -0.2095022309647281, 1.5223564667124609e-06, -0.12285835532250555, 1.6697579050910363e-06, -0.08477848616922334, 2.314572775720779e-06, -0.06294804140744603, 3.953559009023066e-06, -0.04857005331189018, 4.391933037083758e-06, -0.0382687121226955, 3.5184352949003947e-06, -0.030473764476294157, 3.386452949263455e-06, -0.024362576948291248, 3.2918847746577675e-06, -0.019459515188764917, 7.066359931599645e-07, -0.015461200723989862, 2.5628817403290866e-06, -0.012181883403014827, 2.1703343573990264e-06, -0.00948053959593801, 2.360314424730244e-06, -0.007262664727861606, 1.9189040647516074e-06, -0.005450999350074075, 1.618587666932063e-06, -0.003985021414434486, 9.161363096266983e-07, -0.00281406062078617, 2.6913320235605067e-07, -0.003280158972196459
 };
-*/
 
 // Build the group-delay in samples.
 // This is assuming an odd Hilbert size.
@@ -206,8 +206,8 @@ static float imbalanceScale = 0.97;
 static int phaseCal = 2;
 
 static float txDacScale = 1.0;
-static float txImbalanceScale = 0.97;
-static int txPhaseCal = 2;
+static float txImbalanceScale = 0.98;
+static int txPhaseCal = 0;
 
 // ----- Sweeper Integration ------------------------------------------
 
@@ -443,7 +443,8 @@ static void process_in_frame_tx() {
     // The phaseCal allows us to compensate for imperfections in
     // the hardware that result in phase mismatch between the I/Q
     // channels.
-    delay_f32(&tx_hilbert_delay, tx_an2, tx_an3_i, ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY + txPhaseCal);
+    delay_f32(&tx_hilbert_delay, tx_an2, tx_an3_i, 
+        ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY + txPhaseCal);
     /*
     memmove((void*)tx_hilbert_delay_state, 
         (const void*)&(tx_hilbert_delay_state[ADC_SAMPLE_COUNT]), 
@@ -477,7 +478,7 @@ static void process_in_frame_tx() {
         int32_t aScaledI = scaledI;
         aScaledI = aScaledI << 8;
 
-        float scaledQ = (tx_an3_q[i] * txDacScale);
+        float scaledQ = (tx_an3_q[i] * txDacScale) * txImbalanceScale;
         // 24 bit signed
         if (fabs(scaledQ) > 8388607.0) {
             txOverflow = true;
@@ -493,7 +494,7 @@ static void process_in_frame_tx() {
 }
 
 // TEMP
-float phaseAdjust = 0.24;
+float phaseAdjust = 0.17;
 
 static void generateTestTone() {
 
@@ -513,7 +514,7 @@ static void generateTestTone() {
 
     for (unsigned int i = 0; i < DAC_BUFFER_SIZE; i += 2) {
             
-        float c0 = imbalanceScale * a * cos(phi);
+        float c0 = txImbalanceScale * a * cos(phi);
         int32_t c1 = c0;
         // (Left)
         dac_buffer_ping[i + 1] = c1 << 8;
@@ -585,14 +586,6 @@ int main(int argc, const char** argv) {
     gpio_set_dir(rst_pin, GPIO_OUT);
     gpio_put(rst_pin, 1);
 
-    // I2C bus setup
-    i2c_init(i2c0, 100 * 1000);
-    gpio_set_function(I2C0_SDA_PIN, GPIO_FUNC_I2C);
-    gpio_set_function(I2C0_SCL_PIN, GPIO_FUNC_I2C);
-    gpio_pull_up(I2C0_SDA_PIN);
-    gpio_pull_up(I2C0_SCL_PIN);
-    i2c_set_baudrate(i2c0, 100000);
-
     //i2c_init(i2c1, 100 * 1000);
     //gpio_set_function(I2C1_SDA_PIN, GPIO_FUNC_I2C);
     //gpio_set_function(I2C1_SCL_PIN, GPIO_FUNC_I2C);
@@ -612,6 +605,14 @@ int main(int argc, const char** argv) {
     generateTestTone();
 
     // ===== Si5351 Initialization =============================================
+
+    // I2C bus setup
+    i2c_init(i2c0, 100 * 1000);
+    gpio_set_function(I2C0_SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(I2C0_SCL_PIN, GPIO_FUNC_I2C);
+    gpio_pull_up(I2C0_SDA_PIN);
+    gpio_pull_up(I2C0_SCL_PIN);
+    i2c_set_baudrate(i2c0, 100000);
 
     init_si5351();
     // Change freq
@@ -1142,7 +1143,9 @@ int main(int argc, const char** argv) {
             float copy[ADC_SAMPLE_COUNT / 4];
             for (unsigned int i = 0; i < ADC_SAMPLE_COUNT / 4; i++) {
                 if (modeTX)
-                    copy[i] = tx_an1[i];
+                    //copy[i] = tx_an1[i];
+                    //copy[i] = tx_an2[i];
+                    copy[i] = tx_an3_i[i];
                 else
                     copy[i] = an1_i[i];
             }
@@ -1227,6 +1230,10 @@ int main(int argc, const char** argv) {
             if (overflow) {
                 overflow = false;
                 printf("Overflow\n");
+            }
+            if (txOverflow) {
+                txOverflow = false;
+                printf("TX Overflow\n");
             }
         }
 

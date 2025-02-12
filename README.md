@@ -1,3 +1,10 @@
+Overview
+========
+
+This is a homebrew SDR rig with no dependency on external computers/soundards/etc. 
+
+
+
 Build/Debug Commands
 ====================
 
@@ -17,8 +24,9 @@ Pico Pinout Notes
 
 GP0  - (Reserved for UART0 TX)
 GP1  - (Reserved for UART0 RX)
-GP2  - I2C1 SDA for MCP4725 DAC (Addr 0x60)
-GP3  - I2C1 SCL for MCP4725 DAC (Addr 0x60)
+
+GP2  - 
+GP3  - 
 GP4  - SCK out to PCM1804 ADC and PCM5100 DAC
 GP5  - RST out to PCM1804 ADC
 
@@ -36,6 +44,19 @@ GP15
 GP16 - I2C0 SDA for Si5351 (Addr 0x60)
 GP17 - I2C0 SCL for Si5351 (Addr 0x60)
 
+Wiring Notes
+============
+
+* RX board I_PLUS (J2:1) -> Audio Breakout INL_PLUS (J4:1)
+* RX board I_MINUS (J2:2) -> Audio Breakout INL_MINUS (J4:2)
+* RX board Q_PLUS (J2:4) -> Audio Breakout INR_PLUS (J4:4)
+* RX board Q_MINUS (J2:5) -> Audio Breakout INR_MINUS (J4:3)
+
+* RX board CLK_I (J4:1) -> Si5351 CLK0
+* RX board CLK_Q (J4:3) -> Si5351 CLK1
+
+* Microphone input is connected to the INL_PLUS/INL_MINUS pins on the audio breakout board.
+
 Hardware Notes
 ==============
 
@@ -46,17 +67,16 @@ instrumentation amplifier congiruation used on the receive board.  Gain for this
 controlled determined by 1 + 2 R<sub>f</sub> / R<sub>g</sub>.  Notice that the feedback 
 path is tapped after a 47 ohm resistor to set the output impedance of the stage.
 
-
 Research
 ========
 
-Consider the PCM5100 DAC and the PCM1863 ADC? SparkFun is using the DAC on their boards.
+Consider the PCM1863 ADC? 
 
 References
 ==========
 
 [PCM1804 Datasheet](https://www.ti.com/lit/ds/symlink/pcm1804.pdf)
-
+[PCM5100 Datasheet](https://www.ti.com/lit/ds/symlink/pcm5102.pdf)
 
 Steps to Build CMSIS-DSP
 ========================
