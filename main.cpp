@@ -143,6 +143,12 @@ static arm_fir_instance_f32 hilbert_fir;
 static arm_fir_instance_f32 lpf_fir;
 static arm_cfft_instance_f32 audio_fft;
 
+static float tx_lpf_fir_state[LPF_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
+static float tx_hilbert_delay_state[HILBERT_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
+static float tx_hilbert_fir_state[HILBERT_IMPULSE_SIZE + ADC_SAMPLE_COUNT - 1];
+static arm_fir_instance_f32 tx_lpf_fir;
+static arm_fir_instance_f32 tx_hilbert_fir;
+
 //static int32_t freq = 7200000;
 static int32_t freq = 7255000;
 // Calibration
@@ -150,8 +156,10 @@ static int32_t cal = 490;
 // LSB/USB selector
 static bool modeLSB = true;
 //static bool modeLSB = false;
+static bool modeTX = true;
+
 static float dacScale = 100.0;
-static bool overflow = false;
+static float txDacScale = 1.0;
 // Used to trim I/Q imbalance on input
 static float imbalanceScale = 0.97;
 
@@ -175,20 +183,24 @@ public:
 };
 */
 
-static void process_in_frame();
+static void process_in_frame_rx();
+static void process_in_frame_tx();
 
 // This will be called once every AUDIO_BUFFER_SIZE/2 samples.
+// VERY IMPORTANT: This interrupt handler needs to be fast enough 
+// to run inside of one sample block.
 static void dma_adc_handler() {   
 
     dma_in_count++;
     adc_frame_ready = true;
 
-    // VERY IMPORTANT: This interrupt handler needs to be fast enough 
-    /// to run inside of one sample block.
-    //timer_0.reset();
-    //process_in_frame();
-    //if (timer_0.elapsedUs() > max_proc_0) 
-    //    max_proc_0 = timer_0.elapsedUs();
+    timer_0.reset();
+    if (!modeTX)
+        process_in_frame_rx();
+    else
+        process_in_frame_tx();
+    if (timer_0.elapsedUs() > max_proc_0) 
+        max_proc_0 = timer_0.elapsedUs();
 
     // Clear the IRQ status
     dma_hw->ints0 = 1u << dma_ch_in_data;
@@ -225,28 +237,26 @@ static void dma_irq_handler() {
     }
 }
 
+// RX mode processing buffers
 // (Pulled outside to enable introspection)
-
 static float an1_i[ADC_SAMPLE_COUNT];
 static float an1_q[ADC_SAMPLE_COUNT];
-    
 static float an2_i[ADC_SAMPLE_COUNT];
 static float an2_q[ADC_SAMPLE_COUNT];
-
 static float an3_ssb[ADC_SAMPLE_COUNT];
-
 static float an4_audio[ADC_SAMPLE_COUNT];
+static bool overflow = false;
 
-// This should be called when a complete frame of I/Q data has been 
-// received.
+// -----------------------------------------------------------------------------
+// IMPORTANT FUNCTION: 
 //
-// This processing loop happens while interrupts are enabled
-// so it's lower priority than the DMA.
+// This should be called in receive mode when a complete frame of I/Q 
+// data has been converted.
 //
 // Benchmark: Approximately 1ms per call, using a 51 tap Hilbert transform
-// and a 71 tap low pass filter.
+// and a 91 tap low pass filter.
 //
-static void process_in_frame() {
+static void process_in_frame_rx() {
 
     proc_count++;
 
@@ -327,6 +337,106 @@ static void process_in_frame() {
     }
 }
 
+// TX mode processing buffers
+// (Pulled outside to enable introspection)
+static float tx_an1[ADC_SAMPLE_COUNT];
+static float tx_an2[ADC_SAMPLE_COUNT];
+static float tx_an3_i[ADC_SAMPLE_COUNT];
+static float tx_an3_q[ADC_SAMPLE_COUNT];
+static bool txOverflow = false;
+
+// -----------------------------------------------------------------------------
+// IMPORTANT FUNCTION: 
+//
+// This is called in transmit mode each time a complete frame of audio data has
+// been received from the audio source (e.g. microphone). This performs the DSP
+// math and creates I/Q streams that are sent to the DAC for modulation/transmission.
+//
+// EXTREMELY TIME-SENSITIVE, so be careful about adding too much stuff here.
+// This needs to execute inside of one audio block's time.
+//
+static void process_in_frame_tx() {
+
+    proc_count++;
+
+    // Counter used to alternate between double-buffer sides
+    static uint32_t dma_count_0 = 0;
+
+    // Figure out which part of the double-buffer we just finished
+    // loading into.  Notice: the pointer is signed.
+    int32_t* adc_data;
+    if (dma_count_0 % 2 == 0) {
+        adc_data = (int32_t*)adc_buffer;
+    } else {
+        adc_data = (int32_t*)&(adc_buffer[ADC_BUFFER_SIZE]);
+    }
+    dma_count_0++;
+
+    // Move from the DMA buffer and into analysis buffer. 
+    unsigned int j = 0;
+    for (unsigned int i = 0; i < ADC_BUFFER_SIZE; i += 2) {
+        // The 24-bit signed value is left-justified in the 32-bit word, 
+        // so we need to shift right 8. Sign extension is automatic.
+        // Range of 24 bits is -8,388,608 to 8,388,607.
+        //
+        // Pulling from the left channel
+        tx_an1[j] = adc_data[i + 1] >> 8;
+        j++;
+    }
+
+    // TODO: Review filter shape - need something different on TX?
+    // Low-pass filter the audio input
+    arm_fir_f32(&tx_lpf_fir, tx_an1, tx_an2, ADC_SAMPLE_COUNT);
+
+    // Create a delayed version of the audio to get the I stream
+    // TODO: PACKAGE INTO A FUNCTION WITH SAME SIGNATURE AS arm_fir_32()
+    // TODO: MAKE A DIAGRAM
+    memmove((void*)tx_hilbert_delay_state, 
+        (const void*)&(tx_hilbert_delay_state[ADC_SAMPLE_COUNT]), 
+        (HILBERT_IMPULSE_SIZE - 1) * sizeof(float));
+    memmove((void*)&(tx_hilbert_delay_state[HILBERT_IMPULSE_SIZE - 1]), 
+        (const void*)tx_an2,
+        ADC_SAMPLE_COUNT * sizeof(float));
+    for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
+        tx_an3_i[i] = tx_hilbert_delay_state[(HILBERT_IMPULSE_SIZE - 1) - HILBERT_GROUP_DELAY + i];
+
+    // Apply the Hilbert transform of the audio to get the Q stream
+    arm_fir_f32(&tx_hilbert_fir, tx_an2, tx_an3_q, ADC_SAMPLE_COUNT); 
+
+    // Write to the DAC buffer based on our current tracking of which 
+    // is available for use.
+    int32_t* dac_buffer;
+    if (dac_buffer_ping_open) 
+        dac_buffer = (int32_t*)dac_buffer_ping;
+    else
+        dac_buffer = (int32_t*)dac_buffer_pong;
+
+    j = 0;
+    for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) {
+
+        float scaledI = (tx_an3_i[i] * txDacScale);
+        // 24 bit signed
+        if (fabs(scaledI) > 8388607.0) {
+            txOverflow = true;
+        }
+        int32_t aScaledI = scaledI;
+        aScaledI = aScaledI << 8;
+
+        float scaledQ = (tx_an3_q[i] * txDacScale);
+        // 24 bit signed
+        if (fabs(scaledQ) > 8388607.0) {
+            txOverflow = true;
+        }
+        int32_t aScaledQ = scaledQ;
+        aScaledQ = aScaledQ << 8;
+
+        // Right 
+        dac_buffer[j++] = aScaledI;
+        // Left
+        dac_buffer[j++] = aScaledQ;
+    }
+}
+
 // TEMP
 float phaseAdjust = 0.24;
 //float PIPI = 3.14159265359;
@@ -383,6 +493,11 @@ int main(int argc, const char** argv) {
         LPF_IMPULSE_SIZE, lpf_impulse, lpf_fir_state, ADC_SAMPLE_COUNT);
     //arm_cfft_init_512_f32(&audio_fft);
     arm_cfft_init_256_f32(&audio_fft);
+
+    arm_fir_init_f32(&tx_hilbert_fir, 
+        HILBERT_IMPULSE_SIZE, hilbert_impulse, tx_hilbert_fir_state, ADC_SAMPLE_COUNT);
+    arm_fir_init_f32(&tx_lpf_fir, 
+        LPF_IMPULSE_SIZE, lpf_impulse, tx_lpf_fir_state, ADC_SAMPLE_COUNT);
 
     unsigned long fs = 48000;
 
@@ -872,7 +987,7 @@ int main(int argc, const char** argv) {
 
     // Display/diagnostic should happen once per second
     PicoPollTimer flashTimer;
-    flashTimer.setIntervalUs(500 * 1000);
+    flashTimer.setIntervalUs(1000 * 1000);
 
     // A timer used for diagnostic features
     PicoPollTimer sweepTimer;
@@ -947,8 +1062,12 @@ int main(int argc, const char** argv) {
         else if (c == 'p') {
             // Make a quick copy since this buffer is changing in real-time
             float copy[ADC_SAMPLE_COUNT / 4];
-            for (unsigned int i = 0; i < ADC_SAMPLE_COUNT / 4; i++) 
-                copy[i] = an1_i[i];
+            for (unsigned int i = 0; i < ADC_SAMPLE_COUNT / 4; i++) {
+                if (modeTX)
+                    copy[i] = tx_an1[i];
+                else
+                    copy[i] = an1_i[i];
+            }
             printf("\n\n\n======================================\n");
             for (unsigned int i = 0; i < ADC_SAMPLE_COUNT / 4; i++) 
                 printf("%d\n", (int)copy[i]);
@@ -990,7 +1109,12 @@ int main(int argc, const char** argv) {
             float maxAudio = 0;
             float power = 0;
             for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) {               
-                float s = an4_audio[i];
+                float s;
+                if (!modeTX)
+                    s = an4_audio[i];
+                else 
+                    //s = tx_an1[i];
+                    s = tx_an3_q[i];
                 power += s * s;
                 // Complex real/imaginary pair
                 work[i * 2] = s;
@@ -1019,8 +1143,8 @@ int main(int argc, const char** argv) {
             }
             float maxMag = sqrt(maxMagSquared);
 
-            //printf("Power %d, max %d, FFT max bin %d, FFT max mag %d\n", 
-            //    (int)power, (int)maxAudio, maxMagIdx, (int)maxMag);
+            printf("Power %d, max %d, FFT max bin %d, FFT max mag %d\n", 
+                (int)power, (int)maxAudio, maxMagIdx, (int)maxMag);
 
             if (overflow) {
                 overflow = false;
