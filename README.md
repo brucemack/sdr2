@@ -21,7 +21,7 @@ Command used to flash code to board:
 
 Pico Pinout Notes
 =================
-
+```
 GP0  - (Reserved for UART0 TX)
 GP1  - (Reserved for UART0 RX)
 
@@ -43,6 +43,7 @@ GP14
 GP15
 GP16 - I2C0 SDA for Si5351 (Addr 0x60)
 GP17 - I2C0 SCL for Si5351 (Addr 0x60)
+```
 
 Wiring Notes
 ============
@@ -51,10 +52,8 @@ Wiring Notes
 * RX board I_MINUS (J2:2) -> Audio Breakout INL_MINUS (J4:2)
 * RX board Q_PLUS (J2:4) -> Audio Breakout INR_PLUS (J4:4)
 * RX board Q_MINUS (J2:5) -> Audio Breakout INR_MINUS (J4:3)
-
 * RX board CLK_I (J4:1) -> Si5351 CLK0
 * RX board CLK_Q (J4:3) -> Si5351 CLK1
-
 * Microphone input is connected to the INL_PLUS/INL_MINUS pins on the audio breakout board.
 
 Hardware Notes
