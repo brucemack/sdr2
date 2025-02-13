@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "Digital Audio Breakout Board")
-		(date "2025-01-26")
-		(rev "1")
+		(date "2025-02-05")
+		(rev "2")
 		(company "Bruce MacKinnon KC1FSZ")
 		(comment 1 "Copyright (C) 2025")
 		(comment 2 "For amateur radio/non-commercial use only")

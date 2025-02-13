@@ -6,13 +6,152 @@
 	(paper "USLetter")
 	(title_block
 		(title "Digital Audio Breakout Board")
-		(date "2025-01-26")
-		(rev "1")
+		(date "2025-02-05")
+		(rev "2")
 		(company "Bruce MacKinnon KC1FSZ")
 		(comment 1 "Copyright (C) 2025")
 		(comment 2 "For amateur radio/non-commercial use only")
 	)
 	(lib_symbols
+		(symbol "Connector_Generic:Conn_01x02"
+			(pin_names
+				(offset 1.016) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 0 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_01x02"
+				(at 0 -5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "connector"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Connector*:*_1x??_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Conn_01x02_1_1"
+				(rectangle
+					(start -1.27 -2.413)
+					(end 0 -2.667)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 0.127)
+					(end 0 -0.127)
+					(stroke
+						(width 0.1524)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.27 1.27)
+					(end 1.27 -3.81)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 3.81)
+					(name "Pin_1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -2.54 0)
+					(length 3.81)
+					(name "Pin_2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "Connector_Generic:Conn_01x03"
 			(pin_names
 				(offset 1.016) hide)
@@ -1376,6 +1515,16 @@
 	)
 	(wire
 		(pts
+			(xy 100.33 134.62) (xy 114.3 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4b3af844-8d02-4395-8771-5601ad347542")
+	)
+	(wire
+		(pts
 			(xy 123.19 90.17) (xy 139.7 90.17)
 		)
 		(stroke
@@ -1524,6 +1673,48 @@
 		)
 		(uuid "f86ea29b-9946-4a9d-8fad-04395a2020f6")
 	)
+	(text "Optional feature to allow the I2S clock \nlines for the ADC and DAC to be connected.\nThis could reduce MPU pin count when common \nclocks are possible."
+		(exclude_from_sim no)
+		(at 111.76 191.516 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "29812507-99ad-4768-875e-8dba2f7c3c95")
+	)
+	(text "Control for ADC high-pass filter bypass.\nLow=normal (i.e. not bypassed), High=bypassed.\nThis is useful for enabling DC calibration of\nthe ADC."
+		(exclude_from_sim no)
+		(at 113.03 148.844 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "def74d49-2b76-4930-bdb1-e39d47cc4569")
+	)
+	(global_label "HPFBYPASS"
+		(shape input)
+		(at 100.33 134.62 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "0be62cc5-8ef3-4aaa-8714-d3d2dc04468a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 86.5195 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "ADC_LRCK"
 		(shape input)
 		(at 53.34 180.34 0)
@@ -1570,7 +1761,7 @@
 	)
 	(global_label "DAC_SCK"
 		(shape input)
-		(at 111.76 179.07 180)
+		(at 109.22 181.61 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1580,7 +1771,7 @@
 		)
 		(uuid "1e286bb1-c780-47ea-b2bc-35f4b380f0a6")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 100.4291 179.07 0)
+			(at 97.8891 181.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1680,7 +1871,7 @@
 	)
 	(global_label "ADC_BCK"
 		(shape input)
-		(at 119.38 168.91 0)
+		(at 116.84 171.45 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1690,7 +1881,7 @@
 		)
 		(uuid "7177b0cb-1e94-428e-b7ec-ce0de379030f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 130.7714 168.91 0)
+			(at 128.2314 171.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1746,7 +1937,7 @@
 	)
 	(global_label "ADC_SCK"
 		(shape input)
-		(at 119.38 179.07 0)
+		(at 116.84 181.61 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1756,7 +1947,7 @@
 		)
 		(uuid "806d7159-8241-4ec5-8895-46c353d32034")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 130.7109 179.07 0)
+			(at 128.1709 181.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1768,7 +1959,7 @@
 	)
 	(global_label "ADC_LRCK"
 		(shape input)
-		(at 119.38 158.75 0)
+		(at 116.84 161.29 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1778,7 +1969,7 @@
 		)
 		(uuid "91cc34bc-aa8f-4e1f-9db5-e601a83bc570")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 131.7995 158.75 0)
+			(at 129.2595 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1812,7 +2003,7 @@
 	)
 	(global_label "DAC_LRCK"
 		(shape input)
-		(at 111.76 158.75 180)
+		(at 109.22 161.29 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1822,7 +2013,7 @@
 		)
 		(uuid "aebb3f3f-efa7-410e-b008-7e50339234ac")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 99.3405 158.75 0)
+			(at 96.8005 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1944,7 +2135,7 @@
 	)
 	(global_label "DAC_BCK"
 		(shape input)
-		(at 111.76 168.91 180)
+		(at 109.22 171.45 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1954,7 +2145,7 @@
 		)
 		(uuid "cca1f9eb-9ec3-4ad9-af40-ee266575784e")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 100.3686 168.91 0)
+			(at 97.8286 171.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1987,8 +2178,74 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 114.3 137.16 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "067288fe-8c71-49c5-ba4a-fa174f16147e")
+		(property "Reference" "#PWR052"
+			(at 114.3 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 114.3 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 114.3 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 114.3 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 114.3 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "477bdf99-3a02-465a-905e-a2e0e34a823f")
+		)
+		(instances
+			(project ""
+				(path "/82150c16-c06d-4d32-9cbe-16555e6d3c52"
+					(reference "#PWR052")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Jumper:SolderJumper_2_Open")
-		(at 115.57 158.75 0)
+		(at 113.03 161.29 0)
 		(unit 1)
 		(exclude_from_sim yes)
 		(in_bom no)
@@ -1997,7 +2254,7 @@
 		(fields_autoplaced yes)
 		(uuid "212a6bc6-789e-4419-b195-bd8038fc11ac")
 		(property "Reference" "JP5"
-			(at 115.57 154.94 0)
+			(at 113.03 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2005,7 +2262,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_2_Open"
-			(at 115.57 154.94 0)
+			(at 113.03 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2014,7 +2271,7 @@
 			)
 		)
 		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm"
-			(at 115.57 158.75 0)
+			(at 113.03 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2023,7 +2280,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 115.57 158.75 0)
+			(at 113.03 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2032,7 +2289,7 @@
 			)
 		)
 		(property "Description" "Solder Jumper, 2-pole, open"
-			(at 115.57 158.75 0)
+			(at 113.03 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2180,6 +2437,76 @@
 			(project ""
 				(path "/82150c16-c06d-4d32-9cbe-16555e6d3c52"
 					(reference "#PWR034")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 119.38 134.62 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "36d9d3d8-0f13-4f71-9cc8-ed777b00aad2")
+		(property "Reference" "J6"
+			(at 121.92 134.6199 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Conn_01x02"
+			(at 121.92 137.1599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 119.38 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 119.38 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 119.38 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "9467dc7b-1429-4602-9cd7-eea77e50de1d")
+		)
+		(pin "1"
+			(uuid "03603628-cfae-46f9-9743-8c2ca31cc0ac")
+		)
+		(instances
+			(project ""
+				(path "/82150c16-c06d-4d32-9cbe-16555e6d3c52"
+					(reference "J6")
 					(unit 1)
 				)
 			)
@@ -3008,7 +3335,7 @@
 	)
 	(symbol
 		(lib_id "Jumper:SolderJumper_2_Open")
-		(at 115.57 168.91 0)
+		(at 113.03 171.45 0)
 		(unit 1)
 		(exclude_from_sim yes)
 		(in_bom no)
@@ -3017,7 +3344,7 @@
 		(fields_autoplaced yes)
 		(uuid "cc3e7ad9-5bde-4858-b8e7-eaecbc41bfbb")
 		(property "Reference" "JP6"
-			(at 115.57 165.1 0)
+			(at 113.03 167.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3025,7 +3352,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_2_Open"
-			(at 115.57 165.1 0)
+			(at 113.03 167.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3034,7 +3361,7 @@
 			)
 		)
 		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm"
-			(at 115.57 168.91 0)
+			(at 113.03 171.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3043,7 +3370,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 115.57 168.91 0)
+			(at 113.03 171.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3052,7 +3379,7 @@
 			)
 		)
 		(property "Description" "Solder Jumper, 2-pole, open"
-			(at 115.57 168.91 0)
+			(at 113.03 171.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3077,7 +3404,7 @@
 	)
 	(symbol
 		(lib_id "Jumper:SolderJumper_2_Open")
-		(at 115.57 179.07 0)
+		(at 113.03 181.61 0)
 		(unit 1)
 		(exclude_from_sim yes)
 		(in_bom no)
@@ -3086,7 +3413,7 @@
 		(fields_autoplaced yes)
 		(uuid "d05900f7-26c5-4abf-a83d-cf4d89bb4322")
 		(property "Reference" "JP7"
-			(at 115.57 175.26 0)
+			(at 113.03 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3094,7 +3421,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_2_Open"
-			(at 115.57 175.26 0)
+			(at 113.03 177.8 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3103,7 +3430,7 @@
 			)
 		)
 		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm"
-			(at 115.57 179.07 0)
+			(at 113.03 181.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3112,7 +3439,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 115.57 179.07 0)
+			(at 113.03 181.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3121,7 +3448,7 @@
 			)
 		)
 		(property "Description" "Solder Jumper, 2-pole, open"
-			(at 115.57 179.07 0)
+			(at 113.03 181.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)

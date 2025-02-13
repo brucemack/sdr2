@@ -6,8 +6,8 @@
 	(paper "USLetter")
 	(title_block
 		(title "Digital Audio Breakout Board")
-		(date "2025-01-26")
-		(rev "1")
+		(date "2025-02-05")
+		(rev "2")
 		(company "Bruce MacKinnon KC1FSZ")
 		(comment 1 "Copyright (C) 2025")
 		(comment 2 "For amateur radio/non-commercial use only")
@@ -1825,12 +1825,6 @@
 		(uuid "8038bda3-5fc8-4b27-af30-87f49baf5f4c")
 	)
 	(junction
-		(at 91.44 116.84)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "b3580f2b-1fec-48f2-beee-8ccacbb9a2ef")
-	)
-	(junction
 		(at 231.14 88.9)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1880,7 +1874,7 @@
 	)
 	(wire
 		(pts
-			(xy 91.44 91.44) (xy 91.44 116.84)
+			(xy 91.44 91.44) (xy 91.44 119.38)
 		)
 		(stroke
 			(width 0)
@@ -1997,16 +1991,6 @@
 			(type default)
 		)
 		(uuid "3fd48c41-2063-4d5f-b1d7-8369cd4e016e")
-	)
-	(wire
-		(pts
-			(xy 91.44 116.84) (xy 100.33 116.84)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "55d10a8a-d329-41f6-a6a6-e47a58ed9fbe")
 	)
 	(wire
 		(pts
@@ -2200,16 +2184,6 @@
 	)
 	(wire
 		(pts
-			(xy 91.44 116.84) (xy 91.44 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b7e1b4a4-1cb9-4726-8457-f8d371948b7d")
-	)
-	(wire
-		(pts
 			(xy 251.46 105.41) (xy 251.46 104.14)
 		)
 		(stroke
@@ -2227,6 +2201,16 @@
 			(type default)
 		)
 		(uuid "befbbd8c-5705-489e-855f-3324a08bc876")
+	)
+	(wire
+		(pts
+			(xy 60.96 116.84) (xy 100.33 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cd746a9d-8e2d-4f8b-a59b-57e82d1eff97")
 	)
 	(wire
 		(pts
@@ -2890,6 +2874,28 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "HPFBYPASS"
+		(shape input)
+		(at 60.96 116.84 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "f4d256f7-4e91-4b0d-ab9e-4dab359e1593")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 47.1495 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 				(hide yes)
 			)
 		)
