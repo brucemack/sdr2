@@ -1,0 +1,89 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "79e94c33-63da-4751-adae-72fc4eafefd8")
+	(paper "A4")
+	(lib_symbols)
+	(sheet
+		(at 27.94 22.86)
+		(size 33.02 30.48)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "1c0ff529-6a4c-4784-ad12-6fd3d2e1f79d")
+		(property "Sheetname" "Power"
+			(at 27.94 22.1484 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "power.kicad_sch"
+			(at 27.94 53.9246 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "util-1"
+				(path "/79e94c33-63da-4751-adae-72fc4eafefd8"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 69.85 22.86)
+		(size 34.29 30.48)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "ec6e953d-c916-46bb-9b1f-22b208d9bde0")
+		(property "Sheetname" "Audio Out"
+			(at 69.85 22.1484 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "audio-out.kicad_sch"
+			(at 69.85 53.9246 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "util-1"
+				(path "/79e94c33-63da-4751-adae-72fc4eafefd8"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)
