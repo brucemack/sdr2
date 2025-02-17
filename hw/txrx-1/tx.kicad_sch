@@ -3,7 +3,15 @@
 	(generator "eeschema")
 	(generator_version "8.0")
 	(uuid "d610d8d4-c3aa-441a-ac0f-c3c7e327240a")
-	(paper "A4")
+	(paper "USLetter")
+	(title_block
+		(title "Quadrature TX/RX Board")
+		(date "2025-02-16")
+		(rev "1")
+		(company "Bruce MacKinnon KC1FSZ")
+		(comment 1 "Copyright (C) Bruce MacKinnon, 2025")
+		(comment 2 "NOT FOR COMMERCIAL USE")
+	)
 	(lib_symbols)
 	(sheet
 		(at 76.2 24.13)

@@ -3,7 +3,15 @@
 	(generator "eeschema")
 	(generator_version "8.0")
 	(uuid "478073d3-36b3-40d9-b2fb-4d92e5f3825a")
-	(paper "A4")
+	(paper "USLetter")
+	(title_block
+		(title "Quadrature TX/RX Board")
+		(date "2025-02-16")
+		(rev "1")
+		(company "Bruce MacKinnon KC1FSZ")
+		(comment 1 "Copyright (C) Bruce MacKinnon, 2025")
+		(comment 2 "NOT FOR COMMERCIAL USE")
+	)
 	(lib_symbols
 		(symbol "Amplifier_Operational:LM4562"
 			(pin_names
@@ -3467,72 +3475,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+5V")
-		(at 83.82 64.77 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "081916b3-0857-419b-9a8c-05fd2f950347")
-		(property "Reference" "#PWR06"
-			(at 83.82 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+5V"
-			(at 83.82 54.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" ""
-			(at 83.82 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 83.82 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 83.82 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "49fd8b0f-d0d0-4a2b-9e02-82e0fa2b9741")
-		)
-		(instances
-			(project "txrx-1"
-				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/18a6c186-38de-4d45-956c-bdfe41b0c978"
-					(reference "#PWR06")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 127 119.38 0)
 		(unit 1)
@@ -3945,6 +3887,72 @@
 			(project "txrx-1"
 				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/18a6c186-38de-4d45-956c-bdfe41b0c978"
 					(reference "U2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 109.22 58.42 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1ebe7fa7-f6c1-4b0f-bf2e-aa9261b95fd7")
+		(property "Reference" "#PWR06"
+			(at 109.22 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 109.22 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 109.22 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 109.22 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 109.22 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c720fbcc-d459-45e7-9c70-81edbee14bcf")
+		)
+		(instances
+			(project ""
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/18a6c186-38de-4d45-956c-bdfe41b0c978"
+					(reference "#PWR06")
 					(unit 1)
 				)
 			)
@@ -5483,7 +5491,7 @@
 	)
 	(symbol
 		(lib_id "Device:C_Small")
-		(at 83.82 67.31 0)
+		(at 109.22 60.96 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5492,7 +5500,7 @@
 		(fields_autoplaced yes)
 		(uuid "8fe366b3-b05a-4c49-96cb-fc86fd809b36")
 		(property "Reference" "C2"
-			(at 86.36 66.0462 0)
+			(at 111.76 59.6962 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5501,7 +5509,7 @@
 			)
 		)
 		(property "Value" "0.1u"
-			(at 86.36 68.5862 0)
+			(at 111.76 62.2362 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5510,7 +5518,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
-			(at 83.82 67.31 0)
+			(at 109.22 60.96 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5519,7 +5527,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 83.82 67.31 0)
+			(at 109.22 60.96 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5528,7 +5536,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor, small symbol"
-			(at 83.82 67.31 0)
+			(at 109.22 60.96 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6494,7 +6502,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 83.82 69.85 0)
+		(at 109.22 63.5 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6503,7 +6511,7 @@
 		(fields_autoplaced yes)
 		(uuid "d6fdce31-6e24-4113-8640-d34296113ddf")
 		(property "Reference" "#PWR07"
-			(at 83.82 76.2 0)
+			(at 109.22 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6512,7 +6520,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 83.82 74.93 0)
+			(at 109.22 68.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6520,7 +6528,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 83.82 69.85 0)
+			(at 109.22 63.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6529,7 +6537,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 83.82 69.85 0)
+			(at 109.22 63.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6538,7 +6546,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 83.82 69.85 0)
+			(at 109.22 63.5 0)
 			(effects
 				(font
 					(size 1.27 1.27)
