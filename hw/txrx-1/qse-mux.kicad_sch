@@ -6,7 +6,7 @@
 	(paper "USLetter")
 	(title_block
 		(title "Quadrature TX/RX Board")
-		(date "2025-02-16")
+		(date "2025-02-17")
 		(rev "1")
 		(company "Bruce MacKinnon KC1FSZ")
 		(comment 1 "Copyright (C) Bruce MacKinnon, 2025")
@@ -1526,6 +1526,16 @@
 	)
 	(wire
 		(pts
+			(xy 132.08 100.33) (xy 142.24 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "634cfb59-3bcc-43c3-a48d-72c2ef2ef897")
+	)
+	(wire
+		(pts
 			(xy 82.55 92.71) (xy 93.98 92.71)
 		)
 		(stroke
@@ -1586,16 +1596,6 @@
 	)
 	(wire
 		(pts
-			(xy 132.08 97.79) (xy 147.32 97.79)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7df4cbb8-412e-4d5c-af8e-60d7ec920138")
-	)
-	(wire
-		(pts
 			(xy 147.32 87.63) (xy 195.58 87.63)
 		)
 		(stroke
@@ -1653,6 +1653,16 @@
 			(type default)
 		)
 		(uuid "a07667e5-353e-4f96-93bd-096b82497be3")
+	)
+	(wire
+		(pts
+			(xy 147.32 100.33) (xy 160.02 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a545304d-7644-4132-984f-93576af17760")
 	)
 	(wire
 		(pts
@@ -1726,16 +1736,6 @@
 	)
 	(wire
 		(pts
-			(xy 132.08 100.33) (xy 160.02 100.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cf56c0d5-8905-4d38-bb5a-2769180768ad")
-	)
-	(wire
-		(pts
 			(xy 121.92 71.12) (xy 102.87 71.12)
 		)
 		(stroke
@@ -1776,6 +1776,16 @@
 	)
 	(wire
 		(pts
+			(xy 142.24 97.79) (xy 147.32 97.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e81973c5-118a-4e74-bc12-da225d9f8a9f")
+	)
+	(wire
+		(pts
 			(xy 191.77 95.25) (xy 195.58 95.25)
 		)
 		(stroke
@@ -1793,6 +1803,16 @@
 			(type default)
 		)
 		(uuid "ef901f8e-4d42-4e36-94a3-cbd747480e1a")
+	)
+	(wire
+		(pts
+			(xy 132.08 97.79) (xy 137.16 97.79)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f1fa8f13-92af-4299-879d-c07ff086a840")
 	)
 	(wire
 		(pts
@@ -1823,6 +1843,16 @@
 			(type default)
 		)
 		(uuid "fe63fbb0-988a-4a17-9f83-64815d601838")
+	)
+	(text "0ohm for cross-over on PCB"
+		(exclude_from_sim no)
+		(at 148.082 103.124 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "5be552d0-2237-44be-b3e3-65494f2eed98")
 	)
 	(global_label "CLK_Q"
 		(shape input)
@@ -2327,6 +2357,73 @@
 			(project "txrx-1"
 				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/a50ce90c-3197-46da-9f0b-d409feefa4c7"
 					(reference "#PWR053")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 139.7 97.79 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "52889b57-8629-46e0-99b0-753c60f15e39")
+		(property "Reference" "R70"
+			(at 139.7 92.71 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0"
+			(at 139.7 95.25 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 139.7 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 139.7 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 139.7 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0b402425-e27f-4fa4-8ff7-08e37e4cf916")
+		)
+		(pin "2"
+			(uuid "3b9089d6-3ab3-4cd9-8589-62fc7558db76")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/a50ce90c-3197-46da-9f0b-d409feefa4c7"
+					(reference "R70")
 					(unit 1)
 				)
 			)
@@ -2851,6 +2948,73 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 144.78 100.33 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "ace6f34f-886b-411d-b735-5653c3f9a972")
+		(property "Reference" "R71"
+			(at 144.78 95.25 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "0"
+			(at 144.78 97.79 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 144.78 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 144.78 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 144.78 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f4f4c65a-1fec-4c8d-a303-2263cfc4fb8f")
+		)
+		(pin "2"
+			(uuid "a88bb6ed-b551-4c8b-b409-bcb51cf04330")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/a50ce90c-3197-46da-9f0b-d409feefa4c7"
+					(reference "R71")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+5V")
 		(at 191.77 73.66 0)
 		(unit 1)
@@ -3069,7 +3233,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "4.7uF"
+		(property "Value" "10uF"
 			(at 166.37 116.8462 0)
 			(effects
 				(font
