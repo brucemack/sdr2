@@ -1415,6 +1415,16 @@
 		)
 		(uuid "cbdcafd9-f2fb-4fa8-894d-0243d6ef8c18")
 	)
+	(text "SI5351-B-GTR in 10MSOP Package"
+		(exclude_from_sim no)
+		(at 147.066 113.284 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "f27635a5-ea23-4c91-9592-2ee884f851bf")
+	)
 	(global_label "SCL"
 		(shape input)
 		(at 99.06 95.25 180)
