@@ -146,8 +146,7 @@ target_link_libraries(main
 License
 =======
 
-SDR2 Rig
-Copyright (C) Bruce MacKinnon KC1FSZ, 2025
+SDR2 Rig - Copyright (C) Bruce MacKinnon KC1FSZ, 2025
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
