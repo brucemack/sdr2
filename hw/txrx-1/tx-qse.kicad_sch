@@ -1,0 +1,6344 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "4ea166bd-43c4-478d-b5cb-b853de95ccb6")
+	(paper "USLetter")
+	(title_block
+		(title "Quadrature TX/RX Board")
+		(date "2025-02-17")
+		(rev "1")
+		(company "Bruce MacKinnon KC1FSZ")
+		(comment 1 "Copyright (C) Bruce MacKinnon, 2025")
+		(comment 2 "NOT FOR COMMERCIAL USE")
+	)
+	(lib_symbols
+		(symbol "Amplifier_Operational:LM4562"
+			(pin_names
+				(offset 0.127)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "LM4562"
+				(at 0 -5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm4562.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Dual High-Performance, High-Fidelity Audio Operational Amplifier, DIP-8/SOIC-8/TO-99-8"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_locked" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "dual opamp"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "SOIC*3.9x4.9mm*P1.27mm* DIP*W7.62mm* TO*99* OnSemi*Micro8* TSSOP*3x3mm*P0.65mm* TSSOP*4.4x3mm*P0.65mm* MSOP*3x3mm*P0.65mm* SSOP*3.9x4.9mm*P0.635mm* LFCSP*2x2mm*P0.5mm* *SIP* SOIC*5.3x6.2mm*P1.27mm*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "LM4562_1_1"
+				(polyline
+					(pts
+						(xy -5.08 5.08) (xy 5.08 0) (xy -5.08 -5.08) (xy -5.08 5.08)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin output line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name "-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name "+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "LM4562_2_1"
+				(polyline
+					(pts
+						(xy -5.08 5.08) (xy 5.08 0) (xy -5.08 -5.08) (xy -5.08 5.08)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin input line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name "+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name "-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "LM4562_3_1"
+				(pin power_in line
+					(at -2.54 -7.62 90)
+					(length 3.81)
+					(name "V-"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -2.54 7.62 270)
+					(length 3.81)
+					(name "V+"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "Device:C_Small"
+			(pin_numbers hide)
+			(pin_names
+				(offset 0.254) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "C"
+				(at 0.254 1.778 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C_Small"
+				(at 0.254 -2.032 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Unpolarized capacitor, small symbol"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "capacitor cap"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "C_Small_0_1"
+				(polyline
+					(pts
+						(xy -1.524 -0.508) (xy 1.524 -0.508)
+					)
+					(stroke
+						(width 0.3302)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.524 0.508) (xy 1.524 0.508)
+					)
+					(stroke
+						(width 0.3048)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_Small_1_1"
+				(pin passive line
+					(at 0 2.54 270)
+					(length 2.032)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -2.54 90)
+					(length 2.032)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "Device:R_Small_US"
+			(pin_numbers hide)
+			(pin_names
+				(offset 0.254) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 0.762 0.508 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "R_Small_US"
+				(at 0.762 -1.016 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Resistor, small US symbol"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "r resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R_Small_US_1_1"
+				(polyline
+					(pts
+						(xy 0 0) (xy 1.016 -0.381) (xy 0 -0.762) (xy -1.016 -1.143) (xy 0 -1.524)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 1.524) (xy 1.016 1.143) (xy 0 0.762) (xy -1.016 0.381) (xy 0 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin passive line
+					(at 0 2.54 270)
+					(length 1.016)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -2.54 90)
+					(length 1.016)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "power:+5V"
+			(power)
+			(pin_numbers hide)
+			(pin_names
+				(offset 0) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "#PWR"
+				(at 0 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Value" "+5V"
+				(at 0 3.556 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"+5V\""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "+5V_0_1"
+				(polyline
+					(pts
+						(xy -0.762 1.27) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 2.54)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 2.54) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "+5V_1_1"
+				(pin power_in line
+					(at 0 0 90)
+					(length 0)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "power:GND"
+			(power)
+			(pin_numbers hide)
+			(pin_names
+				(offset 0) hide)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "#PWR"
+				(at 0 -6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Value" "GND"
+				(at 0 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "GND_0_1"
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "GND_1_1"
+				(pin power_in line
+					(at 0 0 270)
+					(length 0)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+	(junction
+		(at 163.83 60.96)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0209f88f-79af-4dbf-b89b-5d1bf9e73eab")
+	)
+	(junction
+		(at 63.5 161.29)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "04eade6e-1db6-4723-8c48-06a956a4dcf7")
+	)
+	(junction
+		(at 124.46 142.24)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "06e3256f-8fcb-4974-b89c-54d5b5519c9c")
+	)
+	(junction
+		(at 163.83 144.78)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0a7dbb38-30e3-4f1a-ae0e-bf6ca4c5ca31")
+	)
+	(junction
+		(at 147.32 38.1)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "1578d73a-77d5-415e-bce3-60779d13be03")
+	)
+	(junction
+		(at 96.52 137.16)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "21af23ca-ebdb-4700-932b-b3deed02961d")
+	)
+	(junction
+		(at 147.32 127)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "28c607a6-35c1-4d4c-8251-036a4622cd0e")
+	)
+	(junction
+		(at 214.63 142.24)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2e5503bf-41b9-426d-bf42-e190280c04c8")
+	)
+	(junction
+		(at 214.63 63.5)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "401cfa3e-f100-4bc3-99da-073d73697135")
+	)
+	(junction
+		(at 163.83 139.7)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "42c9f88a-b0cc-43bf-87ef-58ea8ce09bf9")
+	)
+	(junction
+		(at 124.46 48.26)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "4eea5e8f-0e97-4042-9796-c9c1a7502f16")
+	)
+	(junction
+		(at 115.57 104.14)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "56272bd9-732f-42f7-874e-709a3400330a")
+	)
+	(junction
+		(at 187.96 63.5)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5ae6b309-ddae-4e70-a635-c339a97d293e")
+	)
+	(junction
+		(at 115.57 25.4)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "660ab343-e3ff-4165-ae34-d900542b63a0")
+	)
+	(junction
+		(at 187.96 142.24)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "698e95c3-a51b-4ca9-8a61-25428c945025")
+	)
+	(junction
+		(at 124.46 63.5)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "69a62254-a9de-4808-92cc-8840bd062e05")
+	)
+	(junction
+		(at 147.32 48.26)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9a1ae739-89ec-4ff6-a334-3e3e2e68f7dc")
+	)
+	(junction
+		(at 124.46 137.16)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "9a4b303e-f085-4263-8665-057d13013fd7")
+	)
+	(junction
+		(at 213.36 38.1)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "a26b1e27-bacc-4ea4-8ee0-8c417555c965")
+	)
+	(junction
+		(at 147.32 139.7)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "a7cc8612-1a09-4627-a0ad-640e71bb31c9")
+	)
+	(junction
+		(at 147.32 116.84)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "c6b46f22-efd4-4206-943b-40e26c79b8cb")
+	)
+	(junction
+		(at 147.32 60.96)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d3131fa0-1830-4812-bc4a-f4cff27cf0d3")
+	)
+	(junction
+		(at 96.52 58.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d711efa7-56e5-4068-81b8-476fb5126bf8")
+	)
+	(junction
+		(at 52.07 161.29)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d7b89182-b8fa-4bc9-aea7-5acf3ca8636a")
+	)
+	(junction
+		(at 163.83 66.04)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "db24556d-c66e-4ce3-bc00-ec3521749411")
+	)
+	(junction
+		(at 124.46 127)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e1976929-7667-48a3-9e52-76dff3e8f57a")
+	)
+	(junction
+		(at 124.46 58.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f5f8dd76-2ea4-484e-8582-c2c16f5096ec")
+	)
+	(junction
+		(at 213.36 116.84)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f96aae62-3115-415c-bb29-cce07730d851")
+	)
+	(wire
+		(pts
+			(xy 115.57 25.4) (xy 115.57 26.67)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "021fbbf1-5c7d-496e-a2a5-b30aff3ffc19")
+	)
+	(wire
+		(pts
+			(xy 163.83 66.04) (xy 170.18 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "02254458-5542-4667-92a2-00352a320519")
+	)
+	(wire
+		(pts
+			(xy 96.52 137.16) (xy 100.33 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0568fd74-218c-4e48-b14b-765865de3933")
+	)
+	(wire
+		(pts
+			(xy 124.46 48.26) (xy 124.46 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "063e6f2d-6482-4fc2-b986-eaf58dbaf859")
+	)
+	(wire
+		(pts
+			(xy 138.43 116.84) (xy 147.32 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0800bfa1-961f-4491-a53a-014e28cc46a6")
+	)
+	(wire
+		(pts
+			(xy 147.32 127) (xy 147.32 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0d0d8ebb-c155-4245-8c96-155c5690e8de")
+	)
+	(wire
+		(pts
+			(xy 196.85 116.84) (xy 200.66 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0d4b7037-6362-4708-a78c-3f31035e6a94")
+	)
+	(wire
+		(pts
+			(xy 205.74 38.1) (xy 213.36 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0ec5e950-5027-4647-91ae-52e2758e3d5b")
+	)
+	(wire
+		(pts
+			(xy 163.83 139.7) (xy 170.18 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0f37bac7-0997-4201-bf6a-f6201a20beed")
+	)
+	(wire
+		(pts
+			(xy 196.85 38.1) (xy 200.66 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "11e957b4-3a3a-4da7-90be-2966c4603301")
+	)
+	(wire
+		(pts
+			(xy 115.57 104.14) (xy 115.57 105.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1889f5ff-f8d8-4830-898e-dd3101110609")
+	)
+	(wire
+		(pts
+			(xy 124.46 38.1) (xy 124.46 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "189a0ee4-7553-4bed-89f3-0b5fce46e477")
+	)
+	(wire
+		(pts
+			(xy 39.37 165.1) (xy 39.37 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "18d17ce8-1b6d-4a38-a1bb-e015d3542828")
+	)
+	(wire
+		(pts
+			(xy 96.52 58.42) (xy 100.33 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1cc87913-a7b0-4a26-a7ea-718e4cef565c")
+	)
+	(wire
+		(pts
+			(xy 138.43 38.1) (xy 147.32 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1f18362c-1a7f-4122-a56f-5d25548d5d25")
+	)
+	(wire
+		(pts
+			(xy 163.83 144.78) (xy 170.18 144.78)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "240b7589-bcba-4935-bd7b-3e7bfcac1359")
+	)
+	(wire
+		(pts
+			(xy 187.96 48.26) (xy 187.96 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "27b05537-3c79-4e00-b286-722c1210d194")
+	)
+	(wire
+		(pts
+			(xy 101.6 33.02) (xy 101.6 25.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2978381b-ef87-4a5a-8590-d96c89382eb9")
+	)
+	(wire
+		(pts
+			(xy 124.46 116.84) (xy 124.46 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2d352bf7-326c-4503-ab4e-cb1a42742882")
+	)
+	(wire
+		(pts
+			(xy 163.83 60.96) (xy 170.18 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "37c05406-fabc-433f-9414-3ffbfa191a36")
+	)
+	(wire
+		(pts
+			(xy 147.32 38.1) (xy 191.77 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "38091001-7f0c-47fd-824a-6d293b3d679c")
+	)
+	(wire
+		(pts
+			(xy 105.41 137.16) (xy 115.57 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3a1dae85-3da9-43ee-adf5-48167259e336")
+	)
+	(wire
+		(pts
+			(xy 207.01 142.24) (xy 214.63 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3bc9a14d-d335-4622-88c9-45b34e4b3e44")
+	)
+	(wire
+		(pts
+			(xy 101.6 104.14) (xy 115.57 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3bde52da-c20a-4701-9dee-fbf226a50579")
+	)
+	(wire
+		(pts
+			(xy 163.83 127) (xy 163.83 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3d65d74c-f994-4075-99c5-cfa745e82d91")
+	)
+	(wire
+		(pts
+			(xy 154.94 139.7) (xy 163.83 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3e3ff935-2952-4299-b6a9-b6dabb9c46a0")
+	)
+	(wire
+		(pts
+			(xy 133.35 48.26) (xy 124.46 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "47a762bc-17b1-448a-9995-a7835a463b17")
+	)
+	(wire
+		(pts
+			(xy 213.36 116.84) (xy 229.87 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4812e517-061b-4209-9f5a-5ebd241a9e51")
+	)
+	(wire
+		(pts
+			(xy 175.26 48.26) (xy 163.83 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "55898051-382e-4c80-8a5c-1586177ed644")
+	)
+	(wire
+		(pts
+			(xy 147.32 116.84) (xy 191.77 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "55efa731-10e7-43a7-83e9-282fdfcb4c86")
+	)
+	(wire
+		(pts
+			(xy 175.26 127) (xy 163.83 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "595442a9-5987-40b0-a1e7-b0c1a9a77951")
+	)
+	(wire
+		(pts
+			(xy 133.35 127) (xy 124.46 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5ad430c0-e7ad-4129-9aca-2effe0b4b2e3")
+	)
+	(wire
+		(pts
+			(xy 147.32 48.26) (xy 147.32 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5d38bba8-c265-4960-b006-21bd3bd21069")
+	)
+	(wire
+		(pts
+			(xy 187.96 63.5) (xy 185.42 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5f40fd29-10a0-49b2-801a-7bd87fab1294")
+	)
+	(wire
+		(pts
+			(xy 161.29 66.04) (xy 163.83 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "605438f6-55a7-4945-912f-848df8e6269e")
+	)
+	(wire
+		(pts
+			(xy 187.96 127) (xy 187.96 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6916defa-a136-4f84-8fd7-e06a09332108")
+	)
+	(wire
+		(pts
+			(xy 115.57 102.87) (xy 115.57 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6bc7c949-08ab-4775-bebb-0afe5185893c")
+	)
+	(wire
+		(pts
+			(xy 101.6 25.4) (xy 115.57 25.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6c2b39ac-7569-4e58-9ed9-1b8de19e36c9")
+	)
+	(wire
+		(pts
+			(xy 187.96 142.24) (xy 185.42 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6f2112ae-db93-48b3-b996-f5190db8ca42")
+	)
+	(wire
+		(pts
+			(xy 91.44 58.42) (xy 96.52 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "751f90e8-bb97-4353-9f2d-5122dcf413cf")
+	)
+	(wire
+		(pts
+			(xy 133.35 116.84) (xy 124.46 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "753d9332-ffaa-41cf-a480-d5925d37bf2f")
+	)
+	(wire
+		(pts
+			(xy 214.63 63.5) (xy 229.87 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "789ae420-749e-4c3e-bfd2-3782c9a5584c")
+	)
+	(wire
+		(pts
+			(xy 187.96 142.24) (xy 193.04 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "793bc0e2-48d9-4468-872b-eecc47fb51e6")
+	)
+	(wire
+		(pts
+			(xy 138.43 48.26) (xy 147.32 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7c525f73-5e3e-4de6-86b5-fac1c6ae86b0")
+	)
+	(wire
+		(pts
+			(xy 121.92 63.5) (xy 124.46 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7f70c087-7d74-4bf7-8f07-782b22461c77")
+	)
+	(wire
+		(pts
+			(xy 115.57 24.13) (xy 115.57 25.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "83941124-e782-454e-bc61-1bc174c6ad64")
+	)
+	(wire
+		(pts
+			(xy 180.34 48.26) (xy 187.96 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "88d1d712-3a89-406f-9c37-0eeb58f6f858")
+	)
+	(wire
+		(pts
+			(xy 187.96 63.5) (xy 193.04 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "89926c53-27f0-478b-8d5f-e5045bf18dec")
+	)
+	(wire
+		(pts
+			(xy 198.12 63.5) (xy 201.93 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "89e3d5d2-8778-4a6f-b151-2315bf7ee699")
+	)
+	(wire
+		(pts
+			(xy 63.5 161.29) (xy 73.66 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8b57bc52-d9b1-4d11-92b8-18b694947389")
+	)
+	(wire
+		(pts
+			(xy 63.5 153.67) (xy 63.5 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8c387aa1-086f-488f-9228-bf7e31e8f598")
+	)
+	(wire
+		(pts
+			(xy 214.63 142.24) (xy 229.87 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8d9aa734-9051-4794-a340-75d7980b216c")
+	)
+	(wire
+		(pts
+			(xy 52.07 161.29) (xy 63.5 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8e892e3c-15cf-4aa0-ad17-c03d2c53f2f9")
+	)
+	(wire
+		(pts
+			(xy 147.32 60.96) (xy 146.05 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8eb8f8ee-97ff-4412-9b69-a6b90c0640f7")
+	)
+	(wire
+		(pts
+			(xy 133.35 38.1) (xy 124.46 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9078b839-1994-42d9-9908-50465910b3be")
+	)
+	(wire
+		(pts
+			(xy 124.46 58.42) (xy 130.81 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "96ad31ac-996d-4ffd-94bc-b7398a4c1d8f")
+	)
+	(wire
+		(pts
+			(xy 147.32 139.7) (xy 146.05 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9c16389b-9983-4088-aa4d-e3b52c87c0a8")
+	)
+	(wire
+		(pts
+			(xy 91.44 137.16) (xy 96.52 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a202f06b-2784-4110-bb33-1e5f641ba8af")
+	)
+	(wire
+		(pts
+			(xy 121.92 142.24) (xy 124.46 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a3c6b8f0-dc4a-433f-b0f5-06b3b2455191")
+	)
+	(wire
+		(pts
+			(xy 63.5 161.29) (xy 63.5 165.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a6ce3b59-c1d4-4b0d-a591-6668dfdd7e9e")
+	)
+	(wire
+		(pts
+			(xy 96.52 137.16) (xy 96.52 140.97)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ae3c81ba-e55e-4c7d-b4ec-e6f6fb1e6941")
+	)
+	(wire
+		(pts
+			(xy 163.83 48.26) (xy 163.83 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b898ecb5-ac6b-4506-9eab-e6b3e71acc86")
+	)
+	(wire
+		(pts
+			(xy 207.01 63.5) (xy 214.63 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bc189547-cd6d-4356-a469-f6b16e1d0f15")
+	)
+	(wire
+		(pts
+			(xy 39.37 161.29) (xy 52.07 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c256b595-ec56-4b87-91fe-ecc120373796")
+	)
+	(wire
+		(pts
+			(xy 147.32 116.84) (xy 147.32 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c7a1a986-015e-4070-97dd-9e3046b74c4d")
+	)
+	(wire
+		(pts
+			(xy 124.46 63.5) (xy 130.81 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cc1ca9d9-d5e6-4487-b9f5-3c92fb22c0bb")
+	)
+	(wire
+		(pts
+			(xy 180.34 127) (xy 187.96 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ccf2670a-6759-4829-85af-9cb360fd2193")
+	)
+	(wire
+		(pts
+			(xy 96.52 58.42) (xy 96.52 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "cf4e9164-016c-459e-9484-774c84762d26")
+	)
+	(wire
+		(pts
+			(xy 205.74 116.84) (xy 213.36 116.84)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d0e79a55-595c-46f6-a0dc-f99d792b1e11")
+	)
+	(wire
+		(pts
+			(xy 138.43 127) (xy 147.32 127)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d12ca9fd-1999-4a62-b251-8a8fa1754b51")
+	)
+	(wire
+		(pts
+			(xy 120.65 137.16) (xy 124.46 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d159089a-1fc9-43b1-8f5f-90253db4a258")
+	)
+	(wire
+		(pts
+			(xy 213.36 38.1) (xy 229.87 38.1)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d4938efd-c06b-4d34-abfb-2e3f5ba99c09")
+	)
+	(wire
+		(pts
+			(xy 198.12 142.24) (xy 201.93 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d55f942f-457f-4ad5-8063-ab0b0cc893ea")
+	)
+	(wire
+		(pts
+			(xy 124.46 142.24) (xy 130.81 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dcbd3d56-0cb6-4724-b77f-61f63f854292")
+	)
+	(wire
+		(pts
+			(xy 101.6 111.76) (xy 101.6 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e2364ac2-a1d7-4af1-899b-827e3caa2c18")
+	)
+	(wire
+		(pts
+			(xy 124.46 127) (xy 124.46 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e5a3abfc-718c-4c62-ace6-e8c5af669ea3")
+	)
+	(wire
+		(pts
+			(xy 147.32 139.7) (xy 149.86 139.7)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e664333d-4600-464b-8552-4539ccbb3892")
+	)
+	(wire
+		(pts
+			(xy 52.07 165.1) (xy 52.07 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e70fe41e-213a-4b2e-80d6-f120eb055ab1")
+	)
+	(wire
+		(pts
+			(xy 105.41 58.42) (xy 115.57 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e817fd33-58a5-4aa5-92cb-49a9e434c613")
+	)
+	(wire
+		(pts
+			(xy 161.29 144.78) (xy 163.83 144.78)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eb9726c5-6a4b-4b2b-9411-9ead78e79b82")
+	)
+	(wire
+		(pts
+			(xy 124.46 137.16) (xy 130.81 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f06740d5-2a28-465b-b51d-1aa57c4c1f96")
+	)
+	(wire
+		(pts
+			(xy 120.65 58.42) (xy 124.46 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f310c21c-f380-4212-b3d7-dec400735de7")
+	)
+	(wire
+		(pts
+			(xy 154.94 60.96) (xy 163.83 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f32b9226-e20b-47b3-8a02-28c3dba7ecdd")
+	)
+	(wire
+		(pts
+			(xy 147.32 60.96) (xy 149.86 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fb368ad2-2282-4da8-a54d-4fc916903994")
+	)
+	(wire
+		(pts
+			(xy 147.32 38.1) (xy 147.32 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ff805350-4c0f-4b22-8d8e-f484c7a8b189")
+	)
+	(text "2.5V Bias Voltage\nUse 1% resistors!"
+		(exclude_from_sim no)
+		(at 54.102 180.34 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "063b3da4-fae0-4dc4-9c3f-fc46672bde8f")
+	)
+	(global_label "P90"
+		(shape input)
+		(at 229.87 116.84 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "0f7c280b-520c-493e-b113-403d28951241")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 236.5442 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "P180"
+		(shape input)
+		(at 229.87 63.5 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "12cc07bd-2cc3-4a69-9b40-d643680ad815")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 237.7537 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "VBIAS"
+		(shape input)
+		(at 161.29 144.78 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "33fce47e-8697-433f-b185-2e2620a27905")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 153.0433 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "I_IN"
+		(shape input)
+		(at 91.44 58.42 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "43d5461a-78d2-4579-8081-09de4f7e9574")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 84.9471 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "VBIAS"
+		(shape input)
+		(at 121.92 63.5 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "7bb08944-0f8c-45f8-8ffd-d2c2abd8a064")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 113.6733 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "VBIAS"
+		(shape input)
+		(at 73.66 161.29 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "85024ecc-ceb3-4288-a5da-30e50886de07")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 81.9067 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "P0"
+		(shape input)
+		(at 229.87 38.1 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9df75bc9-6021-430d-a987-a3608762a879")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 235.3347 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "VBIAS"
+		(shape input)
+		(at 121.92 142.24 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "d5aafd07-8695-419a-97c9-38afc24e2ec6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 113.6733 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "Q_IN"
+		(shape input)
+		(at 91.44 137.16 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "ee8c701a-b9fd-49fd-869e-d88fbcd812cd")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 84.2214 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "VBIAS"
+		(shape input)
+		(at 161.29 66.04 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "f1355697-66fc-4e7b-887c-cee7e9150aa4")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 153.0433 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "P270"
+		(shape input)
+		(at 229.87 142.24 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "fc4086bf-b1c8-4c3c-bc0d-99095c23b2a6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 237.7537 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 213.36 119.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "00a03507-f62e-4557-ac00-cbb506eebf98")
+		(property "Reference" "C60"
+			(at 215.9 118.1162 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.022uF"
+			(at 215.9 120.6562 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 213.36 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 213.36 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 213.36 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "1df80fc5-1cc6-400f-9e35-c38e9bbc081d")
+		)
+		(pin "1"
+			(uuid "9d830990-1a86-4fae-a5a0-079f15aaa0e9")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C60")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:LM4562")
+		(at 177.8 142.24 0)
+		(mirror x)
+		(unit 2)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "01affc13-4296-4412-bd03-1fece812ca95")
+		(property "Reference" "U42"
+			(at 177.8 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LM4562"
+			(at 177.8 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 177.8 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm4562.pdf"
+			(at 177.8 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Dual High-Performance, High-Fidelity Audio Operational Amplifier, DIP-8/SOIC-8/TO-99-8"
+			(at 177.8 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "5d0d6043-c017-4314-ab1e-4b50e8ad6c51")
+		)
+		(pin "6"
+			(uuid "07a0b49c-c4f8-41b9-935b-18c052182ddd")
+		)
+		(pin "1"
+			(uuid "f456aace-1013-4438-8fa8-d83e7ef48a19")
+		)
+		(pin "7"
+			(uuid "c094f443-dc74-40a2-88cc-7a2099a6bfc9")
+		)
+		(pin "8"
+			(uuid "814adec5-3cc0-4f7d-bd2d-852466755daa")
+		)
+		(pin "2"
+			(uuid "d99f7401-96f2-448a-bd3e-3bcd54cea8e6")
+		)
+		(pin "5"
+			(uuid "a76b6a77-a58c-4c17-bec5-8a964fd592c6")
+		)
+		(pin "4"
+			(uuid "77f66bd3-b690-4e87-b552-c5bca1b8fd97")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "U42")
+					(unit 2)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 195.58 142.24 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "0493023f-474d-42a1-99fd-ffcf01bc18e6")
+		(property "Reference" "C58"
+			(at 195.5736 135.89 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF"
+			(at 195.5736 138.43 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 195.58 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 195.58 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 195.58 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "bc32be4f-a9e3-4682-9bbb-19ad1a458039")
+		)
+		(pin "1"
+			(uuid "19d3ff25-5db8-407b-97af-fa37a10f8feb")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C58")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 102.87 137.16 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "181f9b49-3eb9-4a9d-aaf8-0b27a4b20b66")
+		(property "Reference" "C48"
+			(at 102.8636 130.81 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF"
+			(at 102.8636 133.35 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 102.87 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 102.87 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 102.87 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "8396bf40-a7f1-4378-8e0a-b360a56bf54d")
+		)
+		(pin "1"
+			(uuid "25e5eb24-6538-4069-aee3-aadff112276c")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C48")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 214.63 66.04 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1b13a067-c29e-42cd-9530-0538a18f6bd9")
+		(property "Reference" "C61"
+			(at 217.17 64.7762 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.022uF"
+			(at 217.17 67.3162 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 214.63 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 214.63 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 214.63 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "7ec8ee6b-2309-412a-988b-801ab846c568")
+		)
+		(pin "1"
+			(uuid "d522572e-64e2-4901-8ef0-997da7167d3b")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C61")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:LM4562")
+		(at 138.43 60.96 0)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2204e364-0e1a-4ffa-b932-0c8f3e65e462")
+		(property "Reference" "U41"
+			(at 138.43 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LM4562"
+			(at 138.43 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 138.43 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm4562.pdf"
+			(at 138.43 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Dual High-Performance, High-Fidelity Audio Operational Amplifier, DIP-8/SOIC-8/TO-99-8"
+			(at 138.43 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "6416ccc2-5e1d-400f-b2b3-0ac5b9c85ed8")
+		)
+		(pin "6"
+			(uuid "a8c72339-7b37-4e08-9965-182e482d2497")
+		)
+		(pin "1"
+			(uuid "776dbf8f-f777-4d67-9f29-f97f4ddd8301")
+		)
+		(pin "7"
+			(uuid "98935d19-c454-4bbe-9016-834145397b27")
+		)
+		(pin "8"
+			(uuid "814adec5-3cc0-4f7d-bd2d-852466755da7")
+		)
+		(pin "2"
+			(uuid "ca61617d-5c67-45e4-a0c8-301b418a4234")
+		)
+		(pin "5"
+			(uuid "e32f016c-f062-40e2-b890-45e0e88c8b51")
+		)
+		(pin "4"
+			(uuid "77f66bd3-b690-4e87-b552-c5bca1b8fd94")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "U41")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 214.63 144.78 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "250b5225-2c58-4d63-9c28-a0ac6b06e99e")
+		(property "Reference" "C62"
+			(at 217.17 143.5162 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.022uF"
+			(at 217.17 146.0562 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 214.63 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 214.63 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 214.63 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "0cab94c5-550d-4d4c-9d32-5f2901cc2d01")
+		)
+		(pin "1"
+			(uuid "cb2fc743-c17f-4e77-b911-7245c5410ec6")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C62")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 163.83 149.86 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "250e7d93-9a40-4b67-8b62-98ab0ce444be")
+		(property "Reference" "#PWR046"
+			(at 163.83 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 163.83 154.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 163.83 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 163.83 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 163.83 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d3ac89b2-0036-4cf2-b57e-a41cbca558c3")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR046")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 213.36 40.64 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "30b3f96b-4a5d-4183-8271-63332eaee961")
+		(property "Reference" "C59"
+			(at 215.9 39.3762 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.022uF"
+			(at 215.9 41.9162 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 213.36 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 213.36 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 213.36 40.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "0ddd7a63-4b74-47bd-895f-a45b8d875184")
+		)
+		(pin "1"
+			(uuid "9ed68547-f115-4616-92e9-c8e3ef8057a7")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C59")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 177.8 48.26 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "363b6bab-0bca-4a86-9f08-3782d7f6d7f0")
+		(property "Reference" "R49"
+			(at 177.8 41.91 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 177.8 44.45 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 177.8 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 177.8 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 177.8 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "3ae00db3-d64c-447f-a4df-701fe52e62eb")
+		)
+		(pin "1"
+			(uuid "6b3555af-0584-46b3-947e-953ea58a1094")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R49")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 39.37 170.18 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3706be70-1abb-4a05-bac1-9ae25307bd7c")
+		(property "Reference" "#PWR031"
+			(at 39.37 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 39.37 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 39.37 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 39.37 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 39.37 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e9130a35-4800-483c-b77b-79b0ce8a7388")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR031")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 101.6 38.1 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3a861970-26ee-4e98-8f8c-10aa38b37948")
+		(property "Reference" "#PWR037"
+			(at 101.6 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 101.6 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 101.6 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 101.6 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 101.6 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cdc11cae-2399-46b1-83d1-b3c47c22963b")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR037")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 204.47 142.24 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3d84791c-5853-4924-a502-5eea69715ddb")
+		(property "Reference" "R54"
+			(at 204.47 135.89 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "50"
+			(at 204.47 138.43 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 204.47 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 204.47 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 204.47 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "5fc55a42-0cdd-45b4-9794-5b764b8b0832")
+		)
+		(pin "1"
+			(uuid "2099a6f2-362d-4ac1-b913-7bd41505af9d")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R54")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 204.47 63.5 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "3f2744f1-25c1-4363-8efc-cc566783c73d")
+		(property "Reference" "R53"
+			(at 204.47 57.15 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "50"
+			(at 204.47 59.69 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 204.47 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 204.47 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 204.47 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "44805769-e933-4792-b016-247b212ebd53")
+		)
+		(pin "1"
+			(uuid "ecb04d5a-eff6-4326-842a-b2d024627de4")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R53")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 213.36 121.92 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "42690b08-d0e3-4596-ba5f-5ea08d149105")
+		(property "Reference" "#PWR048"
+			(at 213.36 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 213.36 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 213.36 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 213.36 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 213.36 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3d946ac6-ec3b-44b6-9357-877943a39e09")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR048")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 115.57 24.13 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4749fbdc-2494-4bcc-a795-202917408149")
+		(property "Reference" "#PWR039"
+			(at 115.57 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 115.57 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 115.57 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 115.57 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 115.57 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "87e41302-6644-4382-8a91-a8f9f4871681")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR039")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 101.6 35.56 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4af2adb0-7dde-4086-9d6d-4fd646b278f3")
+		(property "Reference" "C45"
+			(at 104.14 34.2962 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1uF"
+			(at 104.14 36.8362 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 101.6 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 101.6 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 101.6 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "cb6c7ded-6005-4456-b222-2a086b259946")
+		)
+		(pin "1"
+			(uuid "4d958daa-6ad2-4a73-997c-eb2c80eea708")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C45")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 102.87 58.42 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "50e6e627-2525-4b60-b3d3-bbbf7fdf6f8c")
+		(property "Reference" "C47"
+			(at 102.8636 52.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF"
+			(at 102.8636 54.61 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 102.87 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 102.87 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 102.87 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "1fcbfef0-94e3-492c-af4f-229f742a5879")
+		)
+		(pin "1"
+			(uuid "c247b2d9-3d81-4c7c-9be0-03b522ac1f72")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C47")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:LM4562")
+		(at 118.11 113.03 0)
+		(unit 3)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "51ab2bc8-d751-4685-86b9-77f66964e225")
+		(property "Reference" "U42"
+			(at 116.84 111.7599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LM4562"
+			(at 116.84 114.2999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 118.11 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm4562.pdf"
+			(at 118.11 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Dual High-Performance, High-Fidelity Audio Operational Amplifier, DIP-8/SOIC-8/TO-99-8"
+			(at 118.11 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "5d0d6043-c017-4314-ab1e-4b50e8ad6c4e")
+		)
+		(pin "6"
+			(uuid "a8c72339-7b37-4e08-9965-182e482d2496")
+		)
+		(pin "1"
+			(uuid "f456aace-1013-4438-8fa8-d83e7ef48a16")
+		)
+		(pin "7"
+			(uuid "98935d19-c454-4bbe-9016-834145397b26")
+		)
+		(pin "8"
+			(uuid "93840ef8-c52d-4cd7-8235-626ab68b73a3")
+		)
+		(pin "2"
+			(uuid "d99f7401-96f2-448a-bd3e-3bcd54cea8e3")
+		)
+		(pin "5"
+			(uuid "e32f016c-f062-40e2-b890-45e0e88c8b50")
+		)
+		(pin "4"
+			(uuid "f31ddf3a-2bd2-4c22-90e8-f25f27366b53")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "U42")
+					(unit 3)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 96.52 67.31 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "5341de56-9d46-438c-84a3-b511852226de")
+		(property "Reference" "#PWR035"
+			(at 96.52 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 96.52 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 96.52 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 96.52 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 96.52 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5f0f87ab-7b17-45e7-98f5-280e9d3cee05")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR035")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 214.63 147.32 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "53f85097-0bdc-4012-a4ad-afbb813f8b54")
+		(property "Reference" "#PWR050"
+			(at 214.63 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 214.63 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 214.63 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 214.63 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 214.63 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "169ec482-71f2-4e82-81ac-3070691703bc")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR050")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 124.46 147.32 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "559a114e-49e0-462c-a53f-a8bd033466c0")
+		(property "Reference" "#PWR044"
+			(at 124.46 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 124.46 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 124.46 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 124.46 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 124.46 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "bc8351ea-5d2c-49d8-a373-c3a27f3bd959")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR044")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 163.83 147.32 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "56f2f7c7-5b08-4b18-8cdb-5e26205c7339")
+		(property "Reference" "C54"
+			(at 166.37 146.0562 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1uF"
+			(at 166.37 148.5962 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 163.83 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 163.83 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 163.83 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "959bc7f6-9b2c-4a56-84e2-03b1ed0935b7")
+		)
+		(pin "1"
+			(uuid "7e7601d4-a943-4e22-9731-8aabbbd86175")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C54")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 96.52 143.51 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "5dba3975-81a2-44ae-9508-5d28652dc7c1")
+		(property "Reference" "C44"
+			(at 99.06 142.2462 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1000pF"
+			(at 99.06 144.7862 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 96.52 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 96.52 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 96.52 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "64c58200-d6ae-49d9-8f4d-7491c58d6311")
+		)
+		(pin "1"
+			(uuid "6a5a50e7-f0c2-4ba1-b343-3f2ac7f76e9c")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C44")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 118.11 58.42 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6b135860-8e7a-4816-8589-de6f82593ef4")
+		(property "Reference" "R43"
+			(at 118.11 52.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 118.11 54.61 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 118.11 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 118.11 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 118.11 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "e3f06225-3e46-4317-855e-5068c5150ad9")
+		)
+		(pin "1"
+			(uuid "cd1b4a3b-cef4-4b3d-8ca3-70a79c446901")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R43")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:LM4562")
+		(at 118.11 34.29 0)
+		(unit 3)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7208e627-72a0-482d-9f76-261ee2ee32bb")
+		(property "Reference" "U41"
+			(at 116.84 33.0199 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LM4562"
+			(at 116.84 35.5599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 118.11 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm4562.pdf"
+			(at 118.11 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Dual High-Performance, High-Fidelity Audio Operational Amplifier, DIP-8/SOIC-8/TO-99-8"
+			(at 118.11 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "5d0d6043-c017-4314-ab1e-4b50e8ad6c50")
+		)
+		(pin "6"
+			(uuid "a8c72339-7b37-4e08-9965-182e482d2499")
+		)
+		(pin "1"
+			(uuid "f456aace-1013-4438-8fa8-d83e7ef48a18")
+		)
+		(pin "7"
+			(uuid "98935d19-c454-4bbe-9016-834145397b29")
+		)
+		(pin "8"
+			(uuid "66d5ae4c-7639-468c-9377-baa620e50804")
+		)
+		(pin "2"
+			(uuid "d99f7401-96f2-448a-bd3e-3bcd54cea8e5")
+		)
+		(pin "5"
+			(uuid "e32f016c-f062-40e2-b890-45e0e88c8b53")
+		)
+		(pin "4"
+			(uuid "84378d3b-50c2-4857-9c38-540c7b8d8e43")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "U41")
+					(unit 3)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 39.37 167.64 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "74f6706b-725c-426b-b07d-87f2e096939d")
+		(property "Reference" "C41"
+			(at 41.91 166.3762 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4.7uF"
+			(at 41.91 168.9162 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 39.37 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 39.37 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 39.37 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "d8b6deb1-fa5c-4576-9d81-6601bc5c44c0")
+		)
+		(pin "1"
+			(uuid "a40ec107-1095-4684-ba84-f8c2387775bd")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C41")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 203.2 38.1 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "760ee1ad-5b24-4f59-8e56-c315405a76a0")
+		(property "Reference" "R51"
+			(at 203.2 31.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "50"
+			(at 203.2 34.29 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 203.2 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 203.2 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 203.2 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "e77fa70c-6105-4565-b4c0-825116bf18ef")
+		)
+		(pin "1"
+			(uuid "5423df4c-4228-4fe4-9838-4f343c198f8d")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R51")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 63.5 148.59 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "775f42b4-8b18-44ee-8511-debd01f099d5")
+		(property "Reference" "#PWR033"
+			(at 63.5 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 63.5 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 148.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 148.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 63.5 148.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "976db02d-07cd-4ad3-9055-5c63f3abb47a")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR033")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 194.31 116.84 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8049144a-927b-483c-bbcc-b974ff2d8f11")
+		(property "Reference" "C56"
+			(at 194.3036 110.49 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF"
+			(at 194.3036 113.03 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 194.31 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 194.31 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 194.31 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "05b1c8a9-04ee-4780-b5df-7f10dee9cba5")
+		)
+		(pin "1"
+			(uuid "f9dabca8-af3d-4111-af42-2b6ff92cf0bb")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C56")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 195.58 63.5 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "84467e7b-eda5-4c9e-bb01-9de45d792680")
+		(property "Reference" "C57"
+			(at 195.5736 57.15 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF"
+			(at 195.5736 59.69 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 195.58 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 195.58 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 195.58 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "902e46b3-d103-409a-87f2-340f56f5d479")
+		)
+		(pin "1"
+			(uuid "e82bdb05-a74f-4f05-89e1-2cfbfebaab4c")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C57")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 115.57 120.65 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "87e7f643-98be-4707-91ca-757a8b063bb9")
+		(property "Reference" "#PWR042"
+			(at 115.57 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 115.57 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 115.57 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 115.57 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 115.57 120.65 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0623d578-2009-49b6-8092-4b222750f600")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR042")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 124.46 66.04 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8a03c87c-a3c9-4f80-b021-6dda12503907")
+		(property "Reference" "C49"
+			(at 127 64.7762 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1uF"
+			(at 127 67.3162 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 124.46 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 124.46 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 124.46 66.04 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "5a6fd16a-c734-42e4-8921-d9528c722216")
+		)
+		(pin "1"
+			(uuid "2f1ea477-93ef-43b8-8d73-ac6a694f120a")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C49")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 177.8 127 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8d4f3f3e-775c-49e5-b2ec-ea66a30f0f6d")
+		(property "Reference" "R50"
+			(at 177.8 120.65 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 177.8 123.19 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 177.8 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 177.8 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 177.8 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "8ec9cafd-7cdb-481a-b0aa-95c365736636")
+		)
+		(pin "1"
+			(uuid "2352d431-b76c-4f96-9221-281283465445")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R50")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 101.6 116.84 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "927269fa-7119-4e6f-96a6-ff9de422d8c8")
+		(property "Reference" "#PWR038"
+			(at 101.6 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 101.6 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 101.6 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 101.6 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 101.6 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "248e3abc-5f9a-4e87-a391-d21800681295")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR038")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 124.46 144.78 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "949f6c2c-3e72-4342-9a33-83b8796e85d6")
+		(property "Reference" "C50"
+			(at 127 143.5162 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1uF"
+			(at 127 146.0562 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 124.46 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 124.46 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 124.46 144.78 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "4ea019d7-ec65-419f-a888-e215ae9a0ba2")
+		)
+		(pin "1"
+			(uuid "4682c994-6234-48e7-a833-652858d0015d")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C50")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 214.63 68.58 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "94cf941c-92c6-4757-8c40-f72a05a80b84")
+		(property "Reference" "#PWR049"
+			(at 214.63 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 214.63 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 214.63 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 214.63 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 214.63 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "107dff5e-97c1-49ac-82aa-44fc3090d281")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR049")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 152.4 139.7 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "9ad3acda-5264-4cb9-9456-ca75ecd3e521")
+		(property "Reference" "R48"
+			(at 152.4 133.35 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 152.4 135.89 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 152.4 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 152.4 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 152.4 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "a23edcac-730e-4b8c-b464-cdf503e169d6")
+		)
+		(pin "1"
+			(uuid "81c35fcd-c115-4d86-a26b-2fa6b9d72d3c")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R48")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 63.5 170.18 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "9ef17427-d21c-4b85-81c2-cb5004d73998")
+		(property "Reference" "#PWR034"
+			(at 63.5 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 63.5 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 63.5 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 63.5 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 63.5 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1526d717-4bea-4b94-82dc-ae590cda769a")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR034")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 96.52 64.77 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a479ce14-3d26-473c-bb36-6a044b784e16")
+		(property "Reference" "C43"
+			(at 99.06 63.5062 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1000pF"
+			(at 99.06 66.0462 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 96.52 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 96.52 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 96.52 64.77 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "acd57024-ff74-4fee-8f5b-c6a8b2d0ef80")
+		)
+		(pin "1"
+			(uuid "ce27025c-1d41-4f91-9913-8cdefc2ec8c5")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C43")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 163.83 71.12 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a52a2e8f-9eaf-4736-8490-763acf13d25a")
+		(property "Reference" "#PWR045"
+			(at 163.83 77.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 163.83 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 163.83 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 163.83 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 163.83 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7cbec389-5d34-4d04-91f3-994f60b8856b")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR045")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 52.07 170.18 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ac9c2a7d-d128-4759-820d-c5aac17b0286")
+		(property "Reference" "#PWR032"
+			(at 52.07 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 52.07 175.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 52.07 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 52.07 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 52.07 170.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "784e2230-717e-4f69-bc40-3a5a5ce354e7")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR032")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 101.6 114.3 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "afc20507-fb02-421e-9e02-84f694b52424")
+		(property "Reference" "C46"
+			(at 104.14 113.0362 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1uF"
+			(at 104.14 115.5762 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 101.6 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 101.6 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 101.6 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "18f7c6c8-f016-4907-8f62-0acea797982a")
+		)
+		(pin "1"
+			(uuid "1823d2db-5983-4c21-a5c6-76f927136657")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C46")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 163.83 68.58 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b18dc6eb-1873-4e0f-bd2e-243cb5f04475")
+		(property "Reference" "C53"
+			(at 166.37 67.3162 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1uF"
+			(at 166.37 69.8562 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 163.83 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 163.83 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 163.83 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "d4e1f9b7-93a0-4edd-b88e-e4fd1fcbe4c6")
+		)
+		(pin "1"
+			(uuid "3e4a2bee-c4e3-4ad2-ba77-5c74a8408179")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C53")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:LM4562")
+		(at 177.8 63.5 0)
+		(mirror x)
+		(unit 2)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "bb563d75-45d3-43d1-8bd0-45edf7d57d3b")
+		(property "Reference" "U41"
+			(at 177.8 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LM4562"
+			(at 177.8 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 177.8 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm4562.pdf"
+			(at 177.8 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Dual High-Performance, High-Fidelity Audio Operational Amplifier, DIP-8/SOIC-8/TO-99-8"
+			(at 177.8 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "5d0d6043-c017-4314-ab1e-4b50e8ad6c4d")
+		)
+		(pin "6"
+			(uuid "076c180e-556b-467d-839b-b2f44c096772")
+		)
+		(pin "1"
+			(uuid "f456aace-1013-4438-8fa8-d83e7ef48a15")
+		)
+		(pin "7"
+			(uuid "f190ce0b-2f12-4b54-959c-979018bf1d46")
+		)
+		(pin "8"
+			(uuid "814adec5-3cc0-4f7d-bd2d-852466755da6")
+		)
+		(pin "2"
+			(uuid "d99f7401-96f2-448a-bd3e-3bcd54cea8e2")
+		)
+		(pin "5"
+			(uuid "0965b6ef-1b8f-4fbb-9b3c-60e8996e729b")
+		)
+		(pin "4"
+			(uuid "77f66bd3-b690-4e87-b552-c5bca1b8fd93")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "U41")
+					(unit 2)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 203.2 116.84 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "bd23069d-240e-4867-b270-52a29f9709e4")
+		(property "Reference" "R52"
+			(at 203.2 110.49 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "50"
+			(at 203.2 113.03 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 203.2 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 203.2 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 203.2 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "1dfcaec6-d3f5-4b4f-845d-19d3da8d12f4")
+		)
+		(pin "1"
+			(uuid "8f5f4f1a-8c51-4bd0-bf40-6dbbf7adb836")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R52")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 135.89 116.84 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "be3872c2-0449-406d-bfc0-14ef08a2cebf")
+		(property "Reference" "C52"
+			(at 135.8836 110.49 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100pF"
+			(at 135.8836 113.03 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 135.89 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 135.89 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 135.89 116.84 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "ddf5d469-93b5-4783-8431-2a1ef878aeb0")
+		)
+		(pin "1"
+			(uuid "4a0c088b-104c-43ed-ba7c-a159dbcab203")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C52")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 135.89 38.1 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "cfb6d2dc-31da-494f-81ee-38c4f640a30e")
+		(property "Reference" "C51"
+			(at 135.8836 31.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100pF"
+			(at 135.8836 34.29 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 135.89 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 135.89 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 135.89 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "5a11fa00-1218-4989-81c5-4cd3d4dce5e4")
+		)
+		(pin "1"
+			(uuid "bfff21e3-09ba-428a-a642-7ef5555eed05")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C51")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 115.57 41.91 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d17ec167-7b77-4cf8-850e-8f04e831a95e")
+		(property "Reference" "#PWR040"
+			(at 115.57 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 115.57 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 115.57 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 115.57 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 115.57 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a9c37e0d-7cb2-4e8c-8512-5e5755811ab1")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR040")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 63.5 151.13 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d4555470-287c-4b20-913c-f632568d6e93")
+		(property "Reference" "R41"
+			(at 66.04 149.8599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2k"
+			(at 66.04 152.3999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 63.5 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 63.5 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 63.5 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "0160874b-1918-44c8-9509-657bfead22d3")
+		)
+		(pin "1"
+			(uuid "bdf3c90f-6f1c-4016-8d4a-df45e5536819")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R41")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 63.5 167.64 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d506d6ab-8575-41e4-af63-eabd35c94f6e")
+		(property "Reference" "R42"
+			(at 66.04 166.3699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2k"
+			(at 66.04 168.9099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 63.5 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 63.5 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 63.5 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "c011f9a7-13d9-4e49-9da4-f8dbddf4f209")
+		)
+		(pin "1"
+			(uuid "10ffac9b-b285-49d4-ad9a-0186d502fad9")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R42")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 124.46 68.58 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "dd357bc9-cf4f-46db-8a56-b123b3864067")
+		(property "Reference" "#PWR043"
+			(at 124.46 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 124.46 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 124.46 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 124.46 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 124.46 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "293ae6e6-b2c4-4aee-8749-e1b80de6a5fd")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR043")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 152.4 60.96 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "dfcc3213-7c9f-472e-991b-1da968546076")
+		(property "Reference" "R47"
+			(at 152.4 54.61 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 152.4 57.15 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 152.4 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 152.4 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 152.4 60.96 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "e5bbec50-e9a3-4091-b3f9-024728afb903")
+		)
+		(pin "1"
+			(uuid "317d5728-53cb-43d8-aa80-b3f047f21e40")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R47")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 96.52 146.05 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e19b7d6d-84de-42b4-acfe-e55f4bdab25a")
+		(property "Reference" "#PWR036"
+			(at 96.52 152.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 96.52 151.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 96.52 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 96.52 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 96.52 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "bdcbb0c1-ac93-4527-ba54-f64908ec7ca4")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR036")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 118.11 137.16 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e62fa99b-5766-487c-a230-c902045bc5ac")
+		(property "Reference" "R44"
+			(at 118.11 130.81 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 118.11 133.35 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 118.11 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 118.11 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 118.11 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "5ad14a38-7d1b-4880-b8ff-957bf8b1d4f7")
+		)
+		(pin "1"
+			(uuid "617dd549-811a-4a2f-879d-3c32c89e3fa4")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R44")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 213.36 43.18 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ec65b526-aadd-48e2-b168-aa6d0410469a")
+		(property "Reference" "#PWR047"
+			(at 213.36 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 213.36 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 213.36 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 213.36 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 213.36 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9126ad5c-2872-414d-be52-faf5e4a3e2b0")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR047")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+5V")
+		(at 115.57 102.87 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ee169488-12b1-4b8d-b460-3ca2c1b5c721")
+		(property "Reference" "#PWR041"
+			(at 115.57 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+5V"
+			(at 115.57 97.79 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 115.57 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 115.57 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 115.57 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "74d45805-fb9c-4c19-bdd4-2d0be6f71fff")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "#PWR041")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Amplifier_Operational:LM4562")
+		(at 138.43 139.7 0)
+		(mirror x)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f17c2319-37df-48ab-8656-236628195f46")
+		(property "Reference" "U42"
+			(at 138.43 149.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "LM4562"
+			(at 138.43 147.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+			(at 138.43 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm4562.pdf"
+			(at 138.43 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Dual High-Performance, High-Fidelity Audio Operational Amplifier, DIP-8/SOIC-8/TO-99-8"
+			(at 138.43 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "5ec1e5d6-7656-4328-8da1-48ed480f7c7d")
+		)
+		(pin "6"
+			(uuid "a8c72339-7b37-4e08-9965-182e482d2498")
+		)
+		(pin "1"
+			(uuid "a48a6c1b-30f6-40e6-9759-116e0f83dee8")
+		)
+		(pin "7"
+			(uuid "98935d19-c454-4bbe-9016-834145397b28")
+		)
+		(pin "8"
+			(uuid "814adec5-3cc0-4f7d-bd2d-852466755da8")
+		)
+		(pin "2"
+			(uuid "43213de6-3cc2-416d-b6ad-71c9aa38b3c9")
+		)
+		(pin "5"
+			(uuid "e32f016c-f062-40e2-b890-45e0e88c8b52")
+		)
+		(pin "4"
+			(uuid "77f66bd3-b690-4e87-b552-c5bca1b8fd95")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "U42")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 135.89 48.26 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f17ca30a-aa2c-4143-bec3-a19eb8db93b8")
+		(property "Reference" "R45"
+			(at 135.89 41.91 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 135.89 44.45 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 135.89 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 135.89 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 135.89 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "754c9c05-2c1d-4c5a-a7aa-e7287cf9c85e")
+		)
+		(pin "1"
+			(uuid "6fd44ba7-db46-483b-b9b9-214e982a6db3")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R45")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 135.89 127 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f6e7866e-41f2-46c6-9088-5e9010278581")
+		(property "Reference" "R46"
+			(at 135.89 120.65 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 135.89 123.19 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 135.89 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 135.89 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 135.89 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "8e0786f2-a3ba-41a3-950d-d57977222b6a")
+		)
+		(pin "1"
+			(uuid "4a3de0bd-4eb9-415d-80fb-0fa251e186d1")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "R46")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 194.31 38.1 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f7864993-9eba-4929-8c0c-c3a11ba37bc4")
+		(property "Reference" "C55"
+			(at 194.3036 31.75 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10uF"
+			(at 194.3036 34.29 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 194.31 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 194.31 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 194.31 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "eaf5b086-02e3-434f-95b1-939e59c0d904")
+		)
+		(pin "1"
+			(uuid "04832da9-cf42-4a2d-8c63-2751298c5179")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C55")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 52.07 167.64 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "f8cecbc3-09a6-4e5a-aa85-6423364d01ee")
+		(property "Reference" "C42"
+			(at 54.61 166.3762 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1uF"
+			(at 54.61 168.9162 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder"
+			(at 52.07 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 52.07 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor, small symbol"
+			(at 52.07 167.64 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "98818895-8de5-4f40-8e7e-ee0363a7dd3d")
+		)
+		(pin "1"
+			(uuid "119e5827-68a2-46dc-8d04-61afa56bc8a2")
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178/d9a73c20-97e3-4fd1-9870-91cdde3099aa"
+					(reference "C42")
+					(unit 1)
+				)
+			)
+		)
+	)
+)

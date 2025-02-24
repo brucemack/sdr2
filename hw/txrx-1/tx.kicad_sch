@@ -1,0 +1,92 @@
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "d610d8d4-c3aa-441a-ac0f-c3c7e327240a")
+	(paper "USLetter")
+	(title_block
+		(title "Quadrature TX/RX Board")
+		(date "2025-02-17")
+		(rev "1")
+		(company "Bruce MacKinnon KC1FSZ")
+		(comment 1 "Copyright (C) Bruce MacKinnon, 2025")
+		(comment 2 "NOT FOR COMMERCIAL USE")
+	)
+	(lib_symbols)
+	(sheet
+		(at 76.2 24.13)
+		(size 39.37 36.83)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "a50ce90c-3197-46da-9f0b-d409feefa4c7")
+		(property "Sheetname" "QSE-MUX"
+			(at 76.2 23.4184 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "qse-mux.kicad_sch"
+			(at 76.2 61.5446 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 26.67 24.13)
+		(size 39.37 36.83)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "d9a73c20-97e3-4fd1-9870-91cdde3099aa")
+		(property "Sheetname" "QSE"
+			(at 26.67 23.4184 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "tx-qse.kicad_sch"
+			(at 26.67 61.5446 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "txrx-1"
+				(path "/8e82f983-38e6-4304-be32-fb6d88cc8acc/7ed2824d-e7e3-4e73-ad8c-26a3a131b178"
+					(page "4")
+				)
+			)
+		)
+	)
+)

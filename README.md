@@ -71,6 +71,8 @@ Research
 
 Consider the PCM1863 ADC? 
 
+Consider the TS5A4624 analog switch (logic high = 2.4V w/ 5V supply)
+
 References
 ==========
 

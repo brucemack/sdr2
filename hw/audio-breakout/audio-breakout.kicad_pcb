@@ -242,7 +242,7 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "resistor handsolder")
 		(property "Reference" "R1"
-			(at -3 0 360)
+			(at -3 0 0)
 			(layer "F.SilkS")
 			(uuid "533ac6a2-01ab-4770-857e-fc21af9b8ad4")
 			(effects
@@ -253,7 +253,7 @@
 			)
 		)
 		(property "Value" "470"
-			(at 0 1.65 360)
+			(at 0 1.65 0)
 			(layer "F.Fab")
 			(uuid "7af88102-2862-4028-bdb6-2af9a71dd882")
 			(effects
@@ -408,7 +408,7 @@
 			(uuid "6f457cfd-4bea-43a9-aafd-1b3cbd518ba8")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "65ba37d3-6032-4c83-9493-82c87e7f2067")
 			(effects
@@ -671,7 +671,7 @@
 			(uuid "0dbb0eac-9ebd-41e6-a0ea-c93f91cdc43d")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 5.08 360)
+			(at 0 5.08 0)
 			(layer "F.Fab")
 			(uuid "1cd489bd-4c07-4d96-ac53-6ec0637238b2")
 			(effects
@@ -755,7 +755,7 @@
 		(descr "SMD Solder 3-pad Jumper, 1x1.5mm Pads, 0.3mm gap, pads 1-2 bridged with 1 copper strip")
 		(tags "net tie solder jumper bridged")
 		(property "Reference" "JP2"
-			(at 3.7 -0.45 360)
+			(at 3.7 -0.45 0)
 			(layer "F.SilkS")
 			(uuid "c20effb4-7e4f-4abe-ba53-1fa301db0bb4")
 			(effects
@@ -766,7 +766,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_3_Bridged12"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "54a22043-fb6d-40b1-b5d6-178701b391a8")
 			(effects
@@ -979,7 +979,7 @@
 		(descr "SMD Solder 3-pad Jumper, 1x1.5mm Pads, 0.3mm gap, pads 1-2 bridged with 1 copper strip")
 		(tags "net tie solder jumper bridged")
 		(property "Reference" "JP8"
-			(at 4.2 0 360)
+			(at 4.2 0 0)
 			(layer "F.SilkS")
 			(uuid "8277bc82-b16f-408b-9648-7672f926c107")
 			(effects
@@ -990,7 +990,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_3_Bridged12"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "3430579c-690d-421d-92ec-1cb019d8b580")
 			(effects
@@ -1629,7 +1629,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C7"
-			(at 3.5 0 360)
+			(at 3.5 0 0)
 			(layer "F.SilkS")
 			(uuid "e1e58ca4-322b-4133-bc6a-1e662eefc5bc")
 			(effects
@@ -1640,7 +1640,7 @@
 			)
 		)
 		(property "Value" "0.1uF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(uuid "b92c8885-59b5-4baa-9e3b-5631d05f33d8")
 			(effects
@@ -1795,7 +1795,7 @@
 			(uuid "a6ae5907-76b1-4aed-b30e-4d76c2935b16")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "5f216b2e-2a49-4471-b5eb-a5128087c82e")
 			(effects
@@ -1842,7 +1842,7 @@
 		(descr "TSSOP, 20 Pin (JEDEC MO-153 Var AC https://www.jedec.org/document_search?search_api_views_fulltext=MO-153), generated with kicad-footprint-generator ipc_gullwing_generator.py")
 		(tags "TSSOP SO")
 		(property "Reference" "U1"
-			(at 0 -4.2 360)
+			(at 0 -4.2 0)
 			(layer "F.SilkS")
 			(uuid "2db36c09-33e8-45a1-b6bf-1c209d3e2d39")
 			(effects
@@ -1853,7 +1853,7 @@
 			)
 		)
 		(property "Value" "PCM5100"
-			(at 0 4.2 360)
+			(at 0 4.2 0)
 			(layer "F.Fab")
 			(uuid "2b0bed8e-8823-45e2-8e54-fe81830ca7da")
 			(effects
@@ -1864,7 +1864,7 @@
 			)
 		)
 		(property "Footprint" "Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "0df59cd1-3bbd-43be-af4e-677d728efbb3")
@@ -1876,7 +1876,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/pcm5100.pdf"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "28f717c5-3cee-4603-95c4-b167cc292920")
@@ -1888,7 +1888,7 @@
 			)
 		)
 		(property "Description" "2VRMS DirectPath, 100dB Audio Stereo DAC with 32-bit, 384kHz PCM Interface, TSSOP-20"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c31745f7-a755-4e2b-a9cb-9bae73d196fb")
@@ -2047,7 +2047,7 @@
 			(uuid "7d81c38e-65f4-43c0-8a54-bdd2d4813a73")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "cb6ccda4-8afa-402b-bb59-f72b82938b3d")
 			(effects
@@ -2554,7 +2554,7 @@
 		(descr "SMD Solder 3-pad Jumper, 1x1.5mm Pads, 0.3mm gap, pads 1-2 bridged with 1 copper strip")
 		(tags "net tie solder jumper bridged")
 		(property "Reference" "JP4"
-			(at -3.7 0.6 360)
+			(at -3.7 0.6 0)
 			(layer "F.SilkS")
 			(uuid "7c16c325-43a8-49ad-b5c8-9d9ce03a0110")
 			(effects
@@ -2565,7 +2565,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_3_Bridged12"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "1c12b5bf-033a-4eb9-bfd7-2054522dfb87")
 			(effects
@@ -2778,7 +2778,7 @@
 		(descr "SMD Solder 3-pad Jumper, 1x1.5mm Pads, 0.3mm gap, pads 1-2 bridged with 1 copper strip")
 		(tags "net tie solder jumper bridged")
 		(property "Reference" "JP13"
-			(at 4.5 0 360)
+			(at 4.5 0 0)
 			(layer "F.SilkS")
 			(uuid "1295e6b3-692c-4211-88c9-9e73c4dd064b")
 			(effects
@@ -2789,7 +2789,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_3_Bridged12"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "a0cd592c-af2a-429c-b837-98388e4d2222")
 			(effects
@@ -3116,7 +3116,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C12"
-			(at 4 0 360)
+			(at 4 0 0)
 			(layer "F.SilkS")
 			(uuid "18d5263c-e992-4e15-a457-fdc89c75a9a6")
 			(effects
@@ -3127,7 +3127,7 @@
 			)
 		)
 		(property "Value" "1u"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(uuid "8e7865ec-41fb-4ce1-982a-4588518a76a2")
 			(effects
@@ -3282,7 +3282,7 @@
 			(uuid "897b8218-6b04-4189-8ecc-631ecbad523e")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "70be22b1-e8ef-4ab4-aed7-3229f472d426")
 			(effects
@@ -5608,7 +5608,7 @@
 			(uuid "4eab2fda-ef27-48aa-aa1c-df06a5890ab1")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 3.81 360)
+			(at 0 3.81 0)
 			(layer "F.Fab")
 			(uuid "5afe2ca1-9c07-4145-8308-b47df3759000")
 			(effects
@@ -8051,7 +8051,7 @@
 		(descr "SMD Solder 3-pad Jumper, 1x1.5mm Pads, 0.3mm gap, pads 1-2 bridged with 1 copper strip")
 		(tags "net tie solder jumper bridged")
 		(property "Reference" "JP9"
-			(at -4 0 360)
+			(at -4 0 0)
 			(layer "F.SilkS")
 			(uuid "ac103815-d119-4668-a427-eaa1e09d1765")
 			(effects
@@ -8062,7 +8062,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_3_Bridged12"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "1ab43bc0-b4a3-4709-af9c-e6ba1f07d780")
 			(effects
@@ -8488,7 +8488,7 @@
 		(descr "Through hole straight pin header, 1x04, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x04 2.54mm single row")
 		(property "Reference" "J5"
-			(at 0 -2.33 360)
+			(at 0 -2.33 0)
 			(layer "F.SilkS")
 			(uuid "9d2254c5-dd51-455b-8292-1719ccfbc3a9")
 			(effects
@@ -8499,7 +8499,7 @@
 			)
 		)
 		(property "Value" "Conn_01x04"
-			(at 0 9.95 360)
+			(at 0 9.95 0)
 			(layer "F.Fab")
 			(uuid "576d302b-7432-40a1-9ee0-d5bfbdd8fd3f")
 			(effects
@@ -8949,7 +8949,7 @@
 		(descr "SMD Solder 3-pad Jumper, 1x1.5mm Pads, 0.3mm gap, pads 1-2 bridged with 1 copper strip")
 		(tags "net tie solder jumper bridged")
 		(property "Reference" "JP12"
-			(at -4.5 0 360)
+			(at -4.5 0 0)
 			(layer "F.SilkS")
 			(uuid "9dccdd5d-f3f6-4b5d-a497-30af9615843d")
 			(effects
@@ -8960,7 +8960,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_3_Bridged12"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "41d3aaae-80dd-4e84-8c0e-e100d86b5577")
 			(effects
@@ -9173,7 +9173,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C9"
-			(at -3 0 360)
+			(at -3 0 0)
 			(layer "F.SilkS")
 			(uuid "9f7b8fa7-95a6-468f-aab4-daa10dc2cc17")
 			(effects
@@ -9184,7 +9184,7 @@
 			)
 		)
 		(property "Value" "2.2nF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(uuid "40984a95-58ff-4fd5-9f2f-4c37f3a09566")
 			(effects
@@ -9339,7 +9339,7 @@
 			(uuid "9a318660-c683-4f0d-b2a8-18a2d8558f58")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "148b8627-9afe-4200-8750-5a9a86399f6d")
 			(effects
@@ -9386,7 +9386,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C3"
-			(at -3 0 360)
+			(at -3 0 0)
 			(layer "F.SilkS")
 			(uuid "1708df10-093d-49c2-adc4-26ed0c17c2f6")
 			(effects
@@ -9397,7 +9397,7 @@
 			)
 		)
 		(property "Value" "2.2uF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(uuid "39672223-1ad9-4548-9aeb-8f9ca4e76136")
 			(effects
@@ -9552,7 +9552,7 @@
 			(uuid "daf3802a-300b-433a-a25c-8acfc1de88a3")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "babbe365-ae5f-4861-a9e7-cabe47714dbb")
 			(effects
@@ -9599,7 +9599,7 @@
 		(descr "Resistor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 72, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf), generated with kicad-footprint-generator")
 		(tags "resistor handsolder")
 		(property "Reference" "R2"
-			(at -3 0 360)
+			(at -3 0 0)
 			(layer "F.SilkS")
 			(uuid "16d178b3-5426-43aa-b814-fa77a3c61f8f")
 			(effects
@@ -9610,7 +9610,7 @@
 			)
 		)
 		(property "Value" "470"
-			(at 0 1.65 360)
+			(at 0 1.65 0)
 			(layer "F.Fab")
 			(uuid "5930324e-ff10-4a31-86de-70b1c06d18b7")
 			(effects
@@ -9765,7 +9765,7 @@
 			(uuid "008a2c68-6620-4c37-a0c4-cac0a932d53e")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "c330f591-4d8d-4e97-865a-8154c3f50a58")
 			(effects
@@ -11054,7 +11054,7 @@
 		(descr "SMD Solder 3-pad Jumper, 1x1.5mm Pads, 0.3mm gap, pads 1-2 bridged with 1 copper strip")
 		(tags "net tie solder jumper bridged")
 		(property "Reference" "JP11"
-			(at -4.5 0 360)
+			(at -4.5 0 0)
 			(layer "F.SilkS")
 			(uuid "84e6dcc5-2033-420a-bd17-782980a872a2")
 			(effects
@@ -11065,7 +11065,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_3_Bridged12"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "3ccd886b-9a25-4e81-92e1-9916ddbaae52")
 			(effects
@@ -11278,7 +11278,7 @@
 		(descr "SMD Solder 3-pad Jumper, 1x1.5mm Pads, 0.3mm gap, pads 1-2 bridged with 1 copper strip")
 		(tags "net tie solder jumper bridged")
 		(property "Reference" "JP10"
-			(at 4.45 0 360)
+			(at 4.45 0 0)
 			(layer "F.SilkS")
 			(uuid "b114a943-f05e-4314-95e5-b875b9eeaf98")
 			(effects
@@ -11289,7 +11289,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_3_Bridged12"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "181103da-3297-48f4-afc2-22f954a67c45")
 			(effects
@@ -11502,7 +11502,7 @@
 		(descr "SMD Solder 3-pad Jumper, 1x1.5mm Pads, 0.3mm gap, pads 1-2 bridged with 1 copper strip")
 		(tags "net tie solder jumper bridged")
 		(property "Reference" "JP3"
-			(at 0.2 2.25 360)
+			(at 0.2 2.25 0)
 			(layer "F.SilkS")
 			(uuid "089ced6c-cbc2-4004-bcc7-d0031fd64d94")
 			(effects
@@ -11513,7 +11513,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_3_Bridged12"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "50aeaca1-86ee-4913-ac44-35f4d89b2c3d")
 			(effects
@@ -11939,7 +11939,7 @@
 		(descr "SMD Solder 3-pad Jumper, 1x1.5mm Pads, 0.3mm gap, pads 1-2 bridged with 1 copper strip")
 		(tags "net tie solder jumper bridged")
 		(property "Reference" "JP1"
-			(at -3.5 0.55 360)
+			(at -3.5 0.55 0)
 			(layer "F.SilkS")
 			(uuid "27e6c64f-f178-42e9-9f05-29d612e05a92")
 			(effects
@@ -11950,7 +11950,7 @@
 			)
 		)
 		(property "Value" "SolderJumper_3_Bridged12"
-			(at 0 2 360)
+			(at 0 2 0)
 			(layer "F.Fab")
 			(uuid "12dda690-7c15-43ad-b296-348bca0fb92e")
 			(effects
@@ -13892,7 +13892,7 @@
 			(uuid "736f339f-bf0c-4c4e-9607-1f68b2e29ded")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 3.81 360)
+			(at 0 3.81 0)
 			(layer "F.Fab")
 			(uuid "cf456a93-5761-4197-bd42-d5f8174b2ba2")
 			(effects
@@ -13965,7 +13965,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C5"
-			(at 3 0 360)
+			(at 3 0 0)
 			(layer "F.SilkS")
 			(uuid "a153cb35-f051-4e61-8b63-406a97239efb")
 			(effects
@@ -13976,7 +13976,7 @@
 			)
 		)
 		(property "Value" "2.2uF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(uuid "5cd88a0d-e065-4e66-9b6e-98d234cc241a")
 			(effects
@@ -14131,7 +14131,7 @@
 			(uuid "200d2c3f-997d-4cbe-8763-72b57eccf193")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "802b9dc6-332a-4190-ac7b-3c946f4f8e00")
 			(effects
@@ -14178,7 +14178,7 @@
 		(descr "Capacitor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: IPC-SM-782 page 76, https://www.pcb-3d.com/wordpress/wp-content/uploads/ipc-sm-782a_amendment_1_and_2.pdf, https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "capacitor handsolder")
 		(property "Reference" "C8"
-			(at -3 0 360)
+			(at -3 0 0)
 			(layer "F.SilkS")
 			(uuid "77dd1fcb-58a0-491e-9e2d-9024d42d48b7")
 			(effects
@@ -14189,7 +14189,7 @@
 			)
 		)
 		(property "Value" "2.2nF"
-			(at 0 1.68 360)
+			(at 0 1.68 0)
 			(layer "F.Fab")
 			(uuid "e136c310-4fb1-4336-87dc-88b3937bdf1a")
 			(effects
@@ -14344,7 +14344,7 @@
 			(uuid "c4cd1ae6-e9ba-4e10-a157-623a10c3a81c")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "2a8a31a3-99df-448f-86dc-a83a3e9ab013")
 			(effects
@@ -14776,7 +14776,7 @@
 		(descr "Inductor SMD 0805 (2012 Metric), square (rectangular) end terminal, IPC_7351 nominal with elongated pad for handsoldering. (Body size source: https://docs.google.com/spreadsheets/d/1BsfQQcO9C6DZCsRaXUlFlo91Tg2WpOkGARC1WS5S8t0/edit?usp=sharing), generated with kicad-footprint-generator")
 		(tags "inductor handsolder")
 		(property "Reference" "L1"
-			(at -3 0 360)
+			(at -3 0 0)
 			(layer "F.SilkS")
 			(uuid "d0805fe4-a8cc-40c2-a8ed-b98a7bed5ad3")
 			(effects
@@ -14787,7 +14787,7 @@
 			)
 		)
 		(property "Value" "47u"
-			(at 0 1.65 360)
+			(at 0 1.65 0)
 			(layer "F.Fab")
 			(uuid "f7fd26d1-1986-4eb1-b71c-56f63efbec93")
 			(effects
@@ -14942,7 +14942,7 @@
 			(uuid "8124f72f-b4d6-474f-b8cb-89568c31d88a")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 0 0 360)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(uuid "94a45fa0-174f-4c41-b58f-50583698fea8")
 			(effects
@@ -15017,7 +15017,7 @@
 			(justify left bottom)
 		)
 	)
-	(gr_text "KC1FSZ - 2025-01"
+	(gr_text "KC1FSZ - 2025-02"
 		(at 164 130.25 0)
 		(layer "F.SilkS")
 		(uuid "e1816a90-625c-42d3-8913-da59a8fd55a1")
