@@ -82,9 +82,15 @@ Hardware Notes
 ### Instrumentation Amplifiers on Receive Board
 
 See Horowitz and Hill (3rd ed, section 5.16, figure 5.88) for a description of the 
-instrumentation amplifier congiruation used on the receive board.  Gain for this amplifier is 
+instrumentation amplifier configuration used on the receive board.  Gain for this amplifier is 
 controlled determined by 1 + 2 R<sub>f</sub> / R<sub>g</sub>.  Notice that the feedback 
 path is tapped after a 47 ohm resistor to set the output impedance of the stage.
+
+Assuming R<sub>f</sub> is 520, R<sub>g</sub> is 100, the theoretical gain is about 11.
+
+### Random
+
+dBm = 30 + 20 * log(Vrms/sqrt(Z0))
 
 Research
 ========
