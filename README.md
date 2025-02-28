@@ -70,12 +70,10 @@ P7 - Transmit PA enable (active low)
 Wiring Notes
 ============
 
-* RX board I_PLUS (J2:1) -> Audio Breakout INL_PLUS (J4:1)
-* RX board I_MINUS (J2:2) -> Audio Breakout INL_MINUS (J4:2)
-* RX board Q_PLUS (J2:4) -> Audio Breakout INR_PLUS (J4:4)
-* RX board Q_MINUS (J2:5) -> Audio Breakout INR_MINUS (J4:3)
-* RX board CLK_I (J4:1) -> Si5351 CLK0
-* RX board CLK_Q (J4:3) -> Si5351 CLK1
+* TXRX board I_PLUS (J4:1) -> Audio Breakout INL_PLUS (J4:1)
+* TXRX board I_MINUS (J4:2) -> Audio Breakout INL_MINUS (J4:2)
+* TXRX board Q_PLUS (J4:3) -> Audio Breakout INR_PLUS (J4:4)
+* TXRX board Q_MINUS (J4:4) -> Audio Breakout INR_MINUS (J4:3)
 * Microphone input is connected to the INL_PLUS/INL_MINUS pins on the audio breakout board.
 
 Hardware Notes
