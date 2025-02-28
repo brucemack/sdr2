@@ -152,7 +152,8 @@ Control Si5351 (see AN619):
 
 // --------------------------------------------------------------------------
 //#include "uSDR.h"
-#define I2C_VFO					(0x60)	
+//#define I2C_VFO					(0x60)	
+#define I2C_VFO					(0x6f)	
 #define I2C_LINGER_US			200											// Linger time added after i2c SDK functions
 
 // This is the connection to the I2C port.  It is setup at initialization.
@@ -212,8 +213,9 @@ int i2c_get_data(uint8_t addr, uint8_t *dst, size_t len, bool nostop)
 #define SI_CLK_SRC		0b00001100											// Select output source: 11=MS, 00=XTAL direct
 #define SI_CLK_DRV		0b00000011											// Select output drive, increasingly: 2-4-6-8 mA 
 																			//   Play with DRV to get a nice block output
-#define SI_VFO0CTL		0b00001101											// nonINT, PLLA, nonINV, SRC=MS, 4mA
-#define SI_VFO1CTL		0b00101101											// nonINT, PLLB, nonINV, SRC=MS, 4mA
+//#define SI_VFO0CTL		0b00001101											// nonINT, PLLA, nonINV, SRC=MS, 4mA
+#define SI_VFO0CTL		0b00001111											// nonINT, PLLA, nonINV, SRC=MS, 4mA
+#define SI_VFO1CTL		0b00101101											// nonINT, PLLB, nonINV, SRC=MS, 8mA
 
 // PLL_RESET register 177 values
 #define SI_PLLB_RST		0b10001100											// Reset PLL B

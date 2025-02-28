@@ -195,10 +195,11 @@ static delay_instance_f32 tx_hilbert_delay;
 
 static int32_t freq = 7255000;
 // Calibration
-static int32_t cal = 490;
+//static int32_t cal = 490;
+static int32_t cal = 750;
 // LSB/USB selector
 static bool modeLSB = true;
-static bool modeTX = true;
+static bool modeTX = false;
 
 static float dacScale = 100.0;
 // Used to trim I/Q imbalance on input
@@ -582,6 +583,11 @@ int main(int argc, const char** argv) {
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
 
+    // Audio out shutdown
+    gpio_init(12);
+    gpio_set_dir(12, GPIO_OUT);
+    gpio_put(12, 0);
+
     gpio_init(rst_pin);
     gpio_set_dir(rst_pin, GPIO_OUT);
     gpio_put(rst_pin, 1);
@@ -614,15 +620,27 @@ int main(int argc, const char** argv) {
     gpio_pull_up(I2C0_SCL_PIN);
     i2c_set_baudrate(i2c0, 100000);
 
+    // I2C SCAN
+    printf("\nI2C Bus Scan\n");
+    printf("   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F\n");
+    
+    for (int addr = 0; addr < (1 << 7); ++addr) {
+      if (addr % 16 == 0) {
+        printf("%02x ", addr);
+      }
+
+      int ret;
+      uint8_t rxdata;
+      ret = i2c_read_blocking(i2c0, addr, &rxdata, 1, false);
+
+      printf(ret < 0 ? "." : "@");
+      printf(addr % 16 == 15 ? "\n" : "  ");
+    }
+
     init_si5351();
     // Change freq
-    printf("Si5351 initializing 2\n");
     si_evaluate(0, freq + cal);
     printf("Si5351 initialized 3\n");
-
-    //const uint work_size = 256;
-    //float trigSpace[work_size];
-    //F32FFT fft(work_size, trigSpace);
 
     // ===== PCM1804 A/D Converter Setup ======================================
 
