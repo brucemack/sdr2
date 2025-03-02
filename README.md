@@ -51,7 +51,7 @@ Wiring Notes
 * TXRX board I_PLUS (J4:1) -> Audio Breakout INL_PLUS (J4:1)
 * TXRX board I_MINUS (J4:2) -> Audio Breakout INL_MINUS (J4:2)
 * TXRX board Q_PLUS (J4:3) -> Audio Breakout INR_PLUS (J4:4)
-* TXRX board Q_MINUS (J4:4) -> Audio Breakout INR_MINUS (J4:3)
+* TXRX board Q_MINUS (J4:5) -> Audio Breakout INR_MINUS (J4:3)
 * Microphone input is connected to the INL_PLUS/INL_MINUS pins on the audio breakout board.
 
 Hardware Notes

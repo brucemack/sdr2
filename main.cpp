@@ -201,11 +201,13 @@ static int32_t cal = 750;
 static bool modeLSB = true;
 static bool modeTX = false;
 
-static float dacScale = 100.0;
+// Scale when prouding audio output
+static float rxDacScale = 80.0;
 // Used to trim I/Q imbalance on input
-static float imbalanceScale = 0.97;
-static int phaseCal = 2;
+static float rxImbalanceScale = 0.97;
+static int rxPhaseCal = -2;
 
+// Scale when producing I/Q output
 static float txDacScale = 1.0;
 static float txImbalanceScale = 0.98;
 static int txPhaseCal = 0;
@@ -328,7 +330,7 @@ static void process_in_frame_rx() {
         // so we need to shift right 8. Sign extension is automatic.
         // Range of 24 bits is -8,388,608 to 8,388,607.
         an1_i[j] = adc_data[i] >> 8;
-        an1_q[j] = adc_data[i + 1] >> 8;
+        an1_q[j] = (float)(adc_data[i + 1] >> 8) * rxImbalanceScale;
         j++;
     }
 
@@ -337,17 +339,7 @@ static void process_in_frame_rx() {
     // the hardware that result in phase mismatch between the I/Q
     // channels.
     delay_f32(&hilbert_delay, an1_i, an2_i, 
-        ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY + phaseCal);
-    /*
-    memmove((void*)hilbert_delay_state, 
-        (const void*)&(hilbert_delay_state[ADC_SAMPLE_COUNT]), 
-        (HILBERT_IMPULSE_SIZE - 1) * sizeof(float));
-    memmove((void*)&(hilbert_delay_state[HILBERT_IMPULSE_SIZE - 1]), 
-        (const void*)an1_i,
-        ADC_SAMPLE_COUNT * sizeof(float));
-    for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
-        an2_i[i] = hilbert_delay_state[(HILBERT_IMPULSE_SIZE - 1) - HILBERT_GROUP_DELAY + i];
-    */
+        ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY + rxPhaseCal);
 
     // Apply the Hilbert transform of the Q stream
     arm_fir_f32(&hilbert_fir, an1_q, an2_q, ADC_SAMPLE_COUNT); 
@@ -355,9 +347,9 @@ static void process_in_frame_rx() {
     // Make the SSB by combining the I and Q streams
     for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
         if (modeLSB) {
-            an3_ssb[i] = an2_i[i] - an2_q[i];
-        } else {
             an3_ssb[i] = an2_i[i] + an2_q[i];
+        } else {
+            an3_ssb[i] = an2_i[i] - an2_q[i];
         }
 
     // Apply the LPF to the selected sideband
@@ -374,12 +366,13 @@ static void process_in_frame_rx() {
     // Note that we are only writing to the left DAC channel.
     j = 0;
     for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) {
-        float fScaled = (an4_audio[i] * dacScale);
+        float fScaled = (an4_audio[i] * rxDacScale);
         // 24 bit signed
         if (fabs(fScaled) > 8388607.0) {
             overflow = true;
             fScaled = 0;
         }
+        // Move data into the 24 high bits of a 32 bit DAC word
         int32_t aScaled = fScaled;
         aScaled = aScaled << 8;
         // Right 
@@ -446,16 +439,6 @@ static void process_in_frame_tx() {
     // channels.
     delay_f32(&tx_hilbert_delay, tx_an2, tx_an3_i, 
         ADC_SAMPLE_COUNT, HILBERT_GROUP_DELAY + txPhaseCal);
-    /*
-    memmove((void*)tx_hilbert_delay_state, 
-        (const void*)&(tx_hilbert_delay_state[ADC_SAMPLE_COUNT]), 
-        (HILBERT_IMPULSE_SIZE - 1) * sizeof(float));
-    memmove((void*)&(tx_hilbert_delay_state[HILBERT_IMPULSE_SIZE - 1]), 
-        (const void*)tx_an2,
-        ADC_SAMPLE_COUNT * sizeof(float));
-    for (unsigned int i = 0; i < ADC_SAMPLE_COUNT; i++) 
-        tx_an3_i[i] = tx_hilbert_delay_state[(HILBERT_IMPULSE_SIZE - 1) - HILBERT_GROUP_DELAY + i];
-    */
 
     // Apply the Hilbert transform of the audio to get the Q stream
     arm_fir_f32(&tx_hilbert_fir, tx_an2, tx_an3_q, ADC_SAMPLE_COUNT); 
@@ -480,6 +463,7 @@ static void process_in_frame_tx() {
         aScaledI = aScaledI << 8;
 
         float scaledQ = (tx_an3_q[i] * txDacScale) * txImbalanceScale;
+
         // 24 bit signed
         if (fabs(scaledQ) > 8388607.0) {
             txOverflow = true;
@@ -608,7 +592,7 @@ int main(int argc, const char** argv) {
     printf("Minimal SDR2\nCopyright (C) Bruce MacKinnon KC1FSZ, 2025\n");
     printf("Freq %d\n", freq);
 
-    generateTestTone();
+    //generateTestTone();
 
     // ===== Si5351 Initialization =============================================
 
@@ -1097,35 +1081,32 @@ int main(int argc, const char** argv) {
             si_evaluate(0, freq + cal);
             printf("Freq %d\n", freq);
         }
-        else if (c == 'a') {
-            dacScale = dacScale + 5.0;
-            printf("Scale %f\n", dacScale);
-        }
-        else if (c == 's') {
-            dacScale = dacScale - 5.0;
-            printf("Scale %f\n", dacScale);
-        }
-        else if (c == 'q' || c == 'w') {
-            if (c == 'q')
-                phaseAdjust -= 0.005;
+        else if (c == 'a' || c == 's') {
+            if (modeTX)
+                if (c == 'a')
+                    txDacScale = txDacScale + 5.0;
+                else 
+                    txDacScale = txDacScale - 5.0;
             else
-                phaseAdjust += 0.005;
-            printf("Phase Adjust %f\n", phaseAdjust);
-            generateTestTone();
+                if (c == 'a')
+                    rxDacScale = rxDacScale + 5.0;
+                else 
+                    rxDacScale = rxDacScale - 5.0;
+            printf("DAC Scale RX/TX %f/%f\n", rxDacScale, txDacScale);
         }
         else if (c == 'e' || c == 'r') {
             if (c == 'e')
                 if (modeTX)
                     txImbalanceScale -= 0.01;
                 else 
-                    imbalanceScale -= 0.01;
+                    rxImbalanceScale -= 0.01;
             else
                 if (modeTX)
                     txImbalanceScale += 0.01;
                 else
-                    imbalanceScale += 0.01;
+                    rxImbalanceScale += 0.01;
             printf("imbalanceScale RX/TX %f/%f\n", 
-                imbalanceScale, txImbalanceScale);
+                rxImbalanceScale, txImbalanceScale);
             generateTestTone();
         }
         else if (c == 't' || c == 'y') {
@@ -1133,14 +1114,14 @@ int main(int argc, const char** argv) {
                 if (modeTX)
                     txPhaseCal -= 1;
                 else 
-                    phaseCal -= 1;
+                    rxPhaseCal -= 1;
             else
                 if (modeTX)
                     txPhaseCal += 1;
                 else
-                    phaseCal += 1;
+                    rxPhaseCal += 1;
             printf("phaseCal RX/TX %d/%d\n", 
-                phaseCal, txPhaseCal);
+                rxPhaseCal, txPhaseCal);
         }
 
         /*
@@ -1211,6 +1192,7 @@ int main(int argc, const char** argv) {
                 float s;
                 if (!modeTX)
                     s = an4_audio[i];
+                    //s = an1_i[i];
                 else 
                     //s = tx_an1[i];
                     s = tx_an3_q[i];
@@ -1242,8 +1224,8 @@ int main(int argc, const char** argv) {
             }
             float maxMag = sqrt(maxMagSquared);
 
-            printf("Power %d, max %d, FFT max bin %d, FFT max mag %d\n", 
-                (int)power, (int)maxAudio, maxMagIdx, (int)maxMag);
+            //printf("Power %d, max %d, FFT max bin %d, FFT max mag %d\n", 
+            //    (int)power, (int)maxAudio, maxMagIdx, (int)maxMag);
 
             if (overflow) {
                 overflow = false;
@@ -1254,8 +1236,6 @@ int main(int argc, const char** argv) {
                 printf("TX Overflow\n");
             }
         }
-
-        //process_in_frame();           
    }
 
     return 0;
