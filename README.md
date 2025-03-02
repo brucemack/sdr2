@@ -19,30 +19,52 @@ Command used to flash code to board:
 
         ~/git/openocd/src/openocd -s ~/git/openocd/tcl -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c "adapter speed 5000" -c "rp2350.dap.core1 cortex_m reset_config sysresetreq" -c "program main.elf verify reset exit"
 
-Pico Pinout Notes
-=================
+Pico 2 Pinout Notes
+===================
 ```
 GP0  - (Reserved for UART0 TX)
 GP1  - (Reserved for UART0 RX)
 
 GP2  - 
 GP3  - 
-GP4  - SCK out to PCM1804 ADC and PCM5100 DAC
+GP4  - I2S SCK out to PCM1804 ADC and PCM5100 DAC
 GP5  - RST out to PCM1804 ADC
 
-GP6  - DIN in from PC1804 ADC
-GP7  - BCK out to PC1804 ADC
-GP8  - LRCK out to PC1804 ADC
-GP9  - DOUT out to PCM5100 DAC
+GP6  - I2S DIN in from PC1804 ADC
+GP7  - I2S BCK out to PC1804 ADC
+GP8  - I2S LRCK out to PC1804 ADC
+GP9  - I2S DOUT out to PCM5100 DAC
 
-GP10 - BCK out to PCM5100 DAC
-GP11 - LRCK out to PCM5100 DAC
-GP12
-GP13
-GP14
-GP15
+GP10 - I2S BCK out to PCM5100 DAC
+GP11 - I2S LRCK out to PCM5100 DAC
+GP12 - User button input 0
+GP13 - User button input 1
+GP14 - PTT input 
+GP15 - 
 GP16 - I2C0 SDA for Si5351 (Addr 0x60)
 GP17 - I2C0 SCL for Si5351 (Addr 0x60)
+
+GP18 - I2C1 SDA for display and IO expander
+GP19 - I2C1 SCL for display and IO expander
+GP20 - Rotary encoder I channel input
+GP21 - Rotary encoder Q channel input
+
+GP22 - 
+GP26 - ADC0 for forward power
+GP27 - ADC1 for reverse power
+GP28 - 
+```
+IO Expander Notes
+=================
+```
+P0 - User indicator LED output
+P1 - Audio amplifier enable (Low=enable output, high=shutdown amplifier)
+P2 - ADC Input Select (Low=Microphone preamp out, High=QSD channel out)
+P3 - TX band select 0
+P4 - TX band select 1
+P5 - RX band select 0
+P6 - RX band select 1
+P7 - Transmit PA enable (active low)
 ```
 
 Wiring Notes
@@ -60,9 +82,15 @@ Hardware Notes
 ### Instrumentation Amplifiers on Receive Board
 
 See Horowitz and Hill (3rd ed, section 5.16, figure 5.88) for a description of the 
-instrumentation amplifier congiruation used on the receive board.  Gain for this amplifier is 
+instrumentation amplifier configuration used on the receive board.  Gain for this amplifier is 
 controlled determined by 1 + 2 R<sub>f</sub> / R<sub>g</sub>.  Notice that the feedback 
 path is tapped after a 47 ohm resistor to set the output impedance of the stage.
+
+Assuming R<sub>f</sub> is 520, R<sub>g</sub> is 100, the theoretical gain is about 11.
+
+### Random
+
+dBm = 30 + 20 * log(Vrms/sqrt(Z0))
 
 Research
 ========
@@ -70,6 +98,12 @@ Research
 Consider the PCM1863 ADC? 
 
 Consider the TS5A4624 analog switch (logic high = 2.4V w/ 5V supply)
+
+Consider PCF8574A IO expander: https://www.ti.com/lit/ds/symlink/pcf8574a.pdf?ts=1728869550852&ref_url=https%253A%252F%252Fwww.mouser.com%252F
+
+
+RF Transistor: https://www.nxp.com/docs/en/data-sheet/BFU590G.pdf
+
 
 References
 ==========
