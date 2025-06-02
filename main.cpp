@@ -201,7 +201,7 @@ static int32_t cal = 750;
 static bool modeLSB = true;
 static bool modeTX = false;
 
-// Scale when prouding audio output
+// Scale when producing audio output
 static float rxDacScale = 80.0;
 // Used to trim I/Q imbalance on input
 static float rxImbalanceScale = 0.97;
@@ -235,9 +235,18 @@ public:
 static void process_in_frame_rx();
 static void process_in_frame_tx();
 
-// This will be called once every AUDIO_BUFFER_SIZE/2 samples.
+// This function represents the main "audio pump" of the system. All 
+// audio processing is initiated from here. 
+//
 // VERY IMPORTANT: This interrupt handler needs to be fast enough 
 // to run inside of one sample block.
+//
+// This will be called once every ADC_SAMPLE_COUNT samples on 
+// a cadence defined by the ADC DMA channels. The assumption is that 
+// the DMA channels associated with the DACs are running at exactly
+// the same speed so we don't need to do anything in the DAC interrupt
+// handlers.
+//
 static void dma_adc_handler() {   
 
     dma_in_count++;
@@ -255,6 +264,12 @@ static void dma_adc_handler() {
     dma_hw->ints0 = 1u << dma_ch_in_data;
 }
 
+/**
+ * @brief Called each time a DAC buffer is completed. The DAC
+ * DMA system is free-running ping/pong so there's nothing 
+ * to do here other than keep track of which of the two buffers
+ * was just sent out.
+ */
 static void dma_dac0_handler() {   
 
     dma_out_count++;
@@ -264,6 +279,12 @@ static void dma_dac0_handler() {
     dma_hw->ints0 = 1u << dma_ch_out_data0;
 }
 
+/**
+ * @brief Called each time a DAC buffer is completed. The DAC
+ * DMA system is free-running ping/pong so there's nothing 
+ * to do here other than keep track of which of the two buffers
+ * was just sent out.
+ */
 static void dma_dac1_handler() {   
 
     dma_out_count++;
@@ -274,7 +295,9 @@ static void dma_dac1_handler() {
 }
 
 static void dma_irq_handler() {   
-    // Figure out which interrupt fired
+    // All of the interrupts are tied to the same handler so we need
+    // to look at the interrupt status register to figure out what
+    // actually happened here.
     if (dma_hw->ints0 & (1u << dma_ch_in_data)) {
         dma_adc_handler();
     }
@@ -576,15 +599,6 @@ int main(int argc, const char** argv) {
     gpio_set_dir(rst_pin, GPIO_OUT);
     gpio_put(rst_pin, 1);
 
-    //i2c_init(i2c1, 100 * 1000);
-    //gpio_set_function(I2C1_SDA_PIN, GPIO_FUNC_I2C);
-    //gpio_set_function(I2C1_SCL_PIN, GPIO_FUNC_I2C);
-    // NOTE: The Sparkfun MCP4725 breakout board has 4.7k pullups on the 
-    // I2C lines.  Therefore we are not enabling them here.
-    //gpio_pull_up(I2C1_SDA_PIN);
-    //gpio_pull_up(I2C1_SCL_PIN);
-    //i2c_set_baudrate(i2c1, 800000);
-
     // Startup ID
     sleep_ms(500);
     sleep_ms(500);
@@ -673,7 +687,7 @@ int main(int argc, const char** argv) {
 
     // Adjust state-machine clock divisor.  Remember that we need
     // the state machine to run at 2x SCK speed since it takes two 
-    // instructions to acheive one clock transition on the pin.
+    // instructions to achieve one clock transition on the pin.
     //
     // NOTE: The clock divisor is in 16:8 format
     //
